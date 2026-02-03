@@ -36,10 +36,10 @@ The **[Wiki](../../wiki)** serves as the authoritative source for all foundation
 - **[Concepts & Definitions](../../wiki/concepts)**  
   Structured list of concepts and their definitions, based on Transmodel terminology.
 
-- **[Scope](../../wiki/scope-options)** (`scope-options.md`)  
+- **[Scope](../../wiki/scope)** (`scope-options.md`)  
   Project scope definition and boundary conditions. This also contains the **CoRoM deliverables**!
 
-- **[Roles](../../wiki/roles)**  
+- **[Roles](../../wiki/roles.md)**  
   Definition and description of stakeholder roles within the project.
 
 - **[Use Cases](../../wiki/use-cases)** (`use-cases.md`)  
@@ -59,12 +59,12 @@ The **[Wiki](../../wiki)** serves as the authoritative source for all foundation
 
 Each supported standard has its own directory containing mapping documentation to Transmodel:
 
-- **[OSDM](../../wiki/standards/osdm)**
-- **[TOMP-API](../../wiki/standards/tomp-api)**
-- **[BoB](../../wiki/standards/bob)**
-- **[FerryGateway](../../wiki/standards/ferrygateway)**
-- **[OMSA](../../wiki/standards/omsa)**
-- **[InterMOD](../../wiki/standards/intermod)**
+- **[OSDM](../../wiki/mappings/osdm)**
+- **[TOMP-API](../../wiki/mappings/tomp-api)**
+- **[BoB](../../wiki/mappings/bob)**
+- **[FerryGateway](../../wiki/mappings/ferrygateway)**
+- **[OMSA](../../wiki/mappings/omsa)**
+- **[InterMOD](../../wiki/mappings/intermod)**
 
 ##### Mapping Format  
 
@@ -80,7 +80,7 @@ Each standard mapping follows this structure:
 
 The project follows a **five-phase approach**, metaphorically inspired by the blacksmithing process:
 
-### 🥚 Phase 1: [The Kidling](./the-kidling)
+### 🥚 Phase 1: [The Kidling](./phases/the-kidling)
 **Initiation and Foundation**
 
 - **Purpose:** Project setup, team formation, and initial exploration
@@ -100,11 +100,11 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - Gather usable (external) resources
   - Preparing the forge
 
-[→ Read phase README](./the-kidling/README.md)
+[→ Read phase README](./phases/the-kidling/README.md)
 
 ---
 
-### 🔥 Phase 2: [The Forge](./the-forge)
+### 🔥 Phase 2: [The Forge](./phases/the-forge)
 **Make the first proposal**
 
 - **Purpose:** Deliver the first technical documents, based on what we already have
@@ -114,11 +114,11 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
 - **Activities:**
   - design session
 
-[→ Read phase README](./the-forge/README.md)
+[→ Read phase README](./phases/the-forge/README.md)
 
 ---
 
-### 🔨 Phase 3: [The Anvil](./the-anvil)
+### 🔨 Phase 3: [The Anvil](./phases/the-anvil)
 **Hammering the drafts**
 
 - **Purpose:** Complete, extend and finetune the drafts
@@ -129,11 +129,11 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - Biweekly meetings, with a fixed agenda for each meeting (* based on the drafts *)
   - Once in the 5 meetings, a retro session, where we'll look back, and finalize the functionality we've addressed in the past months.
 
-[→ Read phase README](./the-anvil/README.md)
+[→ Read phase README](./phases/the-anvil/README.md)
 
 ---
 
-### 📊 Phase 4: [The Presenting](./the-presenting)
+### 📊 Phase 4: [The Presenting](./phases/the-presenting)
 **Validation and Stakeholder Review**
 
 - **Purpose:** Results to CEN, ballotting
@@ -143,11 +143,11 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - consistency check of the TS (OpenAPI)
   - finalize the documentation
 
-[→ Read phase README](./the-presenting/README.md)
+[→ Read phase README](./phases/the-presenting/README.md)
 
 ---
 
-### ⚒️ Phase 5: [The Tempering](./the-tempering)
+### ⚒️ Phase 5: [The Tempering](./phases/the-tempering)
 **Refinement and Finalization**
 
 - **Purpose:** Incorporate feedback and finalize deliverables
@@ -159,6 +159,6 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - documentation,
   - knowledge transfer
 
-[→ Read phase README](./the-tempering/README.md)
+[→ Read phase README](./phases/the-tempering/README.md)
 
 ---
