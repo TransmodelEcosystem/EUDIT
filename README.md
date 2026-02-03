@@ -6,33 +6,25 @@ This repository contains the documentation and work products for harmonizing var
 
 ---
 
-## Issues
+## [Issues](https://github.com/TransmodelEcosystem/EUDIT/issues)
 
 This tab contains remarks/request related to the technical specification(s). It will be used in the `anvil` phase.
 
-## Pull request
+## [Pull request](https://github.com/TransmodelEcosystem/EUDIT/pulls)
 
 Most likely, we will not use this, unless we decide during the process to have a process to make changes that requires pull requests.
 
-## Actions
-
-Not used
-
-## Discussions
+## [Discussions](https://github.com/TransmodelEcosystem/EUDIT/discussions)
 
 This is the main page for functional discussions. We will prepare discussion items per meeting. They will be placed in this page, and you can already react on the discussions in the weeks before the next meeting. So, if even when you're not in the meeting, your opinion can be taken into account. The discussions will be prefixed with the date of the meeting when they will be addressed.
 
-Don't create discussions on your own, please request them in our biweekly meetings.
+> Don't create discussions on your own, please request them in our biweekly meetings.
 
-## Projects
-
-Not used (for now), maybe later.
-
-## Code (Repository Structure)
+## [Code](https://github.com/TransmodelEcosystem/EUDIT) (Repository Structure)
 
 Contains most work-in-progress documentation, including documents we can use or have to build on.
 
-### 📚 Wiki (Ground Truth Documentation)
+### 📚 Wiki
 
 The **[Wiki](../../wiki)** serves as the authoritative source for all foundational concepts, principles, and mappings. It contains:
 
