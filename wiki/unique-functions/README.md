@@ -1,9 +1,3 @@
-# Processes
+# Unique functions
 
-## Governance
-
-## Licensing
-
-## Support
-
-## Testing
+[Enlist mode-specific functions, and make a plan how to address them (interoperability)]
