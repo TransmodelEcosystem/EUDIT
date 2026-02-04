@@ -39,8 +39,8 @@ The **[Wiki](../../wiki)** serves as the authoritative source for all foundation
 - **[Roles](../../wiki/roles.md)** 
   Definition and description of stakeholder roles within the project.
 
-- **[Processes](../../wiki/processes)**
-  The processes required to maintain, implement, test, govern and deploy the interface.
+- **[Unique functions](../../wiki/unique-functions)**
+  What are the `unique functions` per mode, that we have to deal with (make them interoperable)?
 
 - **[Concepts & Definitions](../../wiki/concepts)** 
   Structured list of concepts and their definitions, based on Transmodel terminology.
@@ -97,7 +97,7 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - Scope definition
   - Basic principles
   - Role description
-  - Processes
+  - Unique functions
   - Concept / definitions
   - Use cases / user actions
   - Architecture/structure options
