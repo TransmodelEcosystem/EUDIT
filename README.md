@@ -97,7 +97,7 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - Scope definition
   - Basic principles
   - Role description
-  - Processes
+  - Unique functions
   - Concept / definitions
   - Use cases / user actions
   - Architecture/structure options
