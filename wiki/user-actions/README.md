@@ -1,6 +1,8 @@
 
 # Index of User Actions
 
+These 'user actions' are derived from the existing standards.
+
 1.  **MMTIS / Static Values**
     *   [see entitlements](#see-entitlements)
     *   [see card types](#see-card-types)
