@@ -26,12 +26,12 @@ We'll probably have 4 meetings, and about 30 experts.. Let's divide the work loa
 - (all) Define roles
 
 ### Meeting 2: exporation
-- (Team-processes) Define options for processes
+- (Team-gap-analysis) Make clear what are the specific functions per mode
 - (Team-architecture) Define architecture & structure
 - (Team-use-cases) Gather use cases
 
 ### Meeting 3: continue exporation, 
-- (Team-processes) Define options for processes
+- (Team-processes) Make clear what are the specific functions per mode
 - (Team-architecture) Define architecture & structure
 - (Team-use-cases) Gather use cases
 - (all) Present to each other
