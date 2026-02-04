@@ -30,26 +30,35 @@ The **[Wiki](../../wiki)** serves as the authoritative source for all foundation
 
 #### Core Documentation
 
-- **[Basic Principles](../../wiki/basic-principles)** (`basic-principles.md`)  
-  Fundamental principles that underpin the entire project.
-
-- **[Concepts & Definitions](../../wiki/concepts)**  
-  Structured list of concepts and their definitions, based on Transmodel terminology.
-
-- **[Scope](../../wiki/scope)** (`scope-options.md`)  
+- **[Scope](../../wiki/scope)**
   Project scope definition and boundary conditions. This also contains the **CoRoM deliverables**!
 
-- **[Roles](../../wiki/roles.md)**  
+- **[Basic Principles](../../wiki/basic-principles)**
+  Fundamental principles that underpin the entire project.
+
+- **[Roles](../../wiki/roles.md)** 
   Definition and description of stakeholder roles within the project.
 
-- **[Use Cases](../../wiki/use-cases)** (`use-cases.md`)  
+- **[Processes](../../wiki/processes)**
+  The processes required to maintain, implement, test, govern and deploy the interface.
+
+- **[Concepts & Definitions](../../wiki/concepts)** 
+  Structured list of concepts and their definitions, based on Transmodel terminology.
+
+- **[Architecture](../../wiki/architecture)**
+  Project scope definition and boundary conditions. 
+
+- **[Use Cases](../../wiki/use-cases)** 
   Collection of use cases, CoRoM input.
 
-- **[User Actions](../../wiki/user-actions)** (`user-actions.md`)  
+- **[User Actions](../../wiki/user-actions)**
   Detailed descriptions of user interactions and workflows.
 
-- **[Documentation](../../wiki/documentation)** (`documentation.md`)  
-  Resources we can use to deliver, also the technical specifications of the standards (fixate the version?)
+- **[External documentation](../../wiki/external-resources)**
+  External resources we can use to deliver. This also contains the **CoRoM deliverables**!
+  
+- **[Specifications](../../wiki/specifications)** 
+  The technical specifications of the standards (fixate the version?)
 
 #### Draft specification
 
@@ -85,20 +94,14 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
 
 - **Purpose:** Project setup, team formation, and initial exploration
 - **Deliverables:** 
+  - Scope definition
   - Basic principles
   - Role description
-  - Scope definition
+  - Processes
+  - Concept / definitions
+  - Use cases / user actions
   - Architecture/structure options
-  - Use cases
   - Plan for the forge
-- **Activities:** 
-  - Gather basic principles
-  - Define roles (simple)
-  - Set the scope (functionality)
-  - Define architecture & structure
-  - Gather use cases
-  - Gather usable (external) resources
-  - Preparing the forge
 
 [→ Read phase README](./phases/the-kidling/README.md)
 

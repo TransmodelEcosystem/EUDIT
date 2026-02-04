@@ -1,0 +1,291 @@
+swagger: '2.0'
+info:
+  version: 2.0.1
+  title: BoB.Booking.API
+basePath: /api/v2
+schemes:
+  - https
+paths:
+  '/booking':
+    get:
+      tags:
+       - booking
+      summary: Get bookings
+      operationId: getAllBookings
+      produces:
+       - application/json
+      parameters:
+      - name: X-BoB-AuthToken
+        in: header
+        description: JWT authentication token
+        required: true
+        type: string
+      - name: travellerId
+        in: query
+        description: Filter bookings on traveller id
+        required: False
+        type: string
+      - name: requestId
+        in: query
+        description: Filter on request ID
+        required: False
+        type: string
+      responses:
+       '200':
+         description: a list of bookings
+         schema:
+           type: array
+           items:
+             $ref: '#/definitions/booking'
+       '401':
+         description: unauthorised
+       '404':
+         description: traveller id not found
+    post:
+      tags:
+        - booking
+      summary: Create preliminary booking from manifest
+      operationId: requestBooking
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: bookingCall
+          in: body
+          description: Manifest to request booking from
+          required: true
+          schema:
+            $ref: '#/definitions/bookingCall'
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: "URL of created booking"
+              type: string
+            Expires:
+              description: Expiration of booking
+              type: string
+          schema:
+            $ref: '#/definitions/booking'
+        '303':
+          description: Booking already exists
+          headers:
+            location:
+              description: "URI of the existing booking"
+              type: string
+        '401':
+          description: unauthorised
+        '406':
+          description: Not acceptable
+          schema:
+            description: Description of why the booking request was rejected
+            type: string
+  '/booking/{bookingId}':
+    get:
+      tags:
+        - booking
+      summary: Get booking by booking id
+      operationId: getBooking
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: bookingId
+          in: path
+          description: booking id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/booking'
+        '401':
+          description: unauthorised
+        '404':
+          description: booking id not found
+    patch:
+      tags:
+        - booking
+      summary: Confirm or cancel booking by booking id
+      operationId: confirmBooking
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: bookingId
+          in: path
+          description: booking id
+          required: true
+          type: string
+        - name: statusChangeRequest
+          in: body
+          description: Parameters to change status of booking
+          required: true
+          schema:
+            $ref: '#/definitions/statusChangeRequest'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/booking'
+        '401':
+          description: unauthorised
+        '404':
+          description: booking id not found
+definitions:
+  bookingCall:
+    type: object
+    required:
+      - manifest
+      - requestId
+    properties:
+      manifest:
+        type: string
+        format: base64url
+        description: Signed manifest with MTB template
+      travellerId:
+        description: Traveller identifier from Traveller API
+        type: string
+      travellerPhone:
+        description: Phone number (E.164)
+        type: string
+      requestId:
+        description: |
+          Request identifier allocated by manifest requestor.
+          This property MUST be provided in order to detect retransmissions.
+          Even though the scope of this property is (pid,entity_id), it is
+          RECOMMENDED that it is generated as globally unique using UUIDv4.
+        type: string
+  booking:
+    type: object
+    required:
+      - bookingId
+      - status
+    properties:
+      bookingId:
+        description: Machine readable booking identifier
+        type: string
+      confirmBefore:
+        description: Booking must be confirmed before date/time, as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+      confirmedWhen:
+        description: Booking was confirmed at date/time, as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+      status:
+        description: Status of the booking
+        type: string
+        enum:
+          - pending
+          - confirmed
+          - cancelled
+          - miss
+          - completed
+      rides:
+        description: ordered list of rides
+        type: array
+        items:
+          $ref: '#/definitions/ride'
+      travellerId:
+        description: Traveller identifier from Traveller API
+        type: string
+      travellerPhone:
+        description: Phone number (E.164)
+        type: string
+      confirmationCode:
+        description: Human readable confirmation code
+        type: string
+      travellerInformation:
+        description: Human readble information pertaining to the journey
+        type: string
+  statusChangeRequest:
+    type: object
+    required:
+      - mtb
+      - status
+    properties:
+      status:
+        description: Status requested
+        type: string
+        enum:
+          - confirmed
+          - cancelled
+      mtb:
+        description: Signed MTB container (to provide proof of purchase for confirmation)
+        type: string
+        format: base64url
+  cancellation:
+    type: object
+    required:
+      - cancellationId
+    properties:
+      cancellationId:
+        description: Machine readable cancellation identifier (complex)
+        type: string
+  ride:
+    type: object
+    required:
+      - boardingPlace
+      - alightingPlace
+      - serviceJourneyReference
+      - departureDateTime
+      - arrivalDateTime
+    properties:
+      boardingPlace:
+        $ref: '#/definitions/place'
+      alightingPlace:
+        $ref: '#/definitions/place'
+      serviceJourneyReference:
+        type: string
+      departureDateTime:
+        type: string
+        format: date-time
+        description: As ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+      arrivalDateTime:
+        type: string
+        format: date-time
+        description: As ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+      productRequested:
+        type: boolean
+      earlierArrivalAcceptable:
+        type: boolean
+      laterDepartureAcceptable:
+        type: boolean
+  place:
+    type: object
+    properties:
+      stopId:
+        type: string
+      coordinate:
+        $ref: '#/definitions/geoPosition'
+  geoPosition:
+    description: Geopos (WGS84 decimal)
+    type: object
+    required:
+     - lat
+     - long
+    properties:
+      lat:
+        type: number
+        format: double
+      long:
+        type: number
+        format: double
+      alt:
+        type: number
+        format: double

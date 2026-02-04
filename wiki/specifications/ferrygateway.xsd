@@ -1,0 +1,4047 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--suppress ALL -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fgw="http://schemas.ferrygateway.org/1.3.1" 
+		   targetNamespace="http://schemas.ferrygateway.org/1.3.1" 
+		   elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace"
+			   schemaLocation="https://www.w3.org/2009/01/xml.xsd" />	
+	<xs:include schemaLocation="ISO_4127_Currency.xsd"/>
+	<xs:include schemaLocation="ISO_3166-1_Alpha-3_Country.xsd"/>
+	<xs:include schemaLocation="ICAO_9303_Alpha-3_Country.xsd"/>
+	<xs:include schemaLocation="ISO_639-1_Alpha-2_Language.xsd"/>
+	<xs:include schemaLocation="MessageCodes.xsd"/>
+	<!-- top level message elements -->
+	<xs:element name="GetRoutesRequest" type="fgw:GetRoutesRequestType"/>
+	<xs:element name="GetRoutesResponse" type="fgw:GetRoutesResponseType"/>
+	<xs:element name="GetPassengerAndVehicleTypesRequest" type="fgw:GetPassengerAndVehicleTypesRequestType"/>
+	<xs:element name="GetPassengerAndVehicleTypesResponse" type="fgw:GetPassengerAndVehicleTypesResponseType"/>
+	<xs:element name="GetTimeTablesRequest" type="fgw:GetTimeTablesRequestType"/>
+	<xs:element name="GetTimeTablesResponse" type="fgw:GetTimeTablesResponseType"/>
+	<xs:element name="GetSailingsRequest" type="fgw:GetSailingsRequestType">
+		<xs:key name="GetSailingsRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetSailingsRequest_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetSailingsRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetSailingsRequest_SailingPassengerIdKeyRef" refer="fgw:GetSailingsRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetSailingsRequest_SailingPetIdKeyRef" refer="fgw:GetSailingsRequest_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetSailingsRequest_SailingVehicleIdKeyRef" refer="fgw:GetSailingsRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetSailingsResponse" type="fgw:GetSailingsResponseType">
+		<xs:key name="GetSailingsResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetSailingsResponse_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetSailingsResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetSailingsResponse_SailingPassengerIdKeyRef" refer="fgw:GetSailingsResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetSailingsResponse_SailingPetIdKeyRef" refer="fgw:GetSailingsResponse_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetSailingsResponse_SailingVehicleIdKeyRef" refer="fgw:GetSailingsResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetSailingsResponse_AccomPassengerIdKeyRef" refer="fgw:GetSailingsResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetServicesRequest" type="fgw:GetServicesRequestType">
+		<xs:key name="GetServicesRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetServicesRequest_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetServicesRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetServicesRequest_SailingPassengerIdKeyRef" refer="fgw:GetServicesRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetServicesRequest_SailingPetIdKeyRef" refer="fgw:GetServicesRequest_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetServicesRequest_SailingVehicleIdKeyRef" refer="fgw:GetServicesRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetServicesRequest_AccomPassengerIdKeyRef" refer="fgw:GetServicesRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetServicesResponse" type="fgw:GetServicesResponseType">
+		<xs:key name="GetServicesResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetServicesResponse_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetServicesResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetServicesResponse_SailingPassengerIdKeyRef" refer="fgw:GetServicesResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetServicesResponse_SailingPetIdKeyRef" refer="fgw:GetServicesResponse_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetServicesResponse_SailingVehicleIdKeyRef" refer="fgw:GetServicesResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetServicesResponse_AccomPassengerIdKeyRef" refer="fgw:GetServicesResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetPriceRequest" type="fgw:GetPriceRequestType">
+		<xs:key name="GetPriceRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetPriceRequest_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetPriceRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetPriceRequest_SailingPassengerIdKeyRef" refer="fgw:GetPriceRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetPriceRequest_SailingPetIdKeyRef" refer="fgw:GetPriceRequest_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetPriceRequest_SailingVehicleIdKeyRef" refer="fgw:GetPriceRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetPriceRequest_AccomPassengerIdKeyRef" refer="fgw:GetPriceRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetPriceResponse" type="fgw:GetPriceResponseType">
+		<xs:key name="GetPriceResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetPriceResponse_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetPriceResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetPriceResponse_SailingPassengerIdKeyRef" refer="fgw:GetPriceResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetPriceResponse_SailingPetIdKeyRef" refer="fgw:GetPriceResponse_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetPriceResponse_SailingVehicleIdKeyRef" refer="fgw:GetPriceResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetPriceResponse_AccomPassengerIdKeyRef" refer="fgw:GetPriceResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="BookRequest" type="fgw:BookRequestType">
+		<xs:key name="BookRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="BookRequest_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="BookRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="BookRequest_SailingPassengerIdKeyRef" refer="fgw:BookRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookRequest_SailingPetIdKeyRef" refer="fgw:BookRequest_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookRequest_SailingVehicleIdKeyRef" refer="fgw:BookRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookRequest_AccomPassengerIdKeyRef" refer="fgw:BookRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookRequest_ContactPassengerIdKeyRef" refer="fgw:BookRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:ContactDetails"/>
+			<xs:field xpath="@PassengerId"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="BookResponse" type="fgw:BookResponseType">
+		<xs:key name="BookResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="BookResponse_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="BookResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="BookResponse_SailingPassengerIdKeyRef" refer="fgw:BookResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookResponse_SailingPetIdKeyRef" refer="fgw:BookResponse_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookResponse_SailingVehicleIdKeyRef" refer="fgw:BookResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookResponse_AccomPassengerIdKeyRef" refer="fgw:BookResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="BookResponse_ContactPassengerIdKeyRef" refer="fgw:BookResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:ContactDetails"/>
+			<xs:field xpath="@PassengerId"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="RecallBookingRequest" type="fgw:RecallBookingRequestType"/>
+	<xs:element name="RecallBookingResponse" type="fgw:RecallBookingResponseType">
+		<xs:key name="RecallBookingResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="RecallBookingResponse_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="RecallBookingResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="RecallBookingResponse_SailingPassengerIdKeyRef" refer="fgw:RecallBookingResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="RecallBookingResponse_SailingPetIdKeyRef" refer="fgw:RecallBookingResponse_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="RecallBookingResponse_SailingVehicleIdKeyRef" refer="fgw:RecallBookingResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="RecallBookingResponse_AccomPassengerIdKeyRef" refer="fgw:RecallBookingResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="RecallBookingResponse_ContactPassengerIdKeyRef" refer="fgw:RecallBookingResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:ContactDetails"/>
+			<xs:field xpath="@PassengerId"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetCancelChargeRequest" type="fgw:GetCancelChargeRequestType"/>
+	<xs:element name="GetCancelChargeResponse" type="fgw:GetCancelChargeResponseType"/>
+	<xs:element name="CancelBookingRequest" type="fgw:CancelBookingRequestType"/>
+	<xs:element name="CancelBookingResponse" type="fgw:CancelBookingResponseType"/>
+	<xs:element name="GetOfferCodesRequest" type="fgw:GetOfferCodesRequestType"/>
+	<xs:element name="GetOfferCodesResponse" type="fgw:GetOfferCodesResponseType">
+		<xs:key name="GetOfferCodesResponse_ProductCode">
+			<xs:selector xpath="fgw:OfferCodes/fgw:OfferCode"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+	</xs:element>
+	<xs:element name="GetInvoicesRequest" type="fgw:GetInvoicesRequestType"/>
+	<xs:element name="GetInvoicesResponse" type="fgw:GetInvoicesResponseType"/>
+	<xs:element name="ReservationRequest" type="fgw:ReservationRequestType">
+		<xs:key name="ReservationRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="ReservationRequest_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="ReservationRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="ReservationRequest_SailingPassengerIdKeyRef" refer="fgw:ReservationRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationRequest_SailingPetIdKeyRef" refer="fgw:ReservationRequest_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationRequest_SailingVehicleIdKeyRef" refer="fgw:ReservationRequest_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationRequest_AccomPassengerIdKeyRef" refer="fgw:ReservationRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationRequest_ContactPassengerIdKeyRef" refer="fgw:ReservationRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:ContactDetails"/>
+			<xs:field xpath="@PassengerId"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="ReservationResponse" type="fgw:ReservationResponseType">
+		<xs:key name="ReservationResponse__PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="ReservationResponse__PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="ReservationResponse__VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="ReservationResponse__SailingPassengerIdKeyRef" refer="fgw:ReservationResponse__PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationResponse__SailingPetIdKeyRef" refer="fgw:ReservationResponse__PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationResponse__SailingVehicleIdKeyRef" refer="fgw:ReservationResponse__VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationResponse__AccomPassengerIdKeyRef" refer="fgw:ReservationResponse__PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:Services/fgw:OnBoardAccommodationServices/fgw:OnBoardAccommodationService/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="ReservationResponse__ContactPassengerIdKeyRef" refer="fgw:ReservationResponse__PassengerIdKey">
+			<xs:selector xpath="fgw:ContactDetails"/>
+			<xs:field xpath="@PassengerId"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="ConfirmReservationRequest" type="fgw:ConfirmReservationRequestType" />
+	<xs:element name="ConfirmReservationResponse" type="fgw:ConfirmReservationResponseType" />
+	<xs:element name="GetBusTransferRequest" type="fgw:GetBusTransferRequestType">
+		<xs:key name="GetBusTransferRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetBusTransferRequest_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetBusTransferRequest_SailingPassengerIdKeyRef" refer="fgw:GetBusTransferRequest_PassengerIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PassengerRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetBusTransferRequest_SailingPetIdKeyRef" refer="fgw:GetBusTransferRequest_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+	<xs:element name="GetBusTransferResponse" type="fgw:GetBusTransferResponseType">
+		<xs:key name="GetBusTransferResponse_PassengerIdKey">
+			<xs:selector xpath="fgw:Passengers/fgw:Passenger"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetBusTransferResponse_PetIdKey">
+			<xs:selector xpath="fgw:Pets/fgw:Pet"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:key name="GetBusTransferResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:Vehicles/fgw:Vehicle"/>
+			<xs:field xpath="@Id"/>
+		</xs:key>
+		<xs:keyref name="GetBusTransferResponse_SailingPetIdKeyRef" refer="fgw:GetBusTransferResponse_PetIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:PetRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+		<xs:keyref name="GetBusTransferResponse_SailingVehicleIdKeyRef" refer="fgw:GetBusTransferResponse_VehicleIdKey">
+			<xs:selector xpath="fgw:FerryComponents/fgw:FerryComponent/fgw:Sailings/fgw:Sailing/fgw:VehicleRefs/fgw:Ref"/>
+			<xs:field xpath="@Id"/>
+		</xs:keyref>
+	</xs:element>
+
+
+	<!-- type declarations -->
+	<xs:complexType name="AbstractRouteType" abstract="true">
+		<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartPort" type="fgw:PortCodeType" use="required"/>
+		<xs:attribute name="DestinationPort" type="fgw:PortCodeType" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="BookBaseResponseType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+			<xs:element name="QrCode" type="fgw:QrCodeType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersBookType"/>
+			<xs:element name="ContactDetails" type="fgw:ContactDetailsType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0" />
+			<xs:element name="FerryComponents" type="fgw:FerryComponentsBookResponseType"/>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+
+	<xs:simpleType name="BookingStatusType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Defines status of booking</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Reserved">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Temporary reservation of space and price, will be cancelled automatically if not confirmed.
+						Cancellation is not subject to cancellation fees.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Booked">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Binding booking of sailing(s), usually subject to cancellation fees.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Paid">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Booking was paid
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Partially Consumed">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Fully Consumed">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Cancelled">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Booking was cancelled.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Readonly">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Booking cannot be modified through the FerryGateway API.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="BookingReferenceRequestType">
+		<xs:attribute name="Reference" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system unique booking reference.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Version" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system's version of the booking.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="BookingReferenceResponseType">
+		<xs:attribute name="Reference" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system unique booking reference.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Version" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system's version of the booking.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BookingStatus" type="fgw:BookingStatusType" use="optional" default="Booked">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system's status of booking.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BookBaseRequestType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersBookType"/>
+			<xs:element name="ContactDetails" type="fgw:ContactDetailsType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentBookRequestType">
+				<xs:unique name="FerryComponentBookRequestType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailings/fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+				<xs:keyref name="FerryComponentBookRequestType_CostDetailSailingIdKeyRef" refer="fgw:FerryComponentBookRequestType_SailingIdUnique">
+					<xs:selector xpath="fgw:QuotedCost/fgw:CostDetails"/>
+					<xs:field xpath="@SailingId"/>
+				</xs:keyref>
+			</xs:element>
+			<xs:element name="Comment" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Any free text comment regarding the booking</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="Token" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">A token previously returned by the awarding system to indicate that a quoted price is valid until a particular time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="BookRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:BookBaseRequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ReservationRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:BookBaseRequestType"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="BookResponseLinksType">
+		<xs:sequence>
+			<xs:element name="BookResponseLink" type="fgw:BookResponseLinkType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Link with description, providing further information or services related to the booking.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BookResponseLinkType">
+		<xs:attribute name="Label" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system defined label denoting the purpose of this link.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="URI" type="xs:anyURI" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The URI of the booking response link.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Text description of the purpose of this link.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="BookResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:BookBaseResponseType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ReservationResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:BookBaseResponseType"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="ConfirmReservationRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:sequence>
+					<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ConfirmReservationResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:BookBaseResponseType"/>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="GetBusTransferRequestType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentTransferServicesRequestType"/>
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="GetBusTransferResponseType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="FerryComponents" type="fgw:FerryComponentsTransferServicesResponseType"/>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+
+	<xs:simpleType name="CombinationRuleType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Describes the rule for selecting individual Sailings from the current FerryComponent.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="None">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						No Combination Rule. There is no option to select individual Sailings from the FerryComponent, only the entire FerryComponent can be selected.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UseLegSetNumber">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The "Leg Set Number" combination rule should be used to select individual Sailings from the FerryComponent.
+						Each Sailing should have a LegSetNumber attribute, and the requesting system should select one Sailing for each
+						LegSetNumber attribute present in the FerryComponent (so that one of each LegSetNumber is present in the selected set of Sailings).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="MandatoryFacilityType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Enumerates facilities that are mandatory on a route and/or sailing.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Vehicle">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Vehicle is required on the sailing.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Meal">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						It is necessary to order a meal on the sailing.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Seating">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Passenger has to reserve a seat.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Cabin">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Passenger has to book a cabin accommodation.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Passport">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Passenger has to present a passport.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VISA">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Passenger needs to have valid VISA.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="National Identity Card or Passport">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Passenger needs to present National Identity Card or Passport.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EU Passenger Directive">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Prior to the departure of the vessel, passenger needs to provide in digital format
+						-	Passenger First Name
+						-	Passenger Last Name
+						-	Passenger Gender (M/F)
+						-	Passenger Date of Birth
+						-	Passenger Nationality
+						-	Passenger Mobile contact (Optional)
+						-	Any disability information
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="MandatoryFacilitiesType">
+		<xs:sequence>
+			<xs:element name="MandatoryFacility" type="fgw:MandatoryFacilityType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:simpleType name="PetTransportOptionsType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Denotes how the pets can be transported.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Pet Friendly Cabin">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Pets can be transported in pet friendly cabins.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Vehicle">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Pets can be transported inside of a passengers vehicle.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Kennel Service">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Kennel service is provided.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Own Kennel">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Passenger has the option to provide their own kennels for their pets.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PetsTransportOptionsType">
+		<xs:sequence>
+			<xs:element name="PetTransportOption" type="fgw:PetTransportOptionsType" maxOccurs="unbounded"/>
+			<xs:element name="PetCategories" type="fgw:PetCategoriesType" maxOccurs="1" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Further specifies which pets can be transported.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PetCategoriesType">
+		<xs:sequence>
+			<xs:element name="PetCategory" type="fgw:PetCategoryType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="VehicleTransportOptionsType">
+		<xs:all>
+			<xs:element name="LeadVehicleCategories" type="fgw:LeadVehicleCategoriesType" minOccurs="0"/>
+			<xs:element name="TrailerVehicleCategories" type="fgw:TrailerCategoriesType" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+
+	<xs:complexType name="CancelBookingRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:sequence>
+					<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">
+								The booking reference of the booking to be cancelled.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="Cost" type="fgw:CostType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">
+								The cancellation Cost as returned in a GetCancelChargeResponse message.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="CancelBookingResponseType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceResponseType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The booking reference of the cancelled booking.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Cost" type="fgw:CostType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						The Cost of the booking cancellation.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="ContactDetailsType">
+		<xs:attribute name="Title" type="fgw:PassengerTitleType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact title.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Forename" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact forename.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Surname" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact surname.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AddressLine1" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">First line of contact address.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AddressLine2" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Second line of contact address.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AddressLine3" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact address county.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="City" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">City name of contact address.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CountryCode" type="fgw:ISO3166CountryType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact address country code (ISO3166-1 3 characters).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ZipPostCode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact address postal code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MobileNumber" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact mobile phone number.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TelephoneNumber" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact telephone number (non-mobile).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Email" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Contact email address.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="PassengerId" type="fgw:IdType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">If the contact person is also a passenger, the Id attribute value of the passenger element for that passenger.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ContextType">
+		<xs:attribute name="AgentAccountNumber" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Agent account identifier or requesting system as recognised by awarding system.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TimeStamp" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Time stamp of requesting system incoming message.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CountryCode" type="fgw:ISO3166CountryType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Originating country of requesting system (ISO3166-1 3 characters).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Currency" type="fgw:ISO4127CurrencyType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Currency code for the prices returned (ISO4217 3 characters).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="LanguagePrefCode" type="fgw:ISO639LanguageType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Preferred language of awarding system response. (ISO639-1 2 characters).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TransactionId" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Requesting system defined transaction Id (echoed in rewarding systems response).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ExternalBookingReference" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">External reference provided by requesting system.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="User" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Requesting system defined identification of user.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="OriginatingSystem" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Originating system - the system calling Ferrygateway.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="CostCategoryType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Ferrygateway defined cost category.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AdministrationFee">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Administration fee, e.g. for assistance by call centre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="AmendmentFee">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A fee for amending bookings.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Balance">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The balance due on the booking.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CancellationFee">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A fee for cancelling a booking or parts of a booking.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Commission">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Commission amount to be given to the agent.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CommissionableAmount">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The amount that is eligible for commission.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Deposit">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The amount of deposit due immediately to confirm the reservation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FuelSurcharge">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A fee to cover extra fuel costs.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LandService">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for shore-based services.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LoyaltyMemberDiscount">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A discount given to the client as a member of a loyalty scheme.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OfferCodeDiscount">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A discount due to a provided offer code.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OnBoardAccommodation">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for the onboard accommodations.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OnBoardService">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for the onboard services. Nature to be specified by label attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OtherCosts">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for anything that cannot be categorised with defined category types. Nature of the cost to be specified by label attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OtherDiscount">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Any other discount or rebate which may apply to the booking. Nature of the discount to be specified by Label attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OtherTaxes">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Any other tax which may apply to the booking. Nature of the tax to be specified by label attribute.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PackageCost">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for a package.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Passenger">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for the passenger(s).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Pet">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for the pet(s).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PortTaxes">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Port tax element of the booking.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ReturnTripDiscount">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A discount due to customer booking a return trip within the same operator.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TravelAgentDiscount">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">A discount for Travel agents.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ValueAddedTax">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The VAT payable on the booking.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Vehicle">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Cost for the vehicle(s).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VehicleAndPassenger">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Price for the vehicle and inclusive pax(es) for the booking.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="CostDetailsType">
+		<xs:sequence>
+			<xs:element name="CostDetail" type="fgw:CostDetailType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="SailingId" type="fgw:IdType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The Id of the sailing to which the included cost detail items refer.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="GrossAmount" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total operator price including surcharges, fees and taxes, but before deduction of any commission.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="CostDetailType">
+		<xs:attribute name="Category" type="fgw:CostCategoryType" use="required"/>
+		<xs:attribute name="TotalAmount" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total amount for the specified quantity of the cost detail item, in the currency specified by the message Context element.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Label" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Description of this cost detail item.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Quantity" type="xs:unsignedInt" use="optional" default="1"/>
+	</xs:complexType>
+	<xs:complexType name="CostType">
+		<xs:sequence>
+			<xs:element name="CostDetails" type="fgw:CostDetailsType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FareDetailsRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:FareDetailsType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FareDetailsResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:FareDetailsType">
+				<xs:attribute name="FareTypeMessage" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Fare type code description.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ProductDescription" type="fgw:RestrictedStringType" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FareDetailsType" abstract="true">
+		<xs:attribute name="FareType" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system defined fare type code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Productcode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Product code (see Ferrygateway Association documentation for full definition).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentBookRequestType">
+		<xs:sequence>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsBookRequestType"/>
+			<xs:element name="QuotedCost" type="fgw:CostType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The cost of this booking expected by the requesting system.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The booking reference, supplied by the requesting system in the case of a booking amendment request.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentBookResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsBookResponseType"/>
+			<xs:element name="Cost" type="fgw:CostType" minOccurs="0"/>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceResponseType" minOccurs="0"/>
+			<xs:element name="BookResponseLinks" type="fgw:BookResponseLinksType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentGetSailingsRequestType">
+		<xs:sequence>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsGetSailingsRequestType">
+				<xs:unique name="FerryComponentGetSailingsRequestType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentGetSailingsResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsGetSailingsResponseType"/>
+			<xs:element name="Cost" type="fgw:CostType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="DeepLink" type="xs:anyURI" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system defined url relating to the FerryComponent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CombinationRule" type="fgw:CombinationRuleType" use="optional" default="None"/>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentPriceRequestType">
+		<xs:sequence>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsPriceRequestType">
+				<xs:unique name="FerryComponentPriceRequestType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentPriceResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsPriceResponseType"/>
+			<xs:element name="Cost" type="fgw:CostType" minOccurs="0"/>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceResponseType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="DeepLink" type="xs:anyURI" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system defined url relating to the FerryComponent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentTransferServicesResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsTransferServicesResponseType"/>
+			<xs:element name="Cost" type="fgw:CostType" minOccurs="0"/>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceResponseType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="DeepLink" type="xs:anyURI" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system defined url relating to the FerryComponent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentsBookResponseType">
+		<xs:sequence>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentBookResponseType">
+				<xs:unique name="FerryComponentBookResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailings/fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+				<xs:keyref name="FerryComponentBookResponseType_CostDetailSailingIdKeyRef" refer="fgw:FerryComponentBookResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Cost/fgw:CostDetails"/>
+					<xs:field xpath="@SailingId"/>
+				</xs:keyref>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentsGetSailingsResponseType">
+		<xs:sequence>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentGetSailingsResponseType" maxOccurs="unbounded">
+				<xs:unique name="FerryComponentGetSailingsResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailings/fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+				<xs:keyref name="FerryComponentGetSailingsResponseType_CostDetailSailingIdKeyRef" refer="fgw:FerryComponentGetSailingsResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Cost/fgw:CostDetails"/>
+					<xs:field xpath="@SailingId"/>
+				</xs:keyref>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentsPriceResponseType">
+		<xs:sequence>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentPriceResponseType">
+				<xs:unique name="FerryComponentPriceResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailings/fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+				<xs:keyref name="FerryComponentsPriceResponseType_CostDetailSailingIdKeyRef" refer="fgw:FerryComponentPriceResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Cost/fgw:CostDetails"/>
+					<xs:field xpath="@SailingId"/>
+				</xs:keyref>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="FerryComponentTransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="OfferCode" type="fgw:OfferCodeType" minOccurs="0"/>
+			<xs:element name="Sailings" type="fgw:SailingsTransferServicesRequestType">
+				<xs:unique name="FerryComponentTransferServicesRequestType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+			</xs:element>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="FerryComponentsTransferServicesResponseType">
+		<xs:sequence>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentTransferServicesResponseType">
+				<xs:unique name="FerryComponentTransferServicesResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Sailings/fgw:Sailing"/>
+					<xs:field xpath="@Id"/>
+				</xs:unique>
+				<xs:keyref name="FerryComponentsTransferServicesResponseType_CostDetailSailingIdKeyRef" refer="fgw:FerryComponentPriceResponseType_SailingIdUnique">
+					<xs:selector xpath="fgw:Cost/fgw:CostDetails"/>
+					<xs:field xpath="@SailingId"/>
+				</xs:keyref>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="GenderType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Male"/>
+			<xs:enumeration value="Female"/>
+			<xs:enumeration value="Other"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="GetCancelChargeRequestType">
+		<xs:complexContent>
+			<!--	NOTE: often not used because extending message with xs:all throws exception "'all' is not the only particle in a group, or is being used as an extension." -->
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:sequence>
+					<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetCancelChargeResponseType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+			<xs:element name="BookingReference" type="fgw:BookingReferenceResponseType"/>
+			<xs:element name="Cost" type="fgw:CostType" minOccurs="0"/>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>
+
+
+	<xs:complexType name="GetInvoicesRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DateFrom" type="xs:date" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Start date from which the invoices will be returned.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DateTo" type="xs:date" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">End date to which the invoices will be returned (inclusive)</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetInvoicesResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageResponseType">
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="Invoices" type="fgw:InvoicesResponseType"/>
+						<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="Messages" type="fgw:MessagesType"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="GetPassengerAndVehicleTypesRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetPassengerAndVehicleTypesResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageResponseType">
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="PassengerCategories" type="fgw:PassengerCategoriesType"/>
+						<xs:element name="LeadVehicleCategories" type="fgw:LeadVehicleCategoriesType" minOccurs="0"/>
+						<xs:element name="TrailerVehicleCategories" type="fgw:TrailerCategoriesType" minOccurs="0"/>
+						<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="Messages" type="fgw:MessagesType"/>
+				</xs:choice>
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetPriceRequestType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentPriceRequestType"/>
+		</xs:all>
+	</xs:complexType>
+	<xs:complexType name="GetPriceResponseType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+			<xs:element name="FerryComponents" type="fgw:FerryComponentsPriceResponseType"/>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Token" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Token returned by the awarding system to indicate that the quoted price is valid until a specified future time.
+					This only applies to the price, it does not guarantee availability.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TokenExpiryTime" type="xs:dateTime" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The time at which the returned token will expire.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="GetRoutesRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetRoutesResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageResponseType">
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="Routes" type="fgw:RoutesType"/>
+						<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="Messages" type="fgw:MessagesType"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetSailingsRequestType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentGetSailingsRequestType"/>
+		</xs:all>
+		<xs:attribute name="IsOnlyMinicruise" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates if only results qualifying as 'mini cruises’ should be returned.  (Usually the same vessel outward/return after discharge/reload).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ShowAlternativeRoutes" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates if alternative routes can be suggested by the calling system (e.g. when the agent queries route Dover-Calais, the system might also return route Dover-Dunkirk)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllotmentAgreementId" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Specifies allotment id used to get the allotments.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="GetSailingsResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageResponseType">
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+						<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+						<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+						<xs:element name="FerryComponents" type="fgw:FerryComponentsGetSailingsResponseType">
+							<xs:unique name="GetSailingsResponseType_FerryComponentIdUnique">
+								<xs:selector xpath="fgw:FerryComponent"/>
+								<xs:field xpath="@Id"/>
+							</xs:unique>
+						</xs:element>
+						<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="Messages" type="fgw:MessagesType"/>
+				</xs:choice>
+				<xs:attribute name="IsOnlyMinicruise" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Indicates if only results qualifying as 'mini cruises’ should be returned. (Usually the same vessel outward/return after discharge/reload).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ShowAlternativeRoutes" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Indicates if alternative routes can be suggested by the calling system (e.g. when the agent queries route Dover-Calais, the system might also return route Dover-Dunkirk)</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetServicesRequestType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+			<xs:element name="FerryComponent" type="fgw:FerryComponentPriceRequestType"/>
+		</xs:all>
+		<xs:attribute name="Mode" type="fgw:ServiceModeType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">List of type of services requested, if not supplied then "ALL" is inferred.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="GetServicesResponseType">
+		<xs:all>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+			<xs:element name="Passengers" type="fgw:PassengersQuoteType"/>
+			<xs:element name="Pets" type="fgw:PetsType" minOccurs="0"/>
+			<xs:element name="Vehicles" type="fgw:VehiclesType" minOccurs="0"/>
+			<xs:element name="FerryComponents" type="fgw:FerryComponentsPriceResponseType" minOccurs="0"/>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+		</xs:all>
+		<xs:attribute name="Mode" type="fgw:ServiceModeType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">List of type of services requested, if not supplied then "ALL" is inferred.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="GetTimeTablesRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DepartPort" type="fgw:PortCodeType" use="required"/>
+				<xs:attribute name="DestinationPort" type="fgw:PortCodeType" use="required"/>
+				<xs:attribute name="FromSailingDate" type="xs:date" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Start date that timetables are being requested from.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ToSailingDate" type="xs:date" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">End date that timetables are being requested from.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="AllotmentAgreementId" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Specifies allotment id used to get the allotments.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="OnlyAllotmentData" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Used in conjunction with AllotmentAgreementId. If true, returns only information related
+							to specified allotment id. Otherwise returns all information</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetTimeTablesResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageResponseType">
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="SailingInfos" type="fgw:TimetableSailingInfosType"/>
+						<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="Messages" type="fgw:MessagesType"/>
+				</xs:choice>
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetOfferCodesRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="GetOfferCodesResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageResponseType">
+				<xs:choice>
+					<xs:sequence>
+						<xs:element name="OfferCodeDetails" type="fgw:OfferCodeDetailsType"/>
+						<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+					</xs:sequence>
+					<xs:element name="Messages" type="fgw:MessagesType"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+
+	<xs:simpleType name="IdentityCategoryType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of identification – either Passport or National Identity Card.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Passport"/>
+			<xs:enumeration value="National Identity Card"/>
+			<xs:enumeration value="Alien Passport - Certificate of Identity"/>
+			<xs:enumeration value="Refugee Passport"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IdType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Unique identifier for element within collection.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z0-9\-]{1,36}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="TransferPlaceType">
+		<xs:attribute name="Id" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique identifier of transfer place.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Name of connected place.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:simpleType name="TransferServiceDirection">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Enumerated value transfer service directions.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ToSailing"/>
+			<xs:enumeration value="FromSailing"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+	<xs:complexType name="BusTransferDetailsUnitCostType">
+		<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Related passenger category.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Amount" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Amount paid per one ticket.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferPlaceType">
+		<xs:attribute name="Id" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Unique identifier of place.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Direction in which transfer service can be booked.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferPlacesType">
+		<xs:sequence>
+			<xs:element name="Place" type="fgw:BusTransferPlaceType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferServiceOptionsType">
+		<xs:all>
+			<xs:element name="Places" type="fgw:BusTransferPlacesType" maxOccurs="1" />
+		</xs:all>
+		<xs:attribute name="Direction" type="fgw:TransferServiceDirection" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Direction in which transfer service can be booked.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferDetailsResponseType">
+		<xs:sequence>
+			<xs:element name="UnitCost" type="fgw:BusTransferDetailsUnitCostType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="Direction" type="fgw:TransferServiceDirection" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Direction in which transfer service can be booked.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BusId" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of bus line.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartPlace" type="xs:string" use="required"/>
+		<xs:attribute name="DestinationPlace" type="xs:string" use="required"/>
+		<xs:attribute name="DepartDateTime" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Advertised departure date and time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ArriveDateTime" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Advertised arrival date and time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferServiceType">
+		<xs:sequence>
+			<xs:element name="Places" type="fgw:TransferPlaceType" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="Direction" type="fgw:TransferServiceDirection" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Direction in which transfer service can be booked.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="LandServiceOptionType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceOptionType">
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="FromDateTime" type="xs:dateTime" use="optional"/>
+				<xs:attribute name="ToDateTime" type="xs:dateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="LandServiceRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceRequestType">
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger type for this service.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="FromDateTime" type="xs:dateTime" use="optional"/>
+				<xs:attribute name="ToDateTime" type="xs:dateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="LandServiceResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceResponseType">
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="FromDateTime" type="xs:dateTime" use="optional"/>
+				<xs:attribute name="ToDateTime" type="xs:dateTime" use="optional"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="LandServicesOptionsType">
+		<xs:sequence>
+			<xs:element name="LandService" type="fgw:LandServiceOptionType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LandServicesRequestType">
+		<xs:sequence>
+			<xs:element name="LandService" type="fgw:LandServiceRequestType" maxOccurs="unbounded" minOccurs="0"/>
+			<xs:element name="TransferServices" type="fgw:TransferServicesRequestType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LandServicesResponseType">
+		<xs:sequence>
+			<xs:element name="LandService" type="fgw:LandServiceResponseType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LeadVehicleCategoriesType">
+		<xs:sequence>
+			<xs:element name="LeadVehicleCategory" type="fgw:LeadVehicleCategoryType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LeadVehicleCategoryType">
+		<xs:complexContent>
+			<xs:extension base="fgw:VehicleCategoryType">
+				<xs:attribute name="Code" type="fgw:LeadVehicleCodeType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Lead vehicle code as assigned by Ferrygateway association. One of Code or OperatorCode must be supplied, if both are supplied the OperatorCode will be used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="LeadVehicleCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Car"/>
+			<xs:enumeration value="Van"/>
+			<xs:enumeration value="Motorhome"/>
+			<xs:enumeration value="VehicleCombination"/>
+			<xs:enumeration value="Minibus"/>
+			<xs:enumeration value="Motorcycle"/>
+			<xs:enumeration value="MotorCycleWithSidecar"/>
+			<xs:enumeration value="Bicycle"/>
+			<xs:enumeration value="Freight"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="FuelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Electric or Hybrid">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">The vehicle is either fully electric or hybrid.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Liquid">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Petrol / Diesel / Ethanol / Biofuel</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Liquified">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">LPG / LNG / Liquified DME</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Compressed Gas">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">CBG / CNG / Hydrogen</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Other">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Fuel type not covered by the other options</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="LeadVehicleType">
+		<xs:complexContent>
+			<xs:extension base="fgw:VehicleBaseType">
+				<xs:attribute name="Code" type="fgw:LeadVehicleCodeType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Lead vehicle code as assigned by Ferrygateway association. One of Code or OperatorCode must be supplied, if both are supplied the OperatorCode will be used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IsHireCar" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Set to true if the vehicle is a hire car.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="BikeOnBack" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">True if there are bicycles on the back of the vehicle. Default is false.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="RoofLoad" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">True if there is any load on the vehicle roof. Default is false.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Make" type="xs:string" use="optional" >
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Make of the vehicle.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Model" type="xs:string" use="optional" >
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Model of the vehicle.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="FuelType" type="fgw:FuelType" use="optional" >
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Fuel type of lead vehicle.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="MediaCategoryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="image/jpeg"/>
+			<xs:enumeration value="image/gif"/>
+			<xs:enumeration value="image/png"/>
+			<xs:enumeration value="text/html"/>
+			<xs:enumeration value="text/plain"/>
+			<xs:enumeration value="text/xml"/>
+			<xs:enumeration value="application/xml"/>
+			<xs:enumeration value="video/mpeg"/>
+			<xs:enumeration value="video/mp4"/>
+			<xs:enumeration value="video/quicktime"/>
+			<xs:enumeration value="audio/mp4"/>
+			<xs:enumeration value="audio/mpeg"/>
+			<xs:enumeration value="application/msword"/>
+			<xs:enumeration value="application/pdf"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="MediasType">
+		<xs:sequence>
+			<xs:element name="Media" type="fgw:MediaType" maxOccurs="unbounded" minOccurs="0" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MediaType">
+		<xs:attribute name="Type" type="fgw:MediaCategoryType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Internet media type/sub-type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ByteSize" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Size of the media in bytes.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Priority" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system preferred display priority within the same media type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="URI" type="xs:anyURI" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Uniform resource identifier for the media.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="MessageRequestType" abstract="true">
+		<xs:sequence>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MessageResponseType" abstract="true">
+		<xs:sequence>
+			<xs:element name="Context" type="fgw:ContextType"/>
+			<xs:element name="TPE" type="fgw:TradingPartnersExtensionType" minOccurs="0"/>
+			<xs:element name="Request" type="fgw:ReturnedRequestType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="MessageSeverityType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Fatal"/>
+			<xs:enumeration value="Recoverable"/>
+			<xs:enumeration value="Warning"/>
+			<xs:enumeration value="Information"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="MessagesType">
+		<xs:sequence>
+			<xs:element name="Message" type="fgw:MessageType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MessageType">
+		<xs:attribute name="Code" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Error or information message code. Codes must comply either with the list of FGW Standard supported codes, or with a specific pattern as defined in the alternative type of this attribute.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:union memberTypes="fgw:MessageCodeType fgw:SLADefinedMessageCodeType"/>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="Description" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Message verbose description.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Severity" type="fgw:MessageSeverityType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Message severity (Fatal, Recoverable error or Information). Operator are not constrained by the severity level defined for the FGW standard codes. In such case, it should be defined in a SLA between the partners. See the FGW Standard documentation for more abour the possible severity levels.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Location" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">XPath expression identifying which node in the request this message refers to. (i.e. which node within the Request element of the response, which is an echo of the original request).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute ref="xml:lang"/>
+	</xs:complexType>
+	<xs:complexType name="OfferCodeType">
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Offer code (see Ferrygateway Association documentation for full definition).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="OfferCodeDetailsType">
+		<xs:sequence>
+			<xs:element name="OfferCodeDetail" type="fgw:OfferCodeDetailType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Detailed information about offer code.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OfferCodeDetailType">
+		<xs:all>
+			<xs:element name="OfferCodeDescription" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">General description of the offer code, when and to whom it is provided.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProductCodeDescription" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">General description of the offer code, when and to whom it is provided.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="FareTypeDescription" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">General description of the offer code, when and to whom it is provided.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Description" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Free text description of the offer and routes available</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="OfferCode" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Offer code (see Ferrygateway Association documentation for full definition).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ProductCode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Product code (see Ferrygateway Association documentation for full definition).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="FareType" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system defined fare type code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BookingStartDate" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Earliest date when the code can be used for booking.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BookingEndDate" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Latest date when the code can be used for booking.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TravelStartDate" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Earliest travel date when the code is valid.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TravelEndDate" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Latest travel date when the code is valid.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MinJourneyDuration" type="xs:duration" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Minimum journey duration for which this code can be used.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxJourneyDuration" type="xs:duration" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum journey duration for which this code can be used.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="InvoicesResponseType">
+		<xs:sequence>
+			<xs:element name="Invoice" type="fgw:InvoiceResponseType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Detailed information about invoice.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceResponseType">
+		<xs:all>
+			<xs:element name="Bookings" type="fgw:InvoiceBookingsResponseType">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Array of bookings that are being invoiced.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="InvoiceTotals" type="fgw:InvoiceTotalsType" >
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Payment totals for the invoice.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="PaymentStatus" type="fgw:InvoicePaymentStatusType" >
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Payment totals for the invoice.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="Number" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identification number of the invoice.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Date" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Date of issue.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DueDate" type="xs:date" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Due date of the payment.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Currency" type="fgw:ISO4127CurrencyType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Invoice currency.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="InvoiceBookingsResponseType">
+		<xs:sequence>
+			<xs:element name="Booking" type="fgw:InvoiceBookingResponseType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Detailed information about booking.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvoiceBookingResponseType">
+		<xs:all>
+			<xs:element name="BookingCost" type="fgw:InvoiceTotalsType" />
+			<xs:element name="Comment" />
+		</xs:all>
+		<xs:attribute name="BookingReference" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Booking reference code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="InvoiceTotalsType">
+		<xs:attribute name="TotalAmount" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total amount for payment.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CommissionAmount" type="xs:decimal" use="optional">
+		</xs:attribute>
+		<xs:attribute name="TaxBase" type="xs:decimal" use="optional">
+		</xs:attribute>
+		<xs:attribute name="TaxAmount" type="xs:decimal" use="optional">
+		</xs:attribute>
+		<xs:attribute name="TaxPercentage" type="xs:decimal" use="optional">
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="InvoicePaymentStatusType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Information about the payment status.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Issued"/>
+			<xs:enumeration value="Paid"/>
+			<xs:enumeration value="Payment Delayed"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="OnBoardAccommodationServiceOptionType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Onboard accommodation service response. To assign passengers to multiple accommodations that have the same accommodation Code,
+				the OnBoardAccommodationService element should be repeated for each accommodation item with that Code, with the quantity set to 1 in each case,
+				and the PassengerRefs element should be populated for each of these separate OnBoardAccommodationService elements.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceOptionType">
+				<xs:sequence>
+					<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+						<xs:key name="OnBoardAccommodationServiceOptionType_RefIdKey">
+							<xs:selector xpath="fgw:Ref"/>
+							<xs:field xpath="@Id"/>
+						</xs:key>
+					</xs:element>
+					<xs:element name="Comment" type="xs:string" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="Berths" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="MaxAdults" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="MaxOccupancy" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="MinOccupancy" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="IsInfantsOK" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="IsAccessible" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="IsPetAllowed" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="IsAllergyFriendly" type="xs:boolean" use="optional" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardAccommodationServiceRequestType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Onboard accommodation service request. To assign passengers to multiple accommodations that have the same accommodation Code,
+				the OnBoardAccommodationService element should be repeated for each accommodation item with that Code, with the quantity set to 1 in each case,
+				and the PassengerRefs element should be populated for each of these separate OnBoardAccommodationService elements.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceRequestType">
+				<xs:sequence>
+					<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+						<xs:key name="OnBoardAccommodationServiceRequestType_RefIdKey">
+							<xs:selector xpath="fgw:Ref"/>
+							<xs:field xpath="@Id"/>
+						</xs:key>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardAccommodationServiceResponseType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Onboard accommodation service response. To assign passengers to multiple accommodations that have the same accommodation Code,
+				the OnBoardAccommodationService element should be repeated for each accommodation item with that Code, with the quantity set to 1 in each case,
+				and the PassengerRefs element should be populated for each of these separate OnBoardAccommodationService elements.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceResponseType">
+				<xs:sequence>
+					<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+						<xs:key name="OnBoardAccommodationServiceResponseType_RefIdKey">
+							<xs:selector xpath="fgw:Ref"/>
+							<xs:field xpath="@Id"/>
+						</xs:key>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="Berths" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="MaxAdults" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="MaxOccupancy" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="MinOccupancy" type="xs:unsignedInt" use="optional"/>
+				<xs:attribute name="IsInfantsOK" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="IsAccessible" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="IsPetAllowed" type="xs:boolean" use="optional" default="false"/>
+				<xs:attribute name="IsAllergyFriendly" type="xs:boolean" use="optional" default="false"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardAccommodationServicesOptionsType">
+		<xs:sequence>
+			<xs:element name="OnBoardAccommodationService" type="fgw:OnBoardAccommodationServiceOptionType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardAccommodationServicesRequestType">
+		<xs:sequence>
+			<xs:element name="OnBoardAccommodationService" type="fgw:OnBoardAccommodationServiceRequestType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardAccommodationServicesResponseType">
+		<xs:sequence>
+			<xs:element name="OnBoardAccommodationService" type="fgw:OnBoardAccommodationServiceResponseType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="DietType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The enumerated type of diet type.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Meat"/>
+			<xs:enumeration value="Fish"/>
+			<xs:enumeration value="Vegetarian"/>
+			<xs:enumeration value="Vegan"/>
+			<xs:enumeration value="Celiak"/>
+			<xs:enumeration value="Jewish"/>
+			<xs:enumeration value="Islamic"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="MealType">
+		<xs:attribute name="Id" type="fgw:RestrictedStringType" use="required" />
+		<xs:attribute name="DietType" type="fgw:DietType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Diet type of the meal</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation>Additional description of meal type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional">
+			<xs:annotation>
+				<xs:documentation>Determines if this is child or adult meal.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServiceSpecification">
+		<xs:sequence>
+			<xs:element name="MealType" type="fgw:MealType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServiceOptionType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceOptionType">
+				<xs:sequence>
+					<xs:element name="MealSpecification" type="fgw:OnBoardMealServiceSpecification" maxOccurs="1" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="Time" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>The date and time for this meal.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="FacilityCode" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation>Facility code that allows distinguishing between onboard locations.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServiceRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceRequestType">
+				<xs:sequence>
+					<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+						<xs:key name="OnBoardMealServiceRequestType_RefIdKey">
+							<xs:selector xpath="fgw:Ref"/>
+							<xs:field xpath="@Id"/>
+						</xs:key>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="Time" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>The date and time for this meal.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="FacilityCode" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation>Facility code that allows distinguishing between onboard locations.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServiceResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceResponseType">
+				<xs:sequence>
+					<xs:element name="MealSpecification" type="fgw:OnBoardMealServiceSpecification" maxOccurs="1" minOccurs="0"/>
+					<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+						<xs:key name="OnBoardMealServiceResponseType_RefIdKey">
+							<xs:selector xpath="fgw:Ref"/>
+							<xs:field xpath="@Id"/>
+						</xs:key>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="Time" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>The date and time for this meal.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="FacilityCode" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation>Facility code that allows distinguishing between onboard locations.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServicesOptionsType">
+		<xs:sequence>
+			<xs:element name="OnBoardMealService" type="fgw:OnBoardMealServiceOptionType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServicesRequestType">
+		<xs:sequence>
+			<xs:element name="OnBoardMealService" type="fgw:OnBoardMealServiceRequestType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardMealServicesResponseType">
+		<xs:sequence>
+			<xs:element name="OnBoardMealService" type="fgw:OnBoardMealServiceResponseType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardServiceOptionType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceOptionType">
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="Time" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>The date and time for this meal.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardServiceRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceRequestType">
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="Time" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>The date and time for this meal.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardServiceResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:ServiceResponseType">
+				<xs:attribute name="PassengerCategory" type="fgw:PassengerCategoryCodeType" use="optional"/>
+				<xs:attribute name="Time" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation>The date and time for this meal.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="OnBoardServicesOptionsType">
+		<xs:sequence>
+			<xs:element name="OnBoardService" type="fgw:OnBoardServiceOptionType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardServicesRequestType">
+		<xs:sequence>
+			<xs:element name="OnBoardService" type="fgw:OnBoardServiceRequestType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OnBoardServicesResponseType">
+		<xs:sequence>
+			<xs:element name="OnBoardService" type="fgw:OnBoardServiceResponseType" maxOccurs="unbounded" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PassengerBookType">
+		<xs:complexContent>
+			<xs:extension base="fgw:PassengerType">
+				<xs:sequence>
+					<xs:element name="QrCode" type="fgw:QrCodeType" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="Gender" type="fgw:GenderType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger gender.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Title" type="fgw:PassengerTitleType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger title</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Forename" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger forename.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Surname" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger surname.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+				<xs:attribute name="PassengerNationality" type="fgw:ICAO9303CountryType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger Nationality.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+
+				<xs:attribute name="IdentityExpiryDate" type="xs:date" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Expiry date of passport or identity card.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IdentityIssueCountry" type="fgw:ICAO9303CountryType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Issuing country of passport or identity card.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IdentityNumber" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passport or identity card number.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IdentityCategory" type="fgw:IdentityCategoryType" use="optional"/>
+				<xs:attribute name="SpecialRequirements" type="fgw:SpecialRequirementsType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Passenger special requirements (e.g. wheelchair, blind, etc).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="PlaceOfBirth" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Place of birth.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="CountryOfBirth" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Country of birth.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="VisaPermitNumber" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">VISA residence permit number.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ICEPhoneNumber" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Contact phone number In Case of Emergency (mobile or landline).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ICEEmail" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Contact email address In Case of Emergency.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PassengerCategoriesType">
+		<xs:sequence>
+			<xs:element name="PassengerCategory" type="fgw:PassengerCategoryType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="PassengerCategoryCodeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The enumerated type of the passenger.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Adult"/>
+			<xs:enumeration value="Child"/>
+			<xs:enumeration value="Infant"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PassengerCategoryType">
+		<xs:sequence>
+			<xs:element name="PassengerSubCategories" type="fgw:PassengerSubCategoriesType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Category" type="fgw:PassengerCategoryCodeType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">This passenger category.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MinAge" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Minimum age in years for this passenger category. Ages are the age at the date of travel.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxAge" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum age in years for this passenger category. Ages are the age at the date of travel.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="PassengerQuoteType">
+		<xs:complexContent>
+			<xs:extension base="fgw:PassengerType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PassengersBookType">
+		<xs:sequence>
+			<xs:element name="Passenger" type="fgw:PassengerBookType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PassengersQuoteType">
+		<xs:sequence>
+			<xs:element name="Passenger" type="fgw:PassengerQuoteType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PassengerSubCategoriesType">
+		<xs:sequence>
+			<xs:element name="PassengerSubCategory" type="fgw:PassengerSubCategoryType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PassengerSubCategoryType">
+		<xs:attribute name="Category" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Code for optional ferry operator defined sub category for passenger (for example - student, resident, member of armed forces).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Description text for optional ferry operator defined passenger sub category.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="PassengerTitleType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Mr"/>
+			<xs:enumeration value="Mrs"/>
+			<xs:enumeration value="Ms"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PassengerType" abstract="true">
+		<xs:attribute name="Id" type="fgw:IdType" use="required"/>
+		<xs:attribute name="Age" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Passenger age in years. Required if PassengerCategoryCodeType is Child at the date of travel.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DateOfBirth" type="xs:date" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Passenger date of birth.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Category" type="fgw:PassengerCategoryCodeType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Passenger type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SubCategory" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Passenger sub-category.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="LoyaltyCardId" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Loyalty card number.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="LoyaltyCardCategory" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Type of loyalty card membership category.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="PetCategoryType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Type of pet.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SmallDog"/>
+			<xs:enumeration value="BigDog"/>
+			<xs:enumeration value="Cat"/>
+			<xs:enumeration value="Other"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="PetsType">
+		<xs:sequence>
+			<xs:element name="Pet" type="fgw:PetType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PetType">
+		<xs:attribute name="Id" type="fgw:IdType" use="required"/>
+		<xs:attribute name="Category" type="fgw:PetCategoryType" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="PlaceQualifierType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Port"/>
+			<xs:enumeration value="Group"/>
+			<xs:enumeration value="Country"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="PortCodeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				UN/LOCODE Port code. Must be a 5 letter code which is listed in the UN/LOCODE 2015-1 or later standard, and is assigned the port function in that standard.
+				UN/LOCODE home page: http://www.unece.org/cefact/locode/welcome.html
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z0-9]{5}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="QrCodeType">
+		<xs:annotation>
+			<xs:documentation>QR code data that should be provided to passenger. These can then be scanned to access bought services.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Data" type="xs:string" />
+	</xs:complexType>
+	<xs:complexType name="QrCodesType">
+		<xs:sequence>
+			<xs:element name="QrCode" type="fgw:QrCodeType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RecallBookingRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:MessageRequestType">
+				<xs:sequence>
+					<xs:element name="BookingReference" type="fgw:BookingReferenceRequestType"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RecallBookingResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:BookBaseResponseType"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="RefsType">
+		<xs:sequence>
+			<xs:element name="Ref" type="fgw:RefType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RefType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				Refers to another element within the current document.
+				The parent element name describes which collection the item refers to, and the Id attribute describes the item within the collection.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="QrCode" type="fgw:QrCodeType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="required"/>
+	</xs:complexType>
+	<xs:simpleType name="RestrictedStringType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ReturnedRequestType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">The xml of the request to which the current document is the response.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:any processContents="skip"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RoutesType">
+		<xs:sequence>
+			<xs:element name="Route" type="fgw:RouteType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RouteType">
+		<xs:complexContent>
+			<xs:extension base="fgw:AbstractRouteType">
+				<xs:all>
+					<xs:element name="Medias" type="fgw:MediasType" minOccurs="0"/>
+					<xs:element name="PetTransportOptions" type="fgw:PetsTransportOptionsType" minOccurs="0"/>
+					<xs:element name="VehicleTransportOptions" type="fgw:VehicleTransportOptionsType" minOccurs="0"/>
+					<xs:element name="MandatoryFacilities" type="fgw:MandatoryFacilitiesType" minOccurs="0"/>
+				</xs:all>
+				<xs:attribute name="DepartPortCountry" type="fgw:ISO3166CountryType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Country code for the depart port.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DepartPortName" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Name of departure port.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DepartPortLatitude" type="xs:float" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Latitude of departure port for geolocation.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DepartPortLongitude" type="xs:float" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Longitude of departure port for geolocation.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DestinationPortCountry" type="fgw:ISO3166CountryType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Country code for the destination port.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DestinationPortName" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Name of destination port.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DestinationPortLatitude" type="xs:float" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Latitude of destination port for geolocation.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DestinationPortLongitude" type="xs:float" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Longitude of destination port for geolocation.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="RouteGroup" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">The operator named group of routes of which this route is a member.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="RouteNote" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">General note on route (e.g. summer only service).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SailingBookRequestType">
+		<xs:sequence>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingBookRequestType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingBookRequestType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingBookRequestType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoRequestType"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsRequestType" minOccurs="0"/>
+			<xs:element name="Services" type="fgw:ServicesRequestType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SailingBookResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingBookResponseType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingBookResponseType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingBookResponseType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoResponseType"/>
+			<xs:element name="Ship" type="fgw:ShipType" minOccurs="0"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsResponseType" minOccurs="0"/>
+			<xs:element name="Services" type="fgw:ServicesResponseType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Services included in the this booked FerryComponent.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProductInformation" type="fgw:ProductInformationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Extra product information for passengers useful before boarding the trip and for marketing the trip.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="IsAvailable" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing was available for booking at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsVehicleAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had space available for vehicles at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsAccommodationAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had any accommodation available at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsPetAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether pets can be transported and there was any capacity for said transport at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferFromFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferToFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SailingInformation" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Special information about this one particular sailing.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SailingGetSailingsRequestType">
+		<xs:sequence>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingGetSailingsRequestType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingGetSailingsRequestType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingGetSailingsRequestType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingSearchCriterion" type="fgw:SailingSearchCriterionType"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsRequestType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SailingGetSailingsResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingGetSailingsResponseType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingGetSailingsResponseType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingGetSailingsResponseType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoResponseType"/>
+			<xs:element name="Ship" type="fgw:ShipType" minOccurs="0"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsResponseType" minOccurs="0"/>
+			<xs:element name="Services" type="fgw:ServicesResponseType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Services included in the this priced FerryComponent.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="IsAvailable" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing was available for booking at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsVehicleAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had space available for vehicles at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsAccommodationAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had any accommodation available at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsPetAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether pets can be transported and there was any capacity for said transport at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferFromFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferToFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SailingInformation" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Special information about this one particular sailing.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="LegSetNumber" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Numeric Id used to group Sailings when using the "UseLegSetNumber" CombinationRule to select individual Sailings from a FerryComponent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SailingInfoRequestType">
+		<xs:complexContent>
+			<xs:extension base="fgw:AbstractRouteType">
+				<xs:attribute name="DepartDateTime" type="xs:dateTime" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Advertised departure date and time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="AllotmentAgreementId" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Specifies allotment id used to get the allotments.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="SailingInfoResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:AbstractRouteType">
+				<xs:sequence>
+					<xs:element name="PetTransportOptions" type="fgw:PetsTransportOptionsType" minOccurs="0"/>
+					<xs:element name="MandatoryFacilities" type="fgw:MandatoryFacilitiesType" minOccurs="0"/>
+				</xs:sequence>
+				<xs:attribute name="DepartPortTerminal" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Operator name for departure terminal (if named).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DestinationPortTerminal" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Operator name for destination terminal (if named).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="AdjustedDepartDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Departure date and time, adjusted (for example, tidal reasons).</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="AdjustedArriveDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Arrival date and time adjusted.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ArriveDateTime" type="xs:dateTime" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Advertised arrival date and time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="CheckinStartDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Check in opening date and time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="CheckinEndDateTime" type="xs:dateTime" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Check in closing date and time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DepartDateTime" type="xs:dateTime" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Advertised departure date and time.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DepartPortName" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Name of departure port.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="DestinationPortName" type="fgw:RestrictedStringType" use="required">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Name of destination port.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IsAccommodationMandatory" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Whether accommodation is mandatory for this sailing.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="AllotmentAgreementId" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Specifies allotment id of related allotment.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TimetableSailingInfosType">
+		<xs:sequence>
+			<xs:element name="SailingInfo" type="fgw:TimetableSailingInfoResponseType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingPriceRequestType">
+		<xs:sequence>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingPriceRequestType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingPriceRequestType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingPriceRequestType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoRequestType"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsRequestType" minOccurs="0"/>
+			<xs:element name="Services" type="fgw:ServicesRequestType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SailingPriceResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingPriceResponseType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingPriceResponseType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingPriceResponseType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoResponseType"/>
+			<xs:element name="Ship" type="fgw:ShipType" minOccurs="0"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsResponseType" minOccurs="0"/>
+			<xs:element name="Services" type="fgw:ServicesResponseType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Services included in the this priced FerryComponent.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ServicesOptions" type="fgw:ServicesOptionsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Optional services that are not included in the this priced FerryComponent, but can be added to it.
+						This element should only be included as part of a GetServicesResponse message.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProductInformation" type="fgw:ProductInformationType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Extra product information for passengers useful before boarding the trip and for marketing the trip.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="IsAvailable" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing was available for booking at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsVehicleAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had space available for vehicles at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsAccommodationAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had any accommodation available at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsPetAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether pets can be transported and there was any capacity for said transport at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferFromFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferToFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SailingInformation" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Special information about this one particular sailing.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="SailingTransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingTransferServicesRequestType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingTransferServicesRequestTypee_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingTransferServicesRequestType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoRequestType"/>
+			<xs:element name="FareDetails" type="fgw:FareDetailsRequestType" minOccurs="0"/>
+			<xs:element name="TransferServices" type="fgw:GetTransferServicesRequestType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="SailingsTransferServicesResponseType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingTransferServicesResponseType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingTransferServicesResponseType">
+		<xs:sequence>
+			<xs:element name="Messages" type="fgw:MessagesType" minOccurs="0"/>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingTransferServicesResponseType_PassengerRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="PetRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingTransferServicesResponseType_PetRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="VehicleRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="SailingTransferServicesResponseType_VehicleRefsIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+			<xs:element name="SailingInfo" type="fgw:SailingInfoResponseType"/>
+			<xs:element name="TransferServicesDetails" type="fgw:TransferServicesDetailsType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Transfer services that can be included in booking.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="optional"/>
+		<xs:attribute name="IsAvailable" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing was available for booking at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsVehicleAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had space available for vehicles at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsAccommodationAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether the returned Sailing had any accommodation available at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsPetAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates whether pets can be transported and there was any capacity for said transport at the time the response was sent.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferFromFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsTransferToFerryAvailable" type="xs:boolean" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates there is a connecting transport at the departure port, e.g. a bus.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SailingInformation" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Special information about this one particular sailing.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPassengers" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all passengers. If false, the PassengerRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllPets" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all pets. If false, the PetRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllVehicles" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Whether element applies to all vehicles. If false, the VehicleRefs element is required.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+
+	<xs:complexType name="SailingsBookRequestType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingBookRequestType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingsBookResponseType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingBookResponseType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="RequestedServicesType">
+		<xs:sequence>
+			<xs:element name="RequestedService" type="fgw:RequestedServiceType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="RequestedServiceType">
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en"></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Category" type="fgw:ServiceCategoryType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en"></xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="SailingSearchCriterionType">
+		<xs:sequence>
+			<xs:element name="RequestedServices" type="fgw:RequestedServicesType" minOccurs="0" >
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Further restrings list of returned sailings. Only sailings with required services will be returned.
+						Note that the services themselves are not returned in GetSailingsResponse, details have to be loaded using GetServices.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="AfterDepartHours" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum number of hours after requested departure time that sailings will be returned for.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AfterDepartSailings" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum number of sailings for awarding system to return after requested departure time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BeforeDepartHours" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum number of hours before requested departure time that sailings will be returned for.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BeforeDepartSailings" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum number of sailings for awarding system to return before requested departure time</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartDateTime" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Scheduled or advertised vessel departure local date and time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartPlace" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Awarding system code for departure port, country or route group.
+					If the DepartPlaceQualifier is "Port", the DepartPlace must be a 5 letter code which is listed in the UN/LOCODE 2015-1 or later standard, and is assigned the port function in that standard.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartPlaceQualifier" type="fgw:PlaceQualifierType" use="optional" default="Port">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates the place type of DepartPlace.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DestinationPlace" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Awarding system code for destination port, country or route group.
+					If the DestinationPlaceQualifier is "Port", the DestinationPlace must be a 5 letter code which is listed in the UN/LOCODE 2015-1 or later standard, and is assigned the port function in that standard.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DestinationPlaceQualifier" type="fgw:PlaceQualifierType" use="optional" default="Port">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates the place type of DestinationPlace.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Ferry operator code as assigned by Ferrygateway association.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="SailingsGetSailingsRequestType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingGetSailingsRequestType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingsGetSailingsResponseType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingGetSailingsResponseType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingsPriceRequestType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingPriceRequestType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingsPriceResponseType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingPriceResponseType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="SailingsTransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="Sailing" type="fgw:SailingTransferServicesRequestType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="ServiceCategoryType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Enumerated value describing the general type of this service.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Accommodation"/>
+			<xs:enumeration value="Meal"/>
+			<xs:enumeration value="Internet"/>
+			<xs:enumeration value="Cinema"/>
+			<xs:enumeration value="Conference"/>
+			<xs:enumeration value="Kennel"/>
+			<xs:enumeration value="Lounge"/>
+			<xs:enumeration value="Excursion"/>
+			<xs:enumeration value="Spa"/>
+			<xs:enumeration value="Other"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ServiceModeCategoryType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Values used to request a subset of all the service options that could be returned by a GetServicesResponse message.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OnBoard"/>
+			<xs:enumeration value="OnBoardMeal"/>
+			<xs:enumeration value="OnBoardAccommodations"/>
+			<xs:enumeration value="Land"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ServiceModeType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">A space-delimited list of service types.</xs:documentation>
+		</xs:annotation>
+		<xs:list itemType="fgw:ServiceModeCategoryType"/>
+	</xs:simpleType>
+	<xs:complexType name="ServiceOptionType">
+		<xs:sequence>
+			<xs:element name="Medias" type="fgw:MediasType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system code for Onboard Service type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Category" type="fgw:ServiceCategoryType" use="optional"/>
+		<xs:attribute name="QuantityAvailable" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The available quantity of this service.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="UnitCost" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">The unit cost of this service.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="fgw:RestrictedStringType" use="optional"/>
+		<xs:attribute name="ServiceRule" type="fgw:ServiceRuleType" use="optional"/>
+		<xs:attribute name="ServiceRuleGroup" type="fgw:RestrictedStringType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="ServiceRequestType">
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system code for Onboard Service type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Quantity" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Requested quantity of this service code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ServiceResponseType">
+		<xs:sequence>
+			<xs:element name="Medias" type="fgw:MediasType" minOccurs="0"/>
+			<xs:element name="QrCodes" type="fgw:QrCodesType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system code for Onboard Service type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Quantity" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Quantity of this service.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TotalCost" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total cost of the specified quantity of this service.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Category" type="fgw:ServiceCategoryType" use="optional"/>
+		<xs:attribute name="OperatorAdded" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">
+					Indicates that this service item was not requested, but was added by the awarding system as a default selection.
+					For example, when accommodation is required but none was requested, this is used to indicate the default accommodation.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="IsMandatory" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Indicates that this service item is mandatory.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="fgw:RestrictedStringType" use="optional"/>
+		<xs:attribute name="ServiceRule" type="fgw:ServiceRuleType" use="optional"/>
+		<xs:attribute name="ServiceRuleGroup" type="fgw:RestrictedStringType" use="optional"/>
+		<xs:attribute name="AllotmentAgreementId" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Specifies allotment id used to get the allotments.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="ServiceRuleType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">Describes a restriction on the selectability of this service.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OnePerBooking"/>
+			<xs:enumeration value="OnePerSailing"/>
+			<xs:enumeration value="OnePerPassenger"/>
+			<xs:enumeration value="OnePerAdult"/>
+			<xs:enumeration value="OnePerVehicle"/>
+			<xs:enumeration value="OnePerPet"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="ServicesOptionsType">
+		<xs:sequence>
+			<xs:element name="OnBoardAccommodationServices" type="fgw:OnBoardAccommodationServicesOptionsType" minOccurs="0"/>
+			<xs:element name="OnBoardMealServices" type="fgw:OnBoardMealServicesOptionsType" minOccurs="0"/>
+			<xs:element name="OnBoardServices" type="fgw:OnBoardServicesOptionsType" minOccurs="0"/>
+			<xs:element name="LandServices" type="fgw:LandServicesOptionsType" minOccurs="0"/>
+			<xs:element name="TransferServices" type="fgw:TransferServicesOptionsType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ServicesRequestType">
+		<xs:sequence>
+			<xs:element name="OnBoardAccommodationServices" type="fgw:OnBoardAccommodationServicesRequestType" minOccurs="0"/>
+			<xs:element name="OnBoardMealServices" type="fgw:OnBoardMealServicesRequestType" minOccurs="0"/>
+			<xs:element name="OnBoardServices" type="fgw:OnBoardServicesRequestType" minOccurs="0"/>
+			<xs:element name="LandServices" type="fgw:LandServicesRequestType" minOccurs="0"/>
+			<xs:element name="TransferServices" type="fgw:TransferServicesRequestType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ServicesResponseType">
+		<xs:sequence>
+			<xs:element name="OnBoardAccommodationServices" type="fgw:OnBoardAccommodationServicesResponseType" minOccurs="0"/>
+			<xs:element name="OnBoardMealServices" type="fgw:OnBoardMealServicesResponseType" minOccurs="0"/>
+			<xs:element name="OnBoardServices" type="fgw:OnBoardServicesResponseType" minOccurs="0"/>
+			<xs:element name="LandServices" type="fgw:LandServicesResponseType" minOccurs="0"/>
+			<xs:element name="TransferServices" type="fgw:TransferServicesResponseType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="GetBusTransferServiceRequestType">
+		<xs:attribute name="Direction" type="fgw:TransferServiceDirection" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Direction in which transfer service can be booked.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="PlaceId" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of place.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Offset" type="xs:string" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">TODO SPECIFY.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="GetBusTransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="BusTransfer" type="fgw:GetBusTransferServiceRequestType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="GetTransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="BusTransferServices" type="fgw:GetBusTransferServicesRequestType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferServiceRequestType">
+		<xs:all>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="BusTransferServiceRequestType_RefIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system code for Transfer Service type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Quantity" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Requested quantity of this service code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BusId" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of bus line.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartPlace" type="xs:string" use="required"/>
+		<xs:attribute name="DestinationPlace" type="xs:string" use="required"/>
+		<xs:attribute name="DepartDateTime" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Advertised departure date and time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferServiceResponseType">
+		<xs:all>
+			<xs:element name="PassengerRefs" type="fgw:RefsType" minOccurs="0">
+				<xs:key name="BusTransferServiceResponseType_RefIdKey">
+					<xs:selector xpath="fgw:Ref"/>
+					<xs:field xpath="@Id"/>
+				</xs:key>
+			</xs:element>
+		</xs:all>
+		<xs:attribute name="Code" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Awarding system code for Transfer Service type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Quantity" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Requested quantity of this service code.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="BusId" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of bus line.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="DepartPlace" type="xs:string" use="required"/>
+		<xs:attribute name="DestinationPlace" type="xs:string" use="required"/>
+		<xs:attribute name="DepartDateTime" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Advertised departure date and time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ArriveDateTime" type="xs:dateTime" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Advertised arrival date and time.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Remark" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Extra information regarding the line.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="TotalCost" type="xs:decimal" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Total cost of the specified quantity of this service.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="BusTransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="BusTransfer" type="fgw:BusTransferServiceRequestType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BusTransferServicesResponseType">
+		<xs:sequence>
+			<xs:element name="BusTransfer" type="fgw:BusTransferServiceResponseType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="TransferServicesRequestType">
+		<xs:sequence>
+			<xs:element name="BusTransferServices" type="fgw:BusTransferServicesRequestType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TransferServicesDetailsType">
+		<xs:sequence>
+			<xs:element name="BusTransfer" type="fgw:BusTransferDetailsResponseType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TransferServicesOptionsType">
+		<xs:sequence>
+			<xs:element name="BusTransferService" type="fgw:BusTransferServiceOptionsType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TransferServicesResponseType">
+		<xs:sequence>
+			<xs:element name="BusTransferServices" type="fgw:BusTransferServicesResponseType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ShipType">
+		<xs:sequence>
+			<xs:element name="Medias" type="fgw:MediasType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="IsFastCraft" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">True if the vessel is a fastcraft.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ShipName" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Ferry operator name for vessel.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ShipIMO" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">IMO Number of the vessel.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ProductInformationType">
+		<xs:sequence>
+			<xs:element name="DepartureInformation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information useful to passengers before departure.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OnBoardInformation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information useful during the whole trip, e.g. information about the in between stops.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ArrivalInformation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Information useful to passengers after arrival.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="MarketingInformation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Important marketing points</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="SpecialRequirementsType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Deaf"/>
+			<xs:enumeration value="Blind"/>
+			<xs:enumeration value="Wheelchair"/>
+			<xs:enumeration value="Electric wheelchair"/>
+			<xs:enumeration value="Walking difficulties"/>
+			<xs:enumeration value="Medical equipment"/>
+			<xs:enumeration value="Other"/>
+			<xs:enumeration value="Blind and deaf"/>
+			<xs:enumeration value="Medication"/>
+			<xs:enumeration value="Power required"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TimetableSailingInfoResponseType">
+		<xs:complexContent>
+			<xs:extension base="fgw:SailingInfoResponseType">
+				<xs:attribute name="SailingId" type="fgw:IdType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">The Id of the sailing that can be used to uniquely identify it.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="IsFastCraft" type="xs:boolean" use="optional" default="false">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">True if the vessel is a fastcraft.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ShipName" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Ferry operator name for vessel.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="ShipIMO" type="fgw:RestrictedStringType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">IMO Number of the vessel.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TradingPartnersExtensionType">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">A placeholder to allow trading partner to transmit mutually agreed additional information on top of the Ferrygateway standard.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TrailerCategoriesType">
+		<xs:sequence>
+			<xs:element name="TrailerCategory" type="fgw:TrailerCategoryType" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TrailerCategoryType">
+		<xs:complexContent>
+			<xs:extension base="fgw:VehicleCategoryType">
+				<xs:attribute name="Code" type="fgw:TrailerCodeType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Trailer code as assigned by Ferrygateway association. One of Code or OperatorCode must be supplied, if both are supplied the OperatorCode will be used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="TrailerCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Trailer"/>
+			<xs:enumeration value="Caravan"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="TrailerType">
+		<xs:complexContent>
+			<xs:extension base="fgw:VehicleBaseType">
+				<xs:attribute name="Code" type="fgw:TrailerCodeType" use="optional">
+					<xs:annotation>
+						<xs:documentation xml:lang="en">Trailer code as assigned by Ferrygateway association. One of Code or OperatorCode must be supplied, if both are supplied the OperatorCode will be used.</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="VehicleBaseType" abstract="true">
+		<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Operator defined vehicle code. One of Code or OperatorCode must be supplied, if both are supplied the OperatorCode will be used.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Height" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Height of this vehicle / trailer in centimeters.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Length" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Length of this vehicle / trailer in centimeters.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Width" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Width of this vehicle / trailer in centimeters.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Registration" type="fgw:RestrictedStringType" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="VehicleCategoryType">
+		<xs:attribute name="OperatorCode" type="fgw:RestrictedStringType" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Operator defined vehicle code. One of Code or OperatorCode must be supplied, if both are supplied the OperatorCode will be used.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Description" type="fgw:RestrictedStringType" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Description of vehicle</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MinLength" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Minimum length in centimeters allowed to qualify for this type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxLength" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum length in centimeters allowed to qualify for this type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MinHeight" type="xs:unsignedInt" use="optional">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Minimum height in centimeters allowed to qualify for this type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxHeight" type="xs:unsignedInt" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Maximum height in centimeters allowed to qualify for this type.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="VehiclesType">
+		<xs:sequence>
+			<xs:element name="Vehicle" type="fgw:VehicleType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="VehicleType">
+		<xs:sequence>
+			<xs:element name="Lead" type="fgw:LeadVehicleType"/>
+			<xs:element name="Trailer" type="fgw:TrailerType" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="Id" type="fgw:IdType" use="required"/>
+	</xs:complexType>
+</xs:schema>
