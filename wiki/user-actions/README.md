@@ -1,8 +1,3 @@
-Below is a comprehensive overview of the **User Actions** identified in the sources, formatted as a Markdown file. 
-
-**Note:** The sources provide the specific names of these atomic functions and their applicability across various transport modes. The **short descriptions, pre-conditions, and post-conditions are my own proposals** to provide context and are not explicitly contained within the provided sources.
-
----
 
 # Index of User Actions
 
