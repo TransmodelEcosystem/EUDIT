@@ -15,10 +15,20 @@ In this document, we'll put the 'basic principles': what are our guiding princip
 * **Don't reinvent the wheel**: Use what is already out there, find an interoperable mode to use already available data, processes and guidelines.
 
 * **Future proof**: The choosen technique must be globally accepted and it must be clear that it will not be depricated in the near future. And the specification must take into account (nearby) future developments, like digital wallets, data-spaces, and cross-border and cross-domain aspects. 
+This principle must be split into these 2:
+   * use established technologies that will not disappear in near future​
+   * looking into possible future technologies and not block their usage
 
-* **Easy to understand, implement and operate**: Aspects like structure, consistency and usablility, error-prone (make less errors during implementations) and cost-efficient data transmission (and interpretation) must always be taken into account.
+
+* **Easy to understand, implement and operate**: Aspects like structure, consistency and usablility, error-prone (make less errors during implementations) and cost-efficient data transmission (and interpretation) must always be taken into account. Abstraction and complexity reduction. Highly structured
 
 * **Functionality above technique**: We need to specify things clearly, and if tooling around the specification limits us, a clear functional specification is more important than writing the specification to work with the tooling (e.g. OpenAPI tooling has limitations).
+
+* **Data minimalisation and privacy-by-design​** GDPR requirement
+
+* **Use ‘ilities’ to verify the outcome​** See below
+
+* **Regulations** must be aligned with other EU/local regulations _or standards of the sector_. Like TSI, PRR or ticketing standards (UNE EN 1545-1:2015 and FR variant INTERCODE). * _This is of course very hard if you’re creating something that is inter-sectoral. We must deliver something that doesn’t conflict with these regulations._
 
 ## Tech 'ilities'
 
