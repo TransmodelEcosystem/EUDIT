@@ -26,7 +26,6 @@ During the Kidling phase, we'll complete these 'ilities', to facilitate the Forg
 
 * **Consistency**:
 * **Discoverability**:
-* **Extensibility**:
 * **Security**:
 * **Extensibility**:
 * **Accessibility**:

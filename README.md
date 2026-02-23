@@ -39,8 +39,8 @@ The **[Wiki](../../wiki)** serves as the authoritative source for all foundation
 - **[Roles](../../wiki/roles.md)** 
   Definition and description of stakeholder roles within the project.
 
-- **[Unique functions](../../wiki/unique-functions)**
-  What are the `unique functions` per mode, that we have to deal with (make them interoperable)?
+- **[Interoperability & Governance](../../wiki/interoperability-governance)**
+  Where can we expect problems when merging? What are the 'soft' aspects around the standard and what are the options for these, to mitigate risks?
 
 - **[Concepts & Definitions](../../wiki/concepts)** 
   Structured list of concepts and their definitions, based on Transmodel terminology.
@@ -97,7 +97,7 @@ The project follows a **five-phase approach**, metaphorically inspired by the bl
   - Scope definition
   - Basic principles
   - Role description
-  - Unique functions
+  - Interoperability issues & governance options
   - Concept / definitions
   - Use cases / user actions
   - Architecture/structure options

@@ -300,7 +300,7 @@ These 'user actions' are derived from the existing standards.
 *   **Post-condition:** The product's validity period begins.
 
 ### initiate leg
-*   **Description:** Performing the technical steps required to start a leg (e.g., unlocking a bike).
+*   **Description:** Create a new leg using a purchased product (swipe-in, check-in)
 *   **Pre-condition:** User is within proximity of the asset.
 *   **Post-condition:** The asset is ready for physical use.
 
