@@ -199,3 +199,5 @@ With the customer account and all new entries, the customer requests for the cal
 ## (offers) Retrieve suitable SALES OFFER PACKAGES, limited to the customer’s valid media
 The list of offers is limited to those that the customer can use with their valid media.
 
+## (aftersale) Retrieve suitable aftersale operations, limited to the customer’s media and fare contracts
+The list of available aftersalesoperations limited to those that the customer can request with their valid media and fare contracts.
