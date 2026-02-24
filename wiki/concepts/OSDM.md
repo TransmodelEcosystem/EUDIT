@@ -24,77 +24,32 @@ Work in progress
 - **AnonymousPassengerSpecification** : passenger data subset to be used to request offers
 - **ApiNextVersion**: indication of upcoming API versions 
 - **ApiVersion** : available API versions 
-ApplicabilityTypestring
-AppliedFee
-AppliedReductions 
-AttachableItemTypestring
-AvailabilityStatusstring
-AvailablePlace 
-AvailablePlacePreferences 
-BackOfficeChangeTypestring
-BackOfficeStatusstring
-BankAccountReference 
-BankIdCodestring
-BarCodeTypestring
-Board 
-BoardingPositionAssignment 
-BoardSpecification 
-BookedOffer 
-BookedOfferPartRequest 
-BookedOfferPartResponse 
-BookedOfferRequest 
-BookedOfferResponse 
-BookedOfferSummary 
-Booking 
-BookingAccessstring
-BookingAccessTimingstring
-BookingArrangement 
-BookingChangeTypestring
-BookingCleanupRequest 
-BookingEvent  | 
-BookingHistoryResponse 
-BookingMethodstring
-BookingPartReference 
-BookingPartStatusstring
-BookingPartSummary 
-BookingPartTypestring
-BookingPatchRequest 
-BookingPurchaseMomentstring
-BookingRequest 
-BookingResponse 
-BookingResponseContentstring
-BookingSearchParameters 
-BookingSearchRequest 
-BookingSearchResponse 
-BookingSearchResult 
-BookingSplit 
-BookingSplitGroup 
-BookingSplitRequest 
-BookingSplitResponse 
-BookingSplitResult 
-BorderRadius 
-Calendar 
-CancelFulfillmentsOffer 
-CancelFulfillmentsOfferCollectionResponse 
-CancelFulfillmentsOfferPatchRequest 
-CancelFulfillmentsOfferRequest 
-CancelFulfillmentsOfferResponse 
-CancelFulfillmentsStatusstring
-Car
-CardReference 
-CardTypeReference 
-CarRack 
-CarrierConstraint 
-CarrierFilter 
-CarSpecification
-ClaimedJourneyDetails 
-ClaimedLeg 
-CoachAvailability 
-CoachDeckLayout 
-CoachDeckLayoutCollectionResponse 
-CoachDeckLayoutResponse 
-CoachDeckLevelstring
-CombinationTag 
+- **AppliedFee** : fees applied
+- **AppliedReductions** : reductions applied 
+- **AvailablePlace** : available place (seat,..) in a grapgical seat map for reservation. 
+_ **AvailablePlacePreferences** : available types or places (seats, berths,..) for reservation. 
+- **BankAccountReference** : bank account reference used in compensation or reemboursement. 
+- **Board** : boarding of a service (from OJP) 
+- **BoardingPositionAssignment**  : boarding of a service (from OJP) 
+- **BoardSpecification**  : boarding of a service (from OJP)  
+- **BookedOffer** : a booked offer of a provider. The booked offer can include multiple booked offer parts and is subject to change via after saes 
+- **BookedOfferSummary** : summary description of s booked offer 
+- **Booking** : A booking of multiple booked offer. The booking might include different trips and bookings.
+- **BookingAccess** : indication who can have access to the booking
+- **BookingArrangement** : Information as part ofg a trip on options for booking in case th booking is not possible via the API (e.g. booking on board only) from OJP
+- **BookingChangeType** : type of after sales transaction applied to a booking part
+- **BookingEvent** : event on a booking, compalint or reemboursement (e.g. cancellation, train delay, ...)  | 
+- **BookingPartSummary** : summary of a booking part
+- **BookingSearchParameters** : parameters to search a booking
+- **CancelFulfillmentsOffer** : an after sales offer to cancella fulfillment (ticket) 
+- **Car** : car data in car carriage on trains
+- **CardReference**: reference to a card (reduction card, custiomer card, ..) 
+- **CardTypeReference** : reference to a card type (reduction card type, ..)  
+- **CarrierConstraint** : usage restriction of a list of carriers 
+- **ClaimedJourneyDetails** : Journey details in a claim. 
+- **CoachAvailability** : availability of a coach in graphical reservation.
+- **CoachDeckLayout** : Schematic layout descriptions used in graphical reservation. 
+- **CombinationTag** : Tag governing offers from different providers with restrictions on combinability. 
 CompanyDetail 
 CompanyRefstring
 CompartmentAvailability 
