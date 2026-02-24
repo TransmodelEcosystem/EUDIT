@@ -1,4 +1,4 @@
-Work in progress
+Copyright UIC (see OSDM.io)
 
 - **AbstractBookingPart** :  commmon data of a booking in the API.
 - **AbstractOfferPart** : common data of an offer in the API.
@@ -50,430 +50,113 @@ _ **AvailablePlacePreferences** : available types or places (seats, berths,..) f
 - **CoachAvailability** : availability of a coach in graphical reservation.
 - **CoachDeckLayout** : Schematic layout descriptions used in graphical reservation. 
 - **CombinationTag** : Tag governing offers from different providers with restrictions on combinability. 
-CompanyDetail 
-CompanyRefstring
-CompartmentAvailability 
-CompartmentPreSelection 
-Complaint 
-ComplaintChangeReasonstring
-ComplaintDecision 
-ComplaintEvent  | 
-ComplaintPatchRequest 
-ComplaintRequest 
-ComplaintResponse 
-Condition 
-ConditionSpecification 
-ConditionTypestring
-ConfirmedRefund 
-ConfirmedRelease 
-ContactDetail 
-ContextTypestring
-ContinousOperationModestring
-ContinuousLeg 
-ContinuousService 
-ContinuousServiceAvailabilityScope 
-ContinuousServiceBookingPart
-ContinuousServiceOfferPart
-ContinuousServicePickUpPlace 
-ContinuousServiceProcessIndicationstring
-ContinuousServicesAvailabilityResponse 
-ContinuousServiceUsage 
-ContinuousServiceUsagePatchRequest 
-ContinuousServiceUsageStatusstring
-ContinuousServiceVehicleAvailability 
-ContinuousServiceVehicleSelection 
-ContinuousServiceVehicleTypestring
-ControlSecurityTypestring
-CorporateCode 
-CountryCodestring
-Currencystring
-CurrencyAmount 
-CurrencyConversion 
-CustomerComplaint 
-DatedJourney 
-DateRange 
-DayTravelAccountUnit
-DecisionTypestring
-DeckAvailability 
-DirectionChange 
-Distanceinteger | null= 0int32
-DistributionModestring
-Document 
-DocumentCollectionResponse 
-DocumentContent 
-DocumentFormatstring
-DocumentRequest 
-DocumentResponse 
-DocumentScopestring
-DocumentSpecification 
-DocumentTypestring
-Event 
-EventDetail 
-EventTypestring
-ExchangeableTypestring
-ExchangeBreakdownItem 
-ExchangeOffer 
-ExchangeOfferCollectionResponse 
-ExchangeOfferCollectionResponseContentstring
-ExchangeOfferRequest 
-ExchangeOfferRequestParameter 
-ExchangeOperation 
-ExchangeOperationPatchRequest 
-ExchangeOperationRequest 
-ExchangeOperationResponse 
-ExchangeOperationResponseContentstring
-ExchangeParts 
-ExchangePassengersOfferRequestSpecification 
-ExchangeServiceOfferRequestSpecification 
-ExchangeStatusstring
-ExchangeTripOfferRequestSpecification 
-ExcludedTimeRange 
-ExclusionScopestring
-FacilityEnumstring
-FacilityGroupEnumstring
-FareAfterSalesRules 
-FareBookingPart  | 
-FareCombinationModel 
-FareConnectionPoint
-FareConnectionPointRef
-FareOfferPart  | 
-FareReferenceStation 
-FareTypestring
-Fee
-Flexibilitystring
-FlexibleStopAreaAssignment 
-Fulfillment 
-FulfillmentCollectionResponse 
-FulfillmentConstraint 
-FulfillmentDocument 
-FulfillmentDocumentTypestring
-FulfillmentIdstring
-FulfillmentItemSecurityFeature 
-FulfillmentItemSecurityFeatureLinks 
-FulfillmentMediaTypestring
-FulfillmentOption 
-FulfillmentPart 
-FulfillmentPatchRequest 
-FulfillmentPostRequest 
-FulfillmentRef 
-FulfillmentRefs 
-FulfillmentResponse 
-FulfillmentsPatchRequest 
-FulfillmentsResponse 
-FulfillmentStatusstring
-FulfillmentSummaryStatusstring
-FulfillmentTypestring
-FulfillmentUsage 
-Genderstring | null
-GeneralAttribute 
-GeneralAttributeMasterData 
-GeoPosition 
-GeoPositionRef
-GraphicElement 
-GraphicElementCodestring
-GridDimension 
-GridPosition 
-GroupedFacilityItem 
-HistoryStatusstring
-IdentificationCard 
-ImpactTypestring
-IndicatedUsage 
-InitialPlaceInput 
-Intermediate 
-IntermediateSpecification 
-Latitudenumber[-90, 90]double
-LegTrack 
-LegTrackSection 
-Line 
-LineNumberstring | null
-Linksarray<object>
-Longitudenumber[-180, 180]double
-LuggageConstraint 
-LuggageDimension 
-LuggageDimensionEnumstring
-LuggageRestriction 
-LuggageRestrictionRuleEnumstring
-MasterDataValidity 
-Mode 
-ModeFilter 
-MoneyTravelAccountUnit
-MotorCycle
-MotorcycleSpecification(any)
-MultiRideAccount
-MultiRideBalance 
-NamedCompany 
-NamedPlaceRef 
-NamedTravelAccountUnit
-NonTripSearchCriteria 
-NotificationEvent 
-Offer 
-OfferCollectionRequest 
-OfferCollectionResponse 
-OfferCollectionResponseContentstring
-OfferModestring
-OfferOverviewRoute 
-OfferOverviewRouteRequest 
-OfferOverviewRouteResponse 
-OfferOverviewTrip 
-OfferOverviewTripRequest 
-OfferOverviewTripResponse 
-OfferPartReference 
-OfferSearchCriteria 
-OfferSelection 
-OfferSummary 
-OfferTag 
-OnHoldOffer 
-OnHoldOfferPatchRequest 
-OnHoldOfferRequest 
-OnHoldOfferResponse 
-OperatingDays 
-OperationDayRefstring | null
-Operator 
-Orientationintegerint32
-OsmTag 
-OverruleCodestring
-ParallelService 
-PartTypestring
-Passenger  | 
-PassengerCategory 
-PassengerConstraints 
-PassengerResponse 
-PassengersBatchUpdateRequest 
-PassengersCollectionResponse 
-PassengerSpecification
-PassengerTypestring
-PathGuidance 
-PathGuidanceAdvicestring
-PathGuidanceFollow 
-PathGuidancePathLink 
-PathGuidancePathLinkEnd 
-PathGuidanceSection 
-PathGuidanceTransitionstring
-PathGuidanceTurnActionstring
-PaymentMethod 
-PaymentTypestring
-Percentagenumber | null[0, 100]float
-PersonalModestring
-PersonDetail 
-PersonSearchRequest 
-PhoneNumberstring | null= 18 charactersmatches ^\+\d{1,3}\s?\d{1,14}(\s\d{1,13})?$
-Place 
-PlaceAllocation 
-PlaceAvailabilityCollectionResponse 
-PlaceAvailabilityMapRequest 
-PlaceAvailabilityMapResponse 
-PlaceGroup 
-PlaceLayout 
-PlaceMasterData 
-PlaceParam 
-PlacePreferenceGroup 
-PlacePreSelection 
-PlacePropertystring
-PlaceRef 
-PlaceRequest 
-PlaceResponse 
-PlaceRestriction 
-PlaceSelection 
-PlacesMasterDataResponse 
-PlaceTypestring
-PlaceUsagestring
-PointOfInterest
-PointOfInterestCategory 
-PointOfInterestFilter 
-PointOfInterestRef
-Polygon 
-PostalAddress 
-Price 
-PRMNeedTypestring
-Problem 
-ProblemCollection 
-ProblemPointer 
-Product 
-ProductCategory 
-ProductCategoryRefstring | null
-ProductCollectionResponse 
-ProductLegAssociation 
-ProductRequestOfferSelection 
-ProductResponse 
-ProductSearchRequest 
-ProductSearchResponse 
-ProductSpecification 
-ProductSummary 
-ProductTagstring
-ProductTagGroup 
-ProductTagName 
-ProductTagsResponse 
-ProductTypestring
-PromotionCode 
-PTModestring
-Purchaser
-PurchaserResponse 
-PurchaserSearchRequest 
-PurchaserSpecification 
-Quantity 
-RectangleGeometry 
-ReductionCardAccount
-ReductionCardType 
-ReductionCardTypeCollectionResponse 
-ReductionGranted 
-RefundBreakdownItem 
-RefundedFulfillmentSpecification 
-RefundOffer 
-RefundOfferCollectionResponse 
-RefundOfferPatchRequest 
-RefundOfferRequest 
-RefundOfferResponse 
-RefundSpecification 
-RefundStatusstring
-RefundTypestring
-RegionalConstraint 
-RegionalValidity 
-RegionalValiditySummary 
-RegulatoryConditionstring
-Reimbursement 
-ReimbursementDecision 
-ReimbursementEvent  | 
-ReimbursementMethod 
-ReimbursementPatchRequest 
-ReimbursementReasonstring
-ReimbursementRequest 
-ReimbursementResponse 
-ReimbursementStatusstring
-ReleaseOffer 
-ReleaseOfferCollectionResponse 
-ReleaseOfferPatchRequest 
-ReleaseOfferRequest 
-ReleaseOfferResponse 
-ReleaseSpecification 
-ReleaseStatusstring
-RequestedInformationstring | null= 32768 characters
-Reservation
-ReservationGroup 
-ReservationOfferPart
-ReservationRelation 
-ReservedPlace 
-Resource 
-ReturnConstraint 
-ReturnSearchParameters 
-Revision 
-Route 
-RouteItem 
-RouteSpecification 
-Section 
-SecurityElementFormatstring
-SecurityElementTypestring
-SecurityFeatureType 
-SelectedAccommodation 
-SelectedPlace 
-SelectedReferencePlace 
-SelectionFee 
-ServiceBrandCodestring
-ServiceBrandFilter 
-ServiceClass 
-ServiceClassTypestring
-ServiceConstraint 
-ServiceDegradationstring
-ServiceFormation 
-ServiceFormationPart 
-ServiceFormationPartAssignment 
-ServiceFormationPartStatus 
-ServiceFormationPartTypestring
-ServiceFormationRoute 
-ServiceIcon 
-ServiceIconCodestring
-ServiceStatus 
-ServiceTime 
-SiSTypestring
-Situation 
-SituationDescription 
-SituationRefstring | null
-SpecificPlaceAvailability 
-StationSet 
-StopBehaviorstring
-StopCallStatus 
-StopPlace(any)
-StopPlaceRef
-SupportingDocument 
-Symbologystring
-Text 
-TextElement 
-TextElementTypestring
-ThroughTicketTagstring
-TimedLeg 
-TimedLegSpecification 
-TimeFrameSegmentationstring
-TimeUnitstring
-Tip 
-TrainLink 
-TrainValidity 
-TrainValidityScopestring
-TransactionContextTypestring
-TransferLeg 
-TransferTypestring
-Translation 
-Transportable 
-TransportableSpecification 
-TransportableTypestring
-TravelAccountResponse 
-TravelAccountResponseContentstring
-TravelAccountTypestring
-TravelAccountUsage 
-TravelClassstring
-TravelDirectionTypestring
-TravelPassAccount
-TravelValidity 
-TravelValidityRange 
-Trip 
-TripAllocationConstraint 
-TripAllocationProcessstring
-TripAllocationUnitstring
-TripChangeCriteria 
-TripChangeParameter 
-TripCollectionRequest 
-TripCollectionResponse 
-TripContentFilter 
-TripContentFilterItemstring
-TripContext 
-TripCoverage 
-TripDataFilter 
-TripDirectionTypestring
-TripFeasibilitystring
-TripInterruptionConstraint 
-TripInterruptionProcessstring
-TripLeg 
-TripLegCoverage 
-TripLegSpecification 
-TripMobilityFilter 
-TripMobilityFilterItemstring
-TripMobilityFilterItemsarray<any>= 1 items
-TripParameters 
-TripPolicyFilter 
-TripRealTimeDataUsagestring
-TripResponse 
-TripResponseContentstring
-TripResponseParameters 
-TripResult 
-TripsCollectionResponseContentstring
-TripSearchCriteria 
-TripSearchCriteriaMultiOD 
-TripSearchOptimisationMethodstring
-TripSearchTypeMultipleODstring
-TripSection 
-TripSpecification 
-TripSpecificationSummary 
-TripStatus 
-TripSummary 
-TripTravelAccountUnit
-TripVia 
-ValidityRange 
-ValidityTypestring
-VAT 
-VatScopestring
-VehicleAvailability 
-VehicleFilter 
-VehicleNumberstring 
-VoucherInformation 
-Zone 
-ZoneCollectionResponse 
-ZoneDefinition 
-ZoneSpecification
+- **CompanyDetail** : details on a company 
+- **CompartmentAvailability** : availability for compartments in graphical reservation 
+- **CompartmentPreSelection** : providers pre-selection of compartments in graphical reservation 
+- **Complaint**  : A complaint due to service degradation or delay
+- **ComplaintDecision** : The decision on a complaint 
+- **Condition** : Generic description on conditions 
+- **ConfirmedRefund** : a refund confirmed by the customer 
+- **ConfirmedRelease** : a release confirmed by the curstomer. The release incalidates the remaining tickets and fixes the after sales tome without initiating the financial refund. 
+- **ContactDetail** : details on a contact (person or company) 
+- **ContinuousLeg** : transport leg using continuous modes  (from OJP)
+- **ContinuousService** :  continuous mode transport service (from OJP)  
+- **ContinuousServiceAvailabilityScope** : search parameter for available continuous mode services 
+- **ContinuousServiceBookingPart** : booking part of a continuous service
+- **ContinuousServiceOfferPart** : oofer part for a continuos service
+- **ContinuousServicePickUpPlace** : place to pich up a continuous service 
+- **ContinuousServiceProcessIndication** : indication of continuous mode usgae
+- **ContinuousServiceUsage** : usage of a continuous service
+- **ContinuousServiceVehicleAvailability** : aailability of continuous service vehicles 
+- **ContinuousServiceVehicleSelection** : selection of a continuous mode vehicle 
+- **CorporateCode** : indication of bilateral corporate offers 
+- **CurrencyConversion** : details on applied currency conversion 
+- **CustomerComplaint** : customer complaint 
+- **DatedJourney** : journey according to a schedul (from OJP) 
+- **DirectionChange** : indication on a change of direction of travel in graphical reservation 
+- **Document** : generic document provided (tickets, receipts,  
+- **Event** : Event send from the API provider to the API consumer 
+- **EventDetail** : detailed event description icluding a summary and a reference to the resource 
+- **ExchangeBreakdownItem** : details ion the parts included in an exchange 
+- **ExchangeOffer** : an offer for an exchange 
+- **ExchangeOfferRequest** : rewquest for an exchange offer to change passengers, roue/trains or taiffs 
+- **ExchangeOperation** : an omgoing exchange process on an echange offer
+- **ExchangeParts** : parts of an exchange
+- **ExchangePassengersOfferRequestSpecification** : specification of the passengers to be exchanged 
+- **ExchangeServiceOfferRequestSpecification** : specification of the service to be exchanged
+- **ExchangeTripOfferRequestSpecification** : sepcification of the trips to be exchanged 
+- **FacilityEnum** : facilities available on ta service (from OJP)
+- **FareAfterSalesRules** : after sales rules on non product fares 
+- **FareBookingPart** booking part on a non product fare 
+- **FareCombinationModel** : combination rules on non-product fares 
+- **FareConnectionPoint** : conncetion points between non-product fares
+- **FareOfferPart** : offer part for a non-product fare 
+- **FareReferenceStation** : set of stations regarded as equivalent in a fare 
+- **Fee** : a fee
+- **Fulfillment** : document for the traveller to be used during his trvel.Created after booking cionfirmation.
+- **FulfillmentConstraint** : restriction on allowed fulfillments on a non-product fare 
+- **FulfillmentDocument** : individual document in a fulfillment 
+- **FulfillmentItemSecurityFeature** : additional security items to be included in fulfillments used with non-product fares 
+- **FulfillmentOption** :  options for fulfillment available on the retailer side  
+- **FulfillmentUsage** : options to request individual fulfillment items from a generic fulfillment (e.g. to get single tickets from a carnet) 
+- **GraphicElement** : graphical element in a graphical reservation layout
+- **IdentificationCard** : details of an identification cared (passport, idCard, ..) 
+- **Intermediate** : intermediate stop in a trip leg (from OJP) 
+- **LegTrack** : track on alight or board (from OJP) 
+- **Line** : line number of a service (from OJP) 
+- **LuggageConstraint** : luggage restrictions foir a non-product fare 
+- **MotorCycle** : motor cycle in car carriage on trains
+- **MultiRideAccount** : travel account for multiple journeys showing the used and still available units
+- **NamedTravelAccountUnit** : travel account unit different from currencies (mile, points, ...)
+- **NonTripSearchCriteria** : search criteria for offers not based on a trip (passes, cards, ..) 
+- **Offer** : a any kind of offer provided to the customer. Consists of offer parts and might be based on a trip or on non-trip search criteria. 
+- **OfferSelection** : selection of offers to start the booking process
+- **OfferSummary** : summary of an offer 
+- **OnHoldOffer** : offer to extend the time limit until confirmation of an offer. 
+- **OverruleCode** : indication to override business rules (in case of thechnical oir staff errors, delays, ..)
+- **ParallelService** : services running in kombination but with different service numbers (from OJP) 
+- **Passenger** : passenger
+- **PassengerConstraints** : passengers constarints in a non-product fare to be added in the controlm bar code 
+- **PathGuidance** : guidance alon a path for warking or driving (from OJP) 
+- **PaymentMethod** : payment method indication and details on used and remaining vouchers 
+- **Place** :location (from OJP) 
+- **PlaceMasterData** : place master data provided in teh API  
+- **Polygon** : polygon used in zone descriptions 
+- **PostalAddress** : postal adress 
+- **Price** : price including VAT details 
+- **Problem** : generic problem data structure 
+- **Product** : generic description of a product on sale 
+- **ProductTag** : Product tag to search the provider catalog via the API (used for non-trip product search)
+- **ProductTagGroup** : grouping of product tags for selection by the user 
+- **PromotionCode** - code to access promotion offers 
+- **Purchaser** : purchaser of a  booking
+- **ReductionCardAccount** : individual reduction card
+- **ReductionCardType**: type of a reduction card
+- **ReductionGranted** : reduction granted in an offer or booking 
+- **RefundOffer** : offer on a refund 
+- **RefundSpecification** : specification of the parts to be refunded in a partial refund 
+- **RegionalConstraint** : regional constraint including the description of the route of a non-product fare
+- **RegionalValidity** : the description of the route of a non-product fare
+- **RegionalValiditySummary** : summary of the route of a non-product fare  
+- **RegulatoryConditionstring** : indication of the regilatory conditions applying to the booking part
+- **Reimbursement** : refund after the date of travel in cae it can not be made automatically (e.g in case confirming documentation is required) 
+- **ReleaseOffer** : offer ro replease a part of a booking. This fixes the refund date ands invalidates the tickets but does not include the financial treansaction. 
+- **RequestedInformationstring** : metadata on the personal data items to be provided before the booking confirmation
+- **Reservation** : booking part representing the reservation of seats, berths, ... 
+- **ReservationOfferPart** : booking part representing the offer for reservation of seats, berths, ... 
+- **Route**: route description as a part of the regional validity 
+- **SelectedPlace** : selected place for a reservation
+- **SelectionFee** : Fee to be applied on a place selection in graphical reservation 
+- **ServiceFormation** : formation of a service following OJP 
+- **Situation** : traffic situation (from OJP)
+- **TimedLeg** : journey leg according to a schedule (from OJP) 
+- **Tip** : a tip given to a driver 
+- **TrainLink** : a restriction of a nopn-product fare toi use a dedicated service only 
+- **TransferLeg** : transfer beteen services in a trip (from OJP) 
+- **Transportable** : non-human "passengers" taht need tickets and / or reservations e.g. bicycles, dogs, prams,.. 
+- **TravelAccountType** : types of travel accounts
+- **TravelAccountUsage** : usage of a travel account - used amout or units on a trip
+- **Trip** : journey (from OJP) 
+- **VoucherInformation** : voucher issuer and id
+- **Zone** : definition of a zone used in the regional validity 
+- **ZoneSpecification** :  definition of a zone provided as master datain the API
