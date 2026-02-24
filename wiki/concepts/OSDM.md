@@ -1,30 +1,29 @@
 Work in progress
 
- **AbstractBookingPart** :  commmon data of a booking in the API.
- **AbstractOfferPart** : common data of an offer in the API.
-**AbstractPassenger** : minimal passenger data that can be used t request offers 
-**AbstractTravelAccount** : common data of a travel account 
-**AccommodationSubType** : codes for specifities in reservations
-**AccommodationType** : high level type of accomodation in reservations
-**AccountingRef** : reference to accounting transactions for bookings
-**ActualPassengerType** : passenger type applied in an offer or boking
-**Address** : address
-**Admission** : a booking part representing a contrcat of travel
-**AdmissionOfferPart** : an offered booking part representing a contrcat of travel
-**AfterSaleCondition** : after sales condition description for customers 
-**AfterSaleConditionTypes** : classification of after sales conditions
-**AfterSalesOverrideDetails** : Indication of an overwrite of after sales conditions 
-**Alight** : arrivale (from OJP) 
-**Ancillary** : add on product not represebting a travel contract, e.g. meals, merch, ...
-**AncillaryGroup** : group of ancillaries to choose from 
-**AncillaryOfferPart** : ancillary offered
-AncillaryRelation 
-AncillarySelection 
-AncillarySubTypestring
-AncillaryTypestring
-AnonymousPassengerSpecification
-ApiNextVersion 
-ApiVersion 
+- **AbstractBookingPart** :  commmon data of a booking in the API.
+- **AbstractOfferPart** : common data of an offer in the API.
+- **AbstractPassenger** : reused generic passenger data
+- **AbstractTravelAccount** : common data of a travel account 
+- **AccommodationSubType** : codes for specifities in reservations
+- **AccommodationType** : high level type of accomodation in reservations
+- **AccountingRef** : reference to accounting transactions for bookings
+- **ActualPassengerType** : passenger type applied in an offer or boking
+- **Address** : address
+- **Admission** : a booking part representing a contrcat of travel
+- **AdmissionOfferPart** : an offered booking part representing a contrcat of travel
+- **AfterSaleCondition** : after sales condition description for customers 
+- **AfterSaleConditionTypes** : classification of after sales conditions
+- **AfterSalesOverrideDetails** : Indication of an overwrite of after sales conditions 
+- **Alight** : arrivale (from OJP) 
+- **Ancillary** : add on product not represebting a travel contract, e.g. meals, merch, ...
+- **AncillaryGroup** : group of ancillaries to choose from 
+- **AncillaryOfferPart** : ancillary offered
+- **AncillaryRelation** : relations and rstrictions between ancillaries and reservations or admissions 
+- **AncillarySubType** : Detailed types of anxillaries
+- **AncillaryTypes** : High level types of ancillaries
+- **AnonymousPassengerSpecification** : passenger data subset to be used to request offers
+- **ApiNextVersion**: indication of upcoming API versions 
+- **ApiVersion** : available API versions 
 ApplicabilityTypestring
 AppliedFee
 AppliedReductions 
