@@ -193,4 +193,9 @@ Gate: machine
 ## (payment) Entering a SEPA Direct Debit Mandate to complete the sale
 For some FARE PRODUCT, having a valid mandate is mandatory in order to complete the sale. The customer enters his bank coordinates on his customer account and uses this payment method for the purchase. 
 
-## 
+## (offers) Get payment terms and instalments details
+With the customer account and all new entries, the customer requests for the calculated payment terms and all the instalments details (period, amount, ended or not, free periods, etc...)
+
+## (offers) Retrieve suitable SALES OFFER PACKAGES, limited to the customer’s valid media
+The list of offers is limited to those that the customer can use with their valid media.
+
