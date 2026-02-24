@@ -1,7 +1,7 @@
 Work in progress
 
-**AbstractBookingPart** :  commmon data of a booking in the API
-**AbstractOfferPart** : common data of an offer in the API 
+ **AbstractBookingPart** :  commmon data of a booking in the API.
+ **AbstractOfferPart** : common data of an offer in the API.
 **AbstractPassenger** : minimal passenger data that can be used t request offers 
 **AbstractTravelAccount** : common data of a travel account 
 **AccommodationSubType** : codes for specifities in reservations
