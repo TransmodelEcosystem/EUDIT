@@ -35,7 +35,97 @@ A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actio
 
 ![Search Non-Trip-Based offers](6.5.2.1-search-non-trip-offers.md)
 
+CoRoM Use case does not meet the requirements
 
+## search trip based offers (6.5.2.2)
+
+CoRoM Use case does not meet the requirements
+
+### search trip based offers by trip specification
+
+### search trip based offers by trip id
+
+### search trip based offers by OD
+
+### search trip based offers for return trips
+
+
+## select offer
+
+### select an offer for booking and start the booking process
+
+### add required personal data of passengers
+
+### change the selection of optional offer parts
+
+### get the available seat preferences or available places for reservation
+
+### select places for reservation
+
+### select nearby places for reservation
+
+### remove optional offer parts
+
+### add optional offer parts
+
+### get an on-hold offer to extend the pre-booking-time
+
+### accept an on-hold offer to extend the pre-booking-time 
+
+### cleanup a preliminary booking in case of failure
+
+### check consistency before confirmation
+
+## confirm booking
+
+### get the fulfillments for a booking
+
+### get individual fulfillments of a multijouney booking
+
+## after sales
+
+### search for additional offers to a booking
+
+### request refund offers for a booking
+
+### request partial refund offers for a booking
+
+### accept refund offer
+
+### request release offer for a booking
+
+### request partial release offer for a booking
+
+### accept release offer
+
+### request exchange offers
+
+### select exchange offer and start the exchange process
+
+### confirm the exchange
+
+## view travel account
+
+### view the travel account of a customer
+
+A travel account might be an account for account based ticketing or a customer card for a loyalty programm.
+
+Sales using the account are made via any of the offer / booking use cases. The travel account use case only shows the status. 
+
+## use on demand services
+
+https://osdm.io/spec/on-demand-services/
+
+## complaints
+
+
+## reemboursements
+
+## inform the API consumer on changes
+
+## provide masterdata via the API
+
+places. reduction card types, coach layouts for graphical reservation, products, product tags, product tag groups, zones
 
 # TOMP Specific use cases
 
