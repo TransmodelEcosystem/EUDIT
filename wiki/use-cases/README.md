@@ -188,3 +188,9 @@ To prevent publishing the complete fare tables. You can anomously search based o
 ## Validate tickets
 Human: inspector
 Gate: machine
+
+# Ticketing Specific use cases
+## (payment) Entering a SEPA Direct Debit Mandate to complete the sale
+For some FARE PRODUCT, having a valid mandate is mandatory in order to complete the sale. The customer enters his bank coordinates on his customer account and uses this payment method for the purchase. 
+
+## 
