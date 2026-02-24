@@ -31,6 +31,12 @@ A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actio
 
 # OSDM Specific use cases
 
+## search non trip based offers
+
+![Search Non-Trip-Based offers](6.5.2.1-search-non-trip-offers.md)
+
+
+
 # TOMP Specific use cases
 
 ## (administration) Add a customer
