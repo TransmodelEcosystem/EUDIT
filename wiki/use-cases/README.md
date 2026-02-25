@@ -54,7 +54,11 @@ CoRoM Use case does not meet the requirements
 
 ## select offer
 
+CoRoM Use case does not meet the requirements
+
 ### select an offer for booking and start the booking process
+
+![select offer and start the booking (pre-book)](6.5.2.3-select-an-offer-for-booking-and-start-the-booking-process.md)
 
 ### add required personal data of passengers
 
