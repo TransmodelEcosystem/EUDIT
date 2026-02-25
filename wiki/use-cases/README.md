@@ -29,7 +29,7 @@ TRAVEL DOCUMENTs.
 ## [6.5.2.7 Customer account consultation](6.5.2.7-customer-account-consultation.md)
 A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actions on FARE PRODUCTs-SALES OFFER PACKAGEs he/she has purchased.
 
-# OSDM Specific use cases
+# OSDM use cases
 
 ## search non trip based offers
 
