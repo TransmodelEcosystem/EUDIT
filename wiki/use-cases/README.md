@@ -43,6 +43,8 @@ CoRoM Use case does not meet the requirements
 
 ### search trip based offers by trip specification
 
+![Search by Trip Specification](6.5.2.1-search-by-trip-specification.md)
+
 ### search trip based offers by trip id
 
 ### search trip based offers by OD
