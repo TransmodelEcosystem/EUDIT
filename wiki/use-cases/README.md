@@ -299,7 +299,8 @@ For some FARE PRODUCT, having a valid mandate is mandatory in order to complete 
 With the customer account and all new entries, the customer requests for the calculated payment terms and all the instalments details (period, amount, ended or not, free periods, etc...)
 
 ## (offers) Retrieve suitable SALES OFFER PACKAGES, limited to the customer’s valid media
-The list of offers is limited to those that the customer can use with their valid media.
+The list of offers is limited to those that the customer can use with their valid media. 
+Detailed in : wiki/use-cases/6.5.2.1-search-non-trip-offers-media
 
 ## (aftersale) Retrieve suitable aftersale operations, limited to the customer’s media and fare contracts
 The list of available aftersalesoperations limited to those that the customer can request with their valid media and fare contracts.
