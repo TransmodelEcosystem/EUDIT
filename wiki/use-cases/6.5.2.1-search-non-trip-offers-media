@@ -1,29 +1,28 @@
-## 6.5.2.1 Search for non-trip offers fitted with media
+## 6.5.2.1 Search for non-trip offers suitable for a media
 
-The use case covers the search for offers not based on a trip.  
+The use case covers the search for offers not based on a trip but limited to media compatibility.  
 
 ### Summary
 
-Request the API provider for offers based on search parameters and/or product tag.
+Request the API provider for offers based on the customer's media and parameters.
 
 ### Steps
-- get the product tags and grouping 
-- ask the customre for selection and additional information on passengers, area and travel time.
-- ask the provider for offers.
-    - additionally provides the fulfillment options available on the consumer side  
+- read the media (contactless card) and extract the data (each contract ID, the media ID, technology, ...)
+- OPTINAL : ask the customer for additional information (reload or new contract, need for new media, etc ..)
+- ask the provider for offers that are suitable for the media (new contracts or reloadings that can be supported by the media) using : 
+    - validity of fare products,
+    - capabilities of the media (space left on the card, ...)
+    - customer profile (anonymous, with a commercial profile, with social rights, ets..)
+    - OPTIONAL : capabilities of the vending machine to manage the purchase and fulfilment
 - display the offers for selection.
 
 ### Description
 
-Request the API provider for offers based on search parameters and/or product tag.
+Request the API provider for offers based on customer's media and search parameters.
 
-In case product tags are supported the consumer requests the product tags and their grouping from the provider. The grouping provides the selection criteria the customer can use to select products for the search.
+...... 
 
-The customer provides the passengers and time range for his travel (if applicable).
-
-The API consumer requests the offers and 
-
-The provider returns the list of offers for the search parameters. 
+The provider returns the list of offers for the parameters. 
 
 Pagination is required.
 
@@ -32,24 +31,18 @@ The subsequent steps in the booking process are not specific to non-trip offers.
 
 ### Use case add-ons
 
-Allow to search promotional offers.
-
-Allow to search for bilateral coorporate offers.
-
-Fulfillment on chip cards might required the validation of the existing chip card content by the provider.
+Fulfillment can be done later, with the first validation.
 
 
 ### Non-functional requirements
 
-Avoid the exchange of catalogs to decople business logic between consumer and provider.
+Avoid to propose fare products and contracts to the customer that cannot be used (travel, validation) with the media he already has.
 
-Keep business logic flexible by limiting the use case on search parameters.
+Reduce the search time for the agent or the customer : read the media and display the suitable offers. 
 
-Reduce costs significantly by limiting the exchange to search parameters.
 
 
 ### Known implementations
 
-Sales API for Eurail and Interrail passes (OSDM)
+Sales API for Conduent customers (private)
 
-see: https://osdm.io/spec/non-trip-based-sale/
