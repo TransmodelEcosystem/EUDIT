@@ -302,5 +302,8 @@ With the customer account and all new entries, the customer requests for the cal
 The list of offers is limited to those that the customer can use with their valid media. 
 Detailed in : wiki/use-cases/6.5.2.1-search-non-trip-offers-media
 
+## (purchase) Deliver fulfilment with the purchase result 
+The raw media for QR code delivery is sent upon delivery of the purchase, taking advantage of the connection being established between the customer and the distributor, for immediate use of the travel ticket.  
+
 ## (aftersale) Retrieve suitable aftersale operations, limited to the customer’s media and fare contracts
-The list of available aftersalesoperations limited to those that the customer can request with their valid media and fare contracts.
+The list of available aftersales operations limited to those that the customer can request with their media and fare contracts.
