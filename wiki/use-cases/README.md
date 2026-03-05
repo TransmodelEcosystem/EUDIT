@@ -29,267 +29,35 @@ TRAVEL DOCUMENTs.
 ## [6.5.2.7 Customer account consultation](6.5.2.7-customer-account-consultation.md)
 A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actions on FARE PRODUCTs-SALES OFFER PACKAGEs he/she has purchased.
 
-# OSDM use cases
+# OSDM Use Cases
 
-## search non trip based offers
+OSDM (Open Sales and Distribution Model) covers the full retail journey from offer search through booking, fulfillment, after-sales, and master data provision. It extends beyond the CoRoM scope into OSDM-specific areas such as graphical seat reservation, on-hold offers, the exchange flow, travel accounts, on-demand services, complaints, and API-driven webhooks.
 
-![Search Non-Trip-Based offers](6.5.2.1-search-non-trip-offers.md)
+See [osdm.md](osdm.md) for the complete list with endpoint references and uniqueness notes.
 
-CoRoM Use case does not meet the requirements
+# TOMP-API Use Cases
 
-## search trip based offers (6.5.2.2)
+TOMP-API (Transport Operator MaaS Platform API) targets shared-mobility and MaaS integration. In addition to standard offer/booking/after-sales flows it uniquely covers physical asset execution (lock/unlock, ETA, driving support), leg lifecycle management, driver's licence validation, deposit handling, and push notifications.
 
-CoRoM Use case does not meet the requirements
+See [tomp-api.md](tomp-api.md) for the complete list with endpoint references and uniqueness notes.
 
-### search trip based offers by trip specification
+# OMSA Use Cases
 
-![Search by Trip Specification](6.5.2.1-search-by-trip-specification.md)
+OMSA (Open MaaS Standard API) follows OGC API Processes conventions and covers the full mobility service lifecycle — authentication, discovery, offer search, traveller management, asset assignment, purchase, after-sales, travel documents, and payment. It is the only in-scope standard that specifies the OAuth2 token endpoint explicitly.
 
-### search trip based offers by trip id
+See [omsa.md](omsa.md) for the complete list with endpoint references and uniqueness notes.
 
-### search trip based offers by OD
+# FerryGateway Use Cases
 
-### search trip based offers for return trips
+FerryGateway is an XML-based (request/response message pairs, not REST) standard for ferry booking. It covers sailing search, vessel timetables, route and port reference data, passenger and vehicle type catalogues, cabin and berth accommodation, ancillary services (meals, on-board), land/transfer connections, cancellation charges, invoicing, promotional codes, and QR-code travel documents.
 
+See [ferrygateway.md](ferrygateway.md) for the complete list with message-pair references and uniqueness notes.
 
-## select offer
+# BoB Use Cases
 
-CoRoM Use case does not meet the requirements
+BoB (Backend of Backend) is an intentionally narrow B2B ticketing interoperability layer. It handles booking calls between a distributor and an operator backend and the exchange of signed Mobile Ticketing Blocks (MTBs) for validation. It is not a full booking API and deliberately omits trip search, offer search, seat reservation, and customer account management.
 
-### select an offer for booking and start the booking process
-
-![select offer and start the booking (pre-book)](6.5.2.3-select-an-offer-for-booking-and-start-the-booking-process.md)
-
-### add required personal data of passengers
-
-### change the selection of optional offer parts
-
-### get the available seat preferences or available places for reservation
-
-### select places for reservation
-
-### select nearby places for reservation
-
-### remove optional offer parts
-
-### add optional offer parts
-
-### get an on-hold offer to extend the pre-booking-time
-
-### accept an on-hold offer to extend the pre-booking-time 
-
-### cleanup a preliminary booking in case of failure
-
-### check consistency before confirmation
-
-## confirm booking
-
-### get the fulfillments for a booking
-
-### get individual fulfillments of a multijouney booking
-
-## after sales
-
-### search for additional offers to a booking
-
-### request refund offers for a booking
-
-### request partial refund offers for a booking
-
-### accept refund offer
-
-### request release offer for a booking
-
-### request partial release offer for a booking
-
-### accept release offer
-
-### request exchange offers
-
-### select exchange offer and start the exchange process
-
-### confirm the exchange
-
-## view travel account
-
-### view the travel account of a customer
-
-A travel account might be an account for account based ticketing or a customer card for a loyalty programm.
-
-Sales using the account are made via any of the offer / booking use cases. The travel account use case only shows the status. 
-
-## use on demand services
-
-https://osdm.io/spec/on-demand-services/
-
-## complaints
-
-
-## reemboursements
-
-## inform the API consumer on changes
-
-## provide masterdata via the API
-
-places. reduction card types, coach layouts for graphical reservation, products, product tags, product tag groups, zones
-
-# TOMP Specific use cases
-
-## (administration) Add a customer
-
-## (administration) Modify a customer
-
-## (administration) Remove/decouple a customer
-
-## (administration) Validate a driver's license
-Needed to rent a car, use a scooter, etc.
-
-## (administration) Register/connect a traveller/customer
-Needed to provide some customer details to determine if the customer is already a known customer on the operator side.
-
-## (offering) Profide detailed PRM information (specified size of wheel chairs, oxigen tanks, ...)
-Needed for special group transport
-
-## (offering) Get damage report of an asset
-
-## (offering) Get an overview of available assets in the future
-
-## (offering) Get an overview of available ancillaries
-
-## (offering) Get an overview of available assets (including seatplan) for a leg in an offer or package
-
-## (offering) Modify start/end times & locations before purchasing
-
-## (offering) Release a package that has been selected/modified
-
-## (offering) Remove an offer from a package
-
-## (purchase) Use a specific asset (bike, scooter, ...)
-Needed to pick a bike from the street or use NeTEx/GBFS-based locations of assets or stations.
-
-## (purchase) Reserve a parking spot
-
-## (purchase) 2-phase purchase  
-Needed to incorporate urban modes in multi-modal trips. This also requires a 'rollback purchase' and 'confirm purchase' functionality.
-
-## (purchase) Extend expiry-time
-Once you have purchased a package, but it's still before the confirmation, the expiry time might be too early. You can request to extend it.
-
-## (purchase) 'Pick up the bill'
-Needed to redirect the payment to a reseller, once a parking session (or charging session) has already started.
-
-## (purchase) purchase a product (like daycard)
-
-## (purchase) purchase a travel package, containing another travel package to exchange
-
-## (generic) Travel package details
-Get information at any time about your travel package
-
-## (generic) Find referenced data
-Get source-references to used data (NeTEx, GBFS, etc). So you can retrieve it yourself and find more details (to validate). The API should work without retrieving this data.
-
-## (execution) ETA
-Required for on-demand services, to notify the traveler that they're on their way to the pickup location.
-
-## (execution) Unlock/close assets
-Different options, like bluetooth, NFC, remote, and even manual locking.
-
-## (execution) Open/close locker to get access to an asset
-
-## (execution) Start/end the usage of an asset
-Often includes the unlocking/locking, not always
-
-## (execution) Pause/resume the usage of an asset
-
-## (execution) Custom functions of an asset
-Like 'open-trunk' or 'open-helmet-box'.
-
-## (execution) Activate a product
-To activate a product before it can be used (like a week-card).
-
-## (execution) Extend the usage of an asset
-E.g. extend parking session
-
-## (execution) Postpone the usage of an asset
-
-## (execution) Add ancillaries (like helmets) to a leg
-
-## (execution) Swap ancillaries
-
-## (execution) Change assigned assets (with optionally other types/products)
-
-## (execution) Deliver proof of correct parking
-
-## (execution) Driving support
-Like:
-* parking location
-* no-go zones
-* low-speed zones
-* .. 
-
-Could be used for publishing PT zones as well. Based on OMF's MDS.
-
-## (execution) Swipe in/out
-This creates a new leg/trip based on a product.
-
-## (execution) See progress of a leg in execution
-For on-demand services
-
-## (execution) Retrieve a (dynamic) ticket
-
-## (support) Request help in case of incidents (flat tires, etc)
-
-## (support) Request help in case of accidents
-
-## (support) Report damage
-
-## (support) Retrieve the status of your support request
-
-## (payment) Get an overview of items to pay
-
-## (payment) Confirm payment
-
-## (payment) Request a deposit
-
-## (notification) Report status changes to user
-
-## (notification) Send alerts to user 
-Like:
-* it's almost time to get back  
-* you have parked at a location where it's not allowed
-
-## (discovery) Show the implemented end-points
-
-## (discovery) At each call, know the possible next steps
-
-## (after-sales) Request redresses
-Like (partial) refunds. Works with delivering options, claiming one of them and confirm/rollback them in a second step. This 2-phase is required in a multi-modal trip (same as the purchase procedure).
-
-## (after-sales) Request refund of a deposit
-
-## (after-sales) Cancel packages
-Only required to fix technical problems.
-
-## (information) Get an overview of entitlements
-
-## (information) Get an overview of card types
-
-## (information) Get an overview of license types
-
-## (information) Get an overview of user profiles
-
-## (information) Get an overview of a single fare
-To prevent publishing the complete fare tables. You can anomously search based on user profile, entitlements, card-types, products and start/end locations.
-
-# OMSA Specific use cases
-
-# FerryGateWay Specific use cases
-
-# BoB Specific use cases
-
-## Validate tickets
-Human: inspector
-Gate: machine
+See [bob.md](bob.md) for the complete list with endpoint references, uniqueness notes, and an explicit out-of-scope section.
 
 # Ticketing Specific use cases
 ## (payment) Entering a SEPA Direct Debit Mandate to complete the sale
