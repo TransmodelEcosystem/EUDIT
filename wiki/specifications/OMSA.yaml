@@ -1307,6 +1307,12 @@ components:
   schemas:
     # OGC
     subscriber:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OMSA-specific OGC asynchronous callback mechanism; no equivalent in Transmodel"
       type: object
       externalDocs:
         url: https://github.com/opengeospatial/ogcapi-processes/raw/refs/heads/master/openapi/schemas/processes-core/subscriber.yaml
@@ -1330,6 +1336,12 @@ components:
           format: uri
 
     defaultInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Generic base class for OMSA process inputs; no direct Transmodel equivalent"
       type: object
       discriminator:
         propertyName: type
@@ -1352,6 +1364,12 @@ components:
           $ref: "#/components/schemas/dateTime"
 
     landingPage:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API landing page; no equivalent in Transmodel"
       type: object
       required:
         - links
@@ -1372,6 +1390,12 @@ components:
             $ref: "#/components/schemas/link"
 
     confClasses:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API conformance classes declaration; no equivalent in Transmodel"
       type: object
       required:
         - conformsTo
@@ -1383,6 +1407,12 @@ components:
             example: "http://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core"
 
     collections:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API collection list; no direct Transmodel equivalent"
       type: object
       required:
         - links
@@ -1409,6 +1439,12 @@ components:
             $ref: '#/components/schemas/collectionInfo'
 
     collectionInfo:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API collection metadata descriptor; no direct Transmodel equivalent"
       type: object
       required:
         - id
@@ -1470,6 +1506,12 @@ components:
           type: number
     
     processList:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API process list; no direct Transmodel equivalent"
       type: object
       required:
         - processes
@@ -1485,6 +1527,12 @@ components:
             $ref: "#/components/schemas/link"
 
     processSummary:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API process summary; no direct Transmodel equivalent"
       allOf:
       - $ref: "#/components/schemas/descriptionType"
       - type: object
@@ -1510,6 +1558,12 @@ components:
               $ref: '#/components/schemas/link'
 
     process:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API process description; no direct Transmodel equivalent"
       allOf:
       - $ref: "#/components/schemas/processSummary"
       - type: object
@@ -1519,6 +1573,12 @@ components:
               $ref: "#/components/schemas/inputDescription"
 
     inputDescription:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC API process input description; no direct Transmodel equivalent"
       allOf:
       - $ref: "#/components/schemas/descriptionType"
       - type: object
@@ -1548,6 +1608,12 @@ components:
             default: ["byValue","byReference"]    
 
     descriptionType:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Generic OGC description type (title, description, keywords); no direct Transmodel equivalent"
       type: object
       properties:
         title:
@@ -1561,6 +1627,14 @@ components:
 
     # Inputs
     searchOfferInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL SPECIFICATION (Fares)"
+            - "FARE DEMAND FACTOR (Fares)"
+          definition: "A set of parameters giving details of an intended consumption of access rights by a TRANSPORT CUSTOMER (e.g., origin and destination of a travel,..."
+          conditions:
+            - "Partial match: contains the search parameters for requesting offers, comparable to TRAVEL SPECIFICATION and associated demand factors"
       allOf:
       - $ref: "#/components/schemas/defaultInput"
       - type: object
@@ -1596,6 +1670,13 @@ components:
               $ref: "#/components/schemas/travellingAsset"
 
     selectOffersInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE (Fares)"
+          definition: "A package to be sold as a whole, consisting of one or several FARE PRODUCTs materialised thanks to one or several TRAVEL DOCUMENTs."
+          conditions:
+            - "Partial match: selection of offers to be included in a package; comparable to choosing SALES OFFER PACKAGEs"
       allOf:
       - $ref: "#/components/schemas/defaultInput"
       - type: object
@@ -1612,6 +1693,13 @@ components:
             enum: [ select_offers ]
 
     packageInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CUSTOMER PURCHASE PACKAGE (Fares)"
+          definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
+          conditions:
+            - "Partial match: references an existing package via packageId; comparable to a reference to a CUSTOMER PURCHASE PACKAGE"
       allOf:
       - $ref: "#/components/schemas/defaultInput"
       - type: object
@@ -1626,6 +1714,13 @@ components:
             enum: [ package ]
 
     legInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "LEG (journeys)"
+          definition: "A part of a TRIP PATTERN corresponding to the movement of a user in a single vehicle, or a pedestrian mode such as walking."
+          conditions:
+            - "Partial match: input for operations on a specific leg element within a package"
       allOf:
       - $ref: "#/components/schemas/packageInput"
       - type: object
@@ -1649,6 +1744,13 @@ components:
          #     $ref: "#/components/schemas/link"
 
     refundInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "REFUNDING (Fares)"
+          definition: "Parameters indicating whether and how the FARE PRODUCT may be refunded."
+          conditions:
+            - "Partial match: input for a refund request; comparable to REFUNDING in Transmodel"
       allOf:
       - $ref: "#/components/schemas/legInput"
       - type: object
@@ -1667,6 +1769,13 @@ components:
             $ref: "#/components/schemas/ancillaryReference"
 
     refundOptionInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "REFUNDING (Fares)"
+          definition: "Parameters indicating whether and how the FARE PRODUCT may be refunded."
+          conditions:
+            - "Partial match: input for claiming or confirming a refund option"
       type: object
       required:
         - type
@@ -1678,6 +1787,13 @@ components:
           $ref: "#/components/schemas/uuid"
 
     travellerInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRANSPORT CUSTOMER (Customers)"
+          definition: "A specific person or organisation involved in a fare process."
+          conditions:
+            - "Partial match: adding/updating/removing a traveller in a package; comparable to management of a TRANSPORT CUSTOMER"
       type: object
       required:
         - type
@@ -1698,6 +1814,13 @@ components:
             - $ref: "#/components/schemas/travellingAsset"
 
     travelSpecificationInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL SPECIFICATION (Fares)"
+          definition: "A set of parameters giving details of an intended consumption of access rights by a TRANSPORT CUSTOMER (e.g., origin and destination of a travel,..."
+          conditions:
+            - "Exact match: input for modifying the travel specification within a package"
       allOf:
       - $ref: "#/components/schemas/packageInput"
       - $ref: "#/components/schemas/travelSpecification"
@@ -1713,6 +1836,14 @@ components:
             enum: [ change_times ]
 
     assetInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "VEHICLE (Vehicles)"
+            - "EQUIPMENT (Vehicles)"
+          definition: "A public transport vehicle used for carrying passengers."
+          conditions:
+            - "Partial match: input for assigning or replacing an asset on a leg"
       allOf:
       - $ref: "#/components/schemas/legInput"
       - type: object
@@ -1729,6 +1860,13 @@ components:
             $ref: "#/components/schemas/assetReference"
 
     ancillaryInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE ELEMENT (Fares)"
+          definition: "The assignment of a FARE PRODUCT to a TYPE OF TRAVEL DOCUMENT in order to define a SALES OFFER PACKAGE, realised as a fixed assignment (printing,..."
+          conditions:
+            - "Partial match: input for assigning or replacing an ancillary service on a leg; ANCILLARY is not a verbatim Transmodel concept — closest match is SALES OFFER PACKAGE ELEMENT"
       allOf:
       - $ref: "#/components/schemas/legInput"
       - type: object
@@ -1745,6 +1883,13 @@ components:
             $ref: "#/components/schemas/ancillaryReference"
 
     purchasePackageInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CUSTOMER PURCHASE PACKAGE (Fares)"
+          definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
+          conditions:
+            - "Partial match: input for directly purchasing a package; comparable to creating a CUSTOMER PURCHASE PACKAGE"
       allOf:
         - $ref: "#/components/schemas/searchOfferInput"
         - type: object
@@ -1756,6 +1901,14 @@ components:
               enum: [ purchase_package ]
 
     purchaseOffersInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CUSTOMER PURCHASE PACKAGE (Fares)"
+            - "SALES OFFER PACKAGE (Fares)"
+          definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
+          conditions:
+            - "Partial match: input for selecting and directly purchasing offers"
       allOf:
         - $ref: "#/components/schemas/selectOffersInput"
         - $ref: "#/components/schemas/purchasePackageInput"
@@ -1768,6 +1921,12 @@ components:
               enum: [ purchase_offers ]
 
     redressInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OMSA-specific: input for a disruption redress option; no direct Transmodel equivalent"
       allOf:
       - $ref: "#/components/schemas/packageInput"
       - type: object
@@ -1782,6 +1941,13 @@ components:
             $ref: "#/components/schemas/uuid"
 
     extendExpiryTimeInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL OFFER PACKAGE (Fares)"
+          definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
+          conditions:
+            - "Partial match: extending the validity period of an offer; comparable to validity time management of a TRAVEL OFFER PACKAGE"
       allOf:
       - $ref: "#/components/schemas/packageInput"
       - type: object
@@ -1802,6 +1968,13 @@ components:
 
     # GeoJSON specs, in contradiction to the convention starting with a capital. Reason: compatibility with GeoJSON specification (types are named this way)
     basePoint:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "POINT (Infrastructure)"
+          definition: "A 0-dimensional node of the network used for the spatial description of the network."
+          conditions:
+            - "Partial match: WGS84 coordinate pair; comparable to a geometric POINT in Transmodel"
       type: array
       minItems: 2
       maxItems: 2
@@ -1811,6 +1984,13 @@ components:
         minimum: 0.0
 
     geojsonPoint:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "POINT (Infrastructure)"
+          definition: "A 0-dimensional node of the network used for the spatial description of the network."
+          conditions:
+            - "Partial match: GeoJSON point geometry; comparable to a geometric POINT in Transmodel"
       type: object
       description: Geojson Coordinate
       required:
@@ -1820,6 +2000,13 @@ components:
           $ref: "#/components/schemas/basePoint"
 
     geojsonLine:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "LINK (Infrastructure)"
+          definition: "An oriented spatial object of dimension 1 with a view to the overall description of a network, describing a connection between two POINTs."
+          conditions:
+            - "Partial match: GeoJSON line geometry; comparable to a geometric LINK in Transmodel"
       type: object
       description: An array of WGS84 coordinate pairs
       required:
@@ -1831,6 +2018,13 @@ components:
             $ref: "#/components/schemas/basePoint"
 
     geojsonPolygon:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ZONE (Infrastructure)"
+          definition: "A two-dimensional location."
+          conditions:
+            - "Partial match: GeoJSON polygon geometry; comparable to a geometric ZONE in Transmodel"
       type: object
       description: geojson representation of a polygon. First and last point must be equal. See also https://geojson.org/geojson-spec.html#polygon and example https://geojson.org/geojson-spec.html#id4. The order should be lon, lat [[[lon1, lat1], [lon2,lat2], [lon3,lat3], [lon1,lat1]]], the first point should match the last point.
       required:
@@ -1844,6 +2038,13 @@ components:
               $ref: "#/components/schemas/basePoint"
 
     geojsonMultiPolygon:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ZONE (Infrastructure)"
+          definition: "A two-dimensional location."
+          conditions:
+            - "Partial match: GeoJSON multi-polygon geometry; comparable to a composite ZONE in Transmodel"
       type: object
       description: geojson representation of a multi polygon. See also https://geojson.org/geojson-spec.html#multipolygon
       required:
@@ -1859,6 +2060,13 @@ components:
                 $ref: "#/components/schemas/basePoint"
 
     geojsonFeature:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "PLACE (Infrastructure)"
+          definition: "A geographic place of any type which may be specified as the origin or destination of a trip."
+          conditions:
+            - "Partial match: GeoJSON feature (asset or seat with geometry); comparable to PLACE-related geometric entities in Transmodel"
       type: object
       required:
       - id
@@ -1886,6 +2094,12 @@ components:
             $ref: "#/components/schemas/link"
 
     geojson:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "GeoJSON FeatureCollection wrapper for geographic data; no direct equivalent, but used as a container for PLACE- and VEHICLE-related information"
       type: object
       properties:
         type:
@@ -1920,6 +2134,13 @@ components:
             $ref: "#/components/schemas/link"
 
     offerCollection:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE (Fares)"
+          definition: "A package to be sold as a whole, consisting of one or several FARE PRODUCTs materialised thanks to one or several TRAVEL DOCUMENTs."
+          conditions:
+            - "Partial match: collection of offers as the result of a search; comparable to a collection of SALES OFFER PACKAGEs"
       type: object
       required:
         - type
@@ -1946,6 +2167,14 @@ components:
     # Major Transmodel objects
     package:
       x-tm: TRAVEL OFFER PACKAGE, CUSTOMER PURCHASE PACKAGE
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL OFFER PACKAGE (Fares)"
+            - "CUSTOMER PURCHASE PACKAGE (Fares)"
+          definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
+          conditions:
+            - "Exact match: before purchase this is a TRAVEL OFFER PACKAGE; after confirmation it becomes a CUSTOMER PURCHASE PACKAGE"
       allOf:
       - $ref: "#/components/schemas/travelSpecification"
       - $ref: "#/components/schemas/placeDefinitions"
@@ -1990,6 +2219,13 @@ components:
     offer:
       type: object
       x-tm: SALES OFFER PACKAGE
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE (Fares)"
+          definition: "A package to be sold as a whole, consisting of one or several FARE PRODUCTs materialised thanks to one or several TRAVEL DOCUMENTs."
+          conditions:
+            - "Exact match: an offer that bundles one or more legs, products and ancillary services"
       properties:
         id:
           $ref: "#/components/schemas/shortString"
@@ -2029,6 +2265,13 @@ components:
 
     leg:
       x-tm: LEG
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "LEG (journeys)"
+          definition: "A part of a TRIP PATTERN corresponding to the movement of a user in a single vehicle, or a pedestrian mode such as walking."
+          conditions:
+            - "Exact match: a contiguous segment of a journey using a single mode of transport, from one location to another"
       allOf:
         - $ref: "#/components/schemas/travelSpecification"
         - type: object
@@ -2077,6 +2320,13 @@ components:
 
     product:
       x-tm: FARE PRODUCT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "FARE PRODUCT (Fares)"
+          definition: "An immaterial marketable element (access rights, discount rights, etc.), specific to a CHARGING MOMENT."
+          conditions:
+            - "Exact match: a saleable product with a fare and associated use rights"
       type: object
       properties:
         type:
@@ -2094,6 +2344,13 @@ components:
             $ref: "#/components/schemas/guarantee"
 
     tripPattern:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "JOURNEY PATTERN (journeys)"
+          definition: "An ordered list of SCHEDULED STOP POINTs and TIMING POINTs on a single ROUTE, describing the pattern of working for public transport vehicles."
+          conditions:
+            - "Partial match: sequence of service journeys, dates and places describing the desired travel pattern"
       type: array
       items:
         type: object
@@ -2108,6 +2365,13 @@ components:
             $ref: "#/components/schemas/placeReference"
 
     requestedTravelSpecification:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL SPECIFICATION (Fares)"
+          definition: "A set of parameters giving details of an intended consumption of access rights by a TRANSPORT CUSTOMER (e.g., origin and destination of a travel,..."
+          conditions:
+            - "Partial match: the desired travel parameters (from/to/via/times) as input for a search request"
       type: object
       properties:
         from:
@@ -2134,6 +2398,13 @@ components:
 
     travelSpecification:
       x-tm: TRAVEL SPECIFICATION
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL SPECIFICATION (Fares)"
+          definition: "A set of parameters giving details of an intended consumption of access rights by a TRANSPORT CUSTOMER (e.g., origin and destination of a travel,..."
+          conditions:
+            - "Exact match: the actual travel specification (from/to/via/times) in a package or leg"
       type: object
       properties:
         from:
@@ -2160,6 +2431,13 @@ components:
 
     travelDocument:
       x-tm: TRAVEL DOCUMENT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL DOCUMENT (Customers)"
+          definition: "A physical or electronic document entitling the holder to use or access a FARE PRODUCT or travel service."
+          conditions:
+            - "Exact match: a travel document (ticket, barcode, link) that entitles the holder to use a product"
       type: object
       discriminator:
         propertyName: travelDocumentType
@@ -2183,6 +2461,13 @@ components:
     typeOfTravelDocument:
       x-tm:
       - concept: TYPE OF TRAVEL DOCUMENT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TYPE OF TRAVEL DOCUMENT (Customers)"
+          definition: "A classification of TRAVEL DOCUMENTs expressing their general functionalities and local functional characteristics specific to the operator."
+          conditions:
+            - "Exact match: classification of the format/medium of a travel document (barcode, QR, NFC, etc.)"
       type: string
       description: how this type is implemented?<br>
       enum: [
@@ -2202,6 +2487,13 @@ components:
     mode:
       x-tm:
       - concept: MODE
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "MODE OF OPERATION (Network)"
+          definition: "Method of providing means of transport, this can be a CONVENTIONAL, ALTERNATIVE or a PERSONAL MODE OF OPERATION."
+          conditions:
+            - "Exact match: the transport modality of a leg or asset (bus, train, bicycle, etc.)"
       type: string
       description: These classes are taken from the NeTeX standard, but ALL and UNKNOWN are removed. On the other hand OTHER and PARKING are added.
       enum:
@@ -2234,6 +2526,13 @@ components:
 
     classOfUse:
       x-tm: CLASS OF USE
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CLASS OF USE (Fares)"
+          definition: "A classification of fare and other service classes by category of user entitled to use them."
+          conditions:
+            - "Exact match: classification of the service class (first class, second class, etc.)"
       type: string
       description: A classification of fare and other service classes by category of user entitled to use them.
       enum:
@@ -2251,6 +2550,14 @@ components:
         ]
 
     individualTraveller:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRANSPORT CUSTOMER (Customers)"
+            - "INDIVIDUAL TRAVELLER (Customers)"
+          definition: "A specific person or organisation involved in a fare process."
+          conditions:
+            - "Exact match: a specific individual traveller with personal characteristics (age, gender, name)"
       allOf:
       - $ref: "#/components/schemas/travelParty"
       - x-tm: INDIVIDUAL TRAVELLER
@@ -2285,6 +2592,13 @@ components:
 
     travelParty:
       x-tm: ACCESS RIGHT PARAMETER ASSIGNMENT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ACCESS RIGHT PARAMETER ASSIGNMENT (Fares)"
+          definition: "The assignment of a fare collection parameter (referring to geography, time, quality or usage) to an element of a fare system (access right,..."
+          conditions:
+            - "Partial match: a travelling entity (person or asset) with associated rights, profiles and requirements"
       type: object
       required:
         - type
@@ -2365,6 +2679,13 @@ components:
 
     postalAddress:
       x-tm: POSTAL ADDRESS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "POSTAL ADDRESS (Infrastructure)"
+          definition: "A postal address for a location with street, house number, city, postal code and country."
+          conditions:
+            - "Exact match: a postal address with street, house number, city, postal code and country"
       type: object
       description: address parts, where addressLine1 and 2 should contain the complete address, matches Content-Language
       additionalProperties: false
@@ -2411,6 +2732,13 @@ components:
 
     packageStatus:
       x-tm: CUSTOMER PURCHASE STATUS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CUSTOMER PURCHASE PACKAGE STATUS (Fares)"
+          definition: "A classification of possible status of a CUSTOMER ACCOUNT, e.g., active, suspended, archived, etc."
+          conditions:
+            - "Exact match: the lifecycle status of a package (offered, selected, confirmed, cancelled, etc.)"
       type: string
       description:
         The life-cycle state of the package (from NEW to ENDED)<br>
@@ -2439,6 +2767,12 @@ components:
         ]
 
     legState:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OMSA-specific: execution state of a leg (not started, active, paused, ended, etc.); related to TRIP in Transmodel but no direct match"
       type: string
       description: status of a leg<br>
         _NOT_STARTED_ the leg is not started, initial state<br>
@@ -2466,6 +2800,13 @@ components:
     # usages
     usage:
       x-tm: USAGE PARAMETER
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "USAGE PARAMETER (Fares)"
+          definition: "A parameter used to specify the use of a SALES OFFER PACKAGE or a FARE PRODUCT."
+          conditions:
+            - "Exact match: base type for usage parameters that define the conditions under which a product may be used"
       type: object
       discriminator:
         propertyName: type
@@ -2486,6 +2827,13 @@ components:
 
     # parameters
     travellingAsset:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "VEHICLE (Vehicles)"
+          definition: "A public transport vehicle used for carrying passengers."
+          conditions:
+            - "Partial match: a co-travelling vehicle or object (e.g. bicycle, car) as part of a travel party"
       allOf:
       - $ref: "#/components/schemas/travelParty"
       - type: object
@@ -2496,6 +2844,13 @@ components:
             $ref: "#/components/schemas/assetReference"
 
     userProfile:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "USER PROFILE (Fares)"
+          definition: "Eligibility requirements to be met by the social profile of a passenger, based on age group, residence, employment status, sex, mobility requirements..."
+          conditions:
+            - "Exact match: a category of travellers defined by age, group size and other demographic characteristics"
       allOf:
       - $ref: "#/components/schemas/travelParty"
       - x-tm: USER PROFILE
@@ -2529,6 +2884,13 @@ components:
             type: boolean
 
     companionProfile:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "USER PROFILE (Fares)"
+          definition: "Eligibility requirements to be met by the social profile of a passenger, based on age group, residence, employment status, sex, mobility requirements..."
+          conditions:
+            - "Partial match: profile of a co-travelling companion; subtype of USER PROFILE in the Transmodel context"
       allOf:
       - $ref: "#/components/schemas/usage"
       - type: object
@@ -2537,6 +2899,13 @@ components:
             $ref: "#/components/schemas/shortString"   
 
     commercialProfile:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "COMMERCIAL PROFILE (Fares)"
+          definition: "A category of users depending on their commercial relations with the operator (frequency of use, amount of purchase etc.), often used for allowing..."
+          conditions:
+            - "Exact match: a commercial profile that determines discounts or special fares based on contractual agreements"
       allOf:
       - $ref: "#/components/schemas/usage"
       - x-tm: COMMERCIAL PROFILE
@@ -2550,6 +2919,13 @@ components:
             $ref: "#/components/schemas/normalString"
 
     entitlementGiven:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ENTITLEMENT GIVEN (Fares)"
+          definition: "A parameter indicating whether a particular FARE PRODUCT provides an entitlement to buy or use an access right."
+          conditions:
+            - "Exact match: a granted entitlement that allows a traveller to use certain products"
       allOf:
       - $ref: "#/components/schemas/usage"
       - x-tm: ENTITLEMENT GIVEN
@@ -2566,6 +2942,13 @@ components:
     # parameters
     equipmentParameter:
       x-tm: EQUIPMENT VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "EQUIPMENT VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER related to service characteristics (e.g., class)."
+          conditions:
+            - "Exact match: validity parameter describing which equipment or facilities are required or available"
       type: object
       required:
       - type
@@ -2586,6 +2969,13 @@ components:
 
     temporalParameter:
       x-tm: TEMPORAL VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TEMPORAL VALIDITY PARAMETERS (Fares)"
+          definition: "Grouping of time-related parameters defining the validity of access rights."
+          conditions:
+            - "Exact match: time-bound validity parameter with start/end times, duration and day type"
       type: object
       required:
       - type
@@ -2604,6 +2994,13 @@ components:
 
     spotReservationParameter:
       x-tm: SEATING VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SEATING VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER related to seating characteristics (e.g., coach or passenger seat)."
+          conditions:
+            - "Exact match: reservation parameter for a specific spot (seat, vehicle spot, luggage spot) on a vehicle"
       type: object
       required:
       - type
@@ -2637,6 +3034,13 @@ components:
 
     networkParameter:
       x-tm: NETWORK VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "NETWORK VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER related to the network structure."
+          conditions:
+            - "Exact match: network-based validity parameter (location, line, zones)"
       type: object
       required:
       - type
@@ -2655,6 +3059,13 @@ components:
 
     routingParameter:
       x-tm: ROUTING VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ROUTING VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER linked to a specific routing."
+          conditions:
+            - "Exact match: routing parameter describing via which journey pattern the product is valid"
       type: object
       required:
       - journeyPattern
@@ -2670,6 +3081,13 @@ components:
 
     serviceParameter:
       x-tm: SERVICE VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SERVICE VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER related to service characteristics (e.g., class)."
+          conditions:
+            - "Exact match: service parameter describing on which service (product, asset, service journey, class) the product is valid"
       type: object
       required:
       - type
@@ -2700,6 +3118,13 @@ components:
 
     onboardStay:
       x-tm: ONBOARD STAY
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ONBOARD STAY (Fares)"
+          definition: "Permission to board early before the journey or stay on board after the journey."
+          conditions:
+            - "Exact match: permission to board early before the journey or to remain on board after the journey"
       type: object
       required:
         - type
@@ -2719,6 +3144,13 @@ components:
 
     accommodation:
       x-tm: ACCOMODATION
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ACCOMMODATION (Fares)"
+          definition: "A combination of accommodation characteristics available on a service, e.g. 'First Class Couchette with shower and 2 bunks'."
+          conditions:
+            - "Exact match: a combination of accommodation characteristics available on a service (e.g. first class sleeper with shower and 2 bunks)"
       type: object
       description: A combination of accommodation characteristics available on a service, e.g. "First Class Couchette with shower and 2 bunks".
       properties:
@@ -2744,6 +3176,13 @@ components:
 
     distributionParameter:
       x-tm: DISTRIBUTION VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "DISTRIBUTION VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER linked to fare product distribution."
+          conditions:
+            - "Exact match: distribution parameter describing via which channel and in which manner the product is sold"
       type: object
       required:
       - type
@@ -2758,6 +3197,13 @@ components:
 
     organisationalParameter:
       x-tm: ORGANISATIONAL VALIDITY PARAMETERS
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ORGANISATIONAL VALIDITY PARAMETERS (Fares)"
+          definition: "A type of VALIDITY PARAMETER related to organisational issues."
+          conditions:
+            - "Exact match: organisational parameter describing for which organisation the product is valid"
       required:
       - id
       - type
@@ -2779,6 +3225,13 @@ components:
       - cancellationFee: lacking
       - cancellationAllowed: cancellationAllowed
       - cancellationFeePercentage: lacking
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CANCELLING (Fares)"
+          definition: "A parameter giving conditions for cancelling of a booked access right."
+          conditions:
+            - "Partial match: cancellation conditions (allowed, fee, percentage); cancellationFee and cancellationFeePercentage are OMSA extensions not present in Transmodel"
       type: object
       description: conditions regarding cancellation of a purchased package
       required:
@@ -2804,6 +3257,14 @@ components:
       - concept: PURCHASE WINDOW
       - maximumPeriodBeforeDeparture: MaximumPeriodBeforeDeparture
       - requiredLicenseTypes: ENTITLEMENT REQUIRED
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "PURCHASE WINDOW (Fares)"
+            - "ENTITLEMENT REQUIRED (Fares)"
+          definition: "Period in which the FARE PRODUCT must be purchased."
+          conditions:
+            - "Partial match: purchase window (maximum period before departure) and required licence types"
       type: object
       description: specify required information to complete a purchase
       required:
@@ -2824,6 +3285,14 @@ components:
 
     card:
       x-tm: CUSTOMER PAYMENT MEANS, MEDIUM APPLICATION INSTANCE
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CUSTOMER PAYMENT MEANS (Customers)"
+            - "MEDIUM APPLICATION INSTANCE (Customers)"
+          definition: "A registered means with which a TRANSPORT CUSTOMER wishes to make payments for a CUSTOMER ACCOUNT, e.g., by nominated EMV CARD."
+          conditions:
+            - "Exact match: any card that is not a licence (discount card, payment card, ID card); CUSTOMER PAYMENT MEANS for payment cards, MEDIUM APPLICATION INSTANCE for travel cards"
       type: object
       description: Any kind of card that isn't a license, only provide the cards that are required
       required:
@@ -2850,6 +3319,14 @@ components:
           $ref: "#/components/schemas/country"
 
     cardType:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TYPE OF PAYMENT METHOD (Customers)"
+            - "MEDIUM ACCESS DEVICE (Customers)"
+          definition: "A classification for payment method (e.g., cash, credit card, debit card, travel card, contactless travel card, mobile phone, token, etc.)."
+          conditions:
+            - "Exact match: card type (discount, travel, bank, credit, ID, passport); TYPE OF PAYMENT METHOD for payment cards, MEDIUM ACCESS DEVICE for access media"
       allOf:
       - $ref: "#/components/schemas/usage"
       - x-tm: TYPE OF PAYMENT METHOD, MEDIUM ACCESS DEVICE
@@ -2888,6 +3365,13 @@ components:
 
     license:
       x-tm: ACCEPTED DRIVER PERMIT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ACCEPTED DRIVER PERMIT (Fares)"
+          definition: "Accepted TYPE OF DRIVER PERMIT for a given SIMPLE VEHICLE TYPE."
+          conditions:
+            - "Exact match: a driving licence or usage permit for a specific vehicle type"
       type: object
       description: driver or usage license for a specific user. Contains the number and the assetType you're allowed to operate (e.g. driver license for CAR)
       required:
@@ -2905,6 +3389,13 @@ components:
           $ref: "#/components/schemas/date"
 
     licenseType:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TYPE OF DRIVER PERMIT (Fares)"
+          definition: "A type of driving license (e.g. https://en.wikipedia.org/wiki/European_driving_licence)."
+          conditions:
+            - "Exact match: a category of driving licence for a certain class of vehicles (car, bicycle, etc.)"
       allOf:
       - $ref: "#/components/schemas/usage"
       - x-tm: TYPE OF DRIVER PERMIT
@@ -2926,6 +3417,12 @@ components:
             $ref: '#/components/schemas/customProperties'
 
     guarantee:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OMSA-specific: travel guarantee in the event of disruption (alternative journey, return, refund, etc.); related to disruption management but no direct Transmodel equivalent"
       type: object
       properties:
         id:
@@ -2957,6 +3454,13 @@ components:
       type: object
       x-tm:
       - concept: FARE PRICE
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "FARE PRICE (Fares)"
+          definition: "Price features for a PRICEABLE OBJECT."
+          conditions:
+            - "Exact match: an amount of money including currency and VAT percentage"
       description: an amount of money, usable in fares, fare calculations or in extra costs.
       required:
         - amount
@@ -2974,6 +3478,13 @@ components:
           $ref: "#/components/schemas/country"
 
     ancillaryCollection:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE ELEMENT (Fares)"
+          definition: "The assignment of a FARE PRODUCT to a TYPE OF TRAVEL DOCUMENT in order to define a SALES OFFER PACKAGE, realised as a fixed assignment (printing,..."
+          conditions:
+            - "Partial match: collection of ancillary services; container for ancillary objects; ANCILLARY is not a verbatim Transmodel concept — closest match is SALES OFFER PACKAGE ELEMENT"
       type: object
       required:
         - type
@@ -3007,6 +3518,13 @@ components:
             $ref: "#/components/schemas/link"
 
     refundOptionCollection:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "REFUNDING (Fares)"
+          definition: "Parameters indicating whether and how the FARE PRODUCT may be refunded."
+          conditions:
+            - "Partial match: collection of available refund options"
       type: object
       required:
         - type
@@ -3040,6 +3558,13 @@ components:
             $ref: "#/components/schemas/link"
 
     travelDocumentCollection:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL DOCUMENT (Customers)"
+          definition: "A physical or electronic document entitling the holder to use or access a FARE PRODUCT or travel service."
+          conditions:
+            - "Partial match: collection of travel documents belonging to a package"
       type: object
       required:
         - type
@@ -3077,6 +3602,13 @@ components:
             $ref: "#/components/schemas/link"
 
     ancillary:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE ELEMENT (Fares)"
+          definition: "The assignment of a FARE PRODUCT to a TYPE OF TRAVEL DOCUMENT in order to define a SALES OFFER PACKAGE, realised as a fixed assignment (printing,..."
+          conditions:
+            - "Partial match: an ancillary service (extra luggage, meal, bicycle storage, etc.) that can be added to a leg; ANCILLARY is not a verbatim Transmodel concept — closest match is SALES OFFER PACKAGE ELEMENT"
       allOf:
       - $ref: "#/components/schemas/ancillaryReference"
       - x-tm: ANCILLARY
@@ -3090,6 +3622,13 @@ components:
               $ref: "#/components/schemas/link"
 
     seat:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SEATING EQUIPMENT (Infrastructure)"
+          definition: "Specialisation of WAITING EQUIPMENT describing the properties of seating"
+          conditions:
+            - "Exact match: a specific seat on a vehicle with characteristics (row, number, facing direction, facilities)"
       type: object
       properties:
         type:
@@ -3128,6 +3667,16 @@ components:
 
     asset:
       x-tm: VEHICLE, PARKING BAY, CYCLE STORAGE EQUIPMENT, VEHICLE CHARGING EQUIPMENT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "VEHICLE (Vehicles)"
+            - "PARKING BAY (Infrastructure)"
+            - "CYCLE STORAGE EQUIPMENT (Infrastructure)"
+            - "VEHICLE CHARGING EQUIPMENT (Infrastructure)"
+          definition: "A public transport vehicle used for carrying passengers."
+          conditions:
+            - "Exact match: the physical vehicle or facility for executing a leg; depending on modality: VEHICLE for vehicles, PARKING BAY for parking spots, CYCLE STORAGE EQUIPMENT for bicycle storage; VEHICLE CHARGING EQUIPMENT is referenced in OMSA but not listed verbatim in the Transmodel glossary"
       description: the asset that can by applied to execute a leg.
       properties:
         type:
@@ -3157,6 +3706,13 @@ components:
             $ref: "#/components/schemas/equipmentReference"
 
     refundOption:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "REFUNDING (Fares)"
+          definition: "Parameters indicating whether and how the FARE PRODUCT may be refunded."
+          conditions:
+            - "Partial match: an available refund option with financial consequences"
       type: object
       properties:
         type:
@@ -3175,6 +3731,12 @@ components:
             $ref: "#/components/schemas/financialDetail"
 
     country:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "ISO 3166-1 two-letter country code; no direct Transmodel equivalent — supporting primitive type"
       type: string
       description: two-letter country codes according to ISO 3166-1
       maxLength: 2
@@ -3182,6 +3744,12 @@ components:
       pattern: "[A-Z]{2}"
 
     currencyCode:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "ISO 4217 currency code; used as an attribute of FARE PRICE — no standalone Transmodel equivalent"
       type: string
       description: ISO 4217 currency code
       minLength: 3
@@ -3189,6 +3757,12 @@ components:
       pattern: "[a-zA-Z]{3}"
 
     customProperties:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Free dictionary for bilateral extensions; no Transmodel equivalent"
       type: object
       description: dictionary for extra fields (bilatural agreements)
       additionalProperties:
@@ -3196,6 +3770,13 @@ components:
         maxProperties: 20
 
     placeDefinitions:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "PLACE (Infrastructure)"
+          definition: "A geographic place of any type which may be specified as the origin or destination of a trip."
+          conditions:
+            - "Partial match: inline place definitions (e.g. home address) not present in external data sources; comparable to PLACE in Transmodel"
       type: object
       properties:
         placeDefinitions:
@@ -3207,6 +3788,13 @@ components:
             $ref: "#/components/schemas/postalAddress"
 
     binaryTicket:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL DOCUMENT (Customers)"
+          definition: "A physical or electronic document entitling the holder to use or access a FARE PRODUCT or travel service."
+          conditions:
+            - "Partial match: binary travel document (barcode, QR code, Aztec code) as base64-encoded data; subtype of TRAVEL DOCUMENT"
       allOf:
       - $ref: "#/components/schemas/travelDocument"
       - x-tm: lacking
@@ -3231,6 +3819,13 @@ components:
     externalTicket:
       x-tm: 
       - concept: TRAVEL DOCUMENT
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRAVEL DOCUMENT (Customers)"
+          definition: "A physical or electronic document entitling the holder to use or access a FARE PRODUCT or travel service."
+          conditions:
+            - "Exact match: externally accessible travel document via link; subtype of TRAVEL DOCUMENT"
       allOf:
       - $ref: "#/components/schemas/travelDocument"
       - type: object
@@ -3241,6 +3836,13 @@ components:
             enum: [ digital_ticket ]
 
     financialDetail:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "FARE PRICE (Fares)"
+          definition: "Price features for a PRICEABLE OBJECT."
+          conditions:
+            - "Partial match: financial detail of a refund option with amount, category and expiry date"
       type: object
       properties:
         amount:
@@ -3259,6 +3861,13 @@ components:
           $ref: '#/components/schemas/customProperties'
 
     paymentCategory:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "FARE PRICE (Fares)"
+          definition: "Price features for a PRICEABLE OBJECT."
+          conditions:
+            - "Partial match: category of a financial transaction (deposit, damage, refund, rebate, etc.); extends FARE PRICE classification beyond what Transmodel defines"
       type: string
       description: >-
         The category of the journalled item <br> _ALL_ - for filtering purposes
@@ -3301,10 +3910,23 @@ components:
 
     # referenced data
     externalReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Generic external reference to an ID in an external data source; identifier type without a standalone Transmodel equivalent"
       allOf:
         - $ref: "#/components/schemas/normalString"
 
     organisationReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "ORGANISATION (Organisations)"
+          definition: "A legally incorporated body associated with any aspect of public transportation."
+          conditions:
+            - "Partial match: reference to a transport organisation (operator) with ID and name"
       type: object
       required:
       - organisationId
@@ -3315,6 +3937,13 @@ components:
           $ref: "#/components/schemas/normalString"
 
     placeReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "PLACE (Infrastructure)"
+          definition: "A geographic place of any type which may be specified as the origin or destination of a trip."
+          conditions:
+            - "Exact match: reference to a location via a prefix-based ID (GPS, NSR, P for custom address)"
       type: object
       required:
       - placeId
@@ -3333,14 +3962,35 @@ components:
           $ref: "#/components/schemas/normalString"
 
     customerReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRANSPORT CUSTOMER (Customers)"
+          definition: "A specific person or organisation involved in a fare process."
+          conditions:
+            - "Partial match: reference to a customer ID"
       allOf:
         - $ref: "#/components/schemas/normalString"
 
     travellerReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TRANSPORT CUSTOMER (Customers)"
+          definition: "A specific person or organisation involved in a fare process."
+          conditions:
+            - "Partial match: reference to a traveller ID; may also map to INDIVIDUAL TRAVELLER (Customers)"
       allOf:
         - $ref: "#/components/schemas/normalString"
 
     productReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "FARE PRODUCT (Fares)"
+          definition: "An immaterial marketable element (access rights, discount rights, etc.), specific to a CHARGING MOMENT."
+          conditions:
+            - "Partial match: reference to a product with ID and name"
       type: object
       required:
       - productId
@@ -3352,18 +4002,53 @@ components:
           $ref: "#/components/schemas/normalString"
 
     offerReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE (Fares)"
+          definition: "A package to be sold as a whole, consisting of one or several FARE PRODUCTs materialised thanks to one or several TRAVEL DOCUMENTs."
+          conditions:
+            - "Partial match: reference to an offer ID"
       $ref: "#/components/schemas/normalString"
 
     packageReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "CUSTOMER PURCHASE PACKAGE (Fares)"
+          definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
+          conditions:
+            - "Partial match: reference to a package ID"
       $ref: "#/components/schemas/normalString"
 
     legReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "LEG (journeys)"
+          definition: "A part of a TRIP PATTERN corresponding to the movement of a user in a single vehicle, or a pedestrian mode such as walking."
+          conditions:
+            - "Partial match: reference to a leg ID"
       $ref: "#/components/schemas/normalString"
 
     lineReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "LINE (Network)"
+          definition: "A group of ROUTEs which is generally known to the public by a similar name or number."
+          conditions:
+            - "Exact match: reference to a line ID"
       $ref: "#/components/schemas/normalString"
 
     zoneReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "TARIFF ZONE (Fares)"
+          definition: "A ZONE used to define a zonal fare structure in a zone-counting or zone-matrix system."
+          conditions:
+            - "Exact match: reference to a tariff zone with ID and name"
       type: object
       required:
       - zoneId
@@ -3374,6 +4059,13 @@ components:
           $ref: "#/components/schemas/normalString"
 
     assetReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "VEHICLE (Vehicles)"
+          definition: "A public transport vehicle used for carrying passengers."
+          conditions:
+            - "Partial match: reference to an asset (vehicle or facility) with ID and name"
       type: object
       required:
       - assetId
@@ -3384,6 +4076,13 @@ components:
           $ref: "#/components/schemas/normalString"
 
     ancillaryReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SALES OFFER PACKAGE ELEMENT (Fares)"
+          definition: "The assignment of a FARE PRODUCT to a TYPE OF TRAVEL DOCUMENT in order to define a SALES OFFER PACKAGE, realised as a fixed assignment (printing,..."
+          conditions:
+            - "Partial match: reference to an ancillary service with ID and name; ANCILLARY is not a verbatim Transmodel concept — closest match is SALES OFFER PACKAGE ELEMENT"
       type: object
       required:
       - ancillaryId
@@ -3394,6 +4093,13 @@ components:
           $ref: "#/components/schemas/normalString"
 
     equipmentReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "EQUIPMENT (Infrastructure)"
+          definition: "An item of equipment installed either in a fixed location (PLACE EQUIPMENT) or on-board vehicles (VEHICLE EQUIPMENT)."
+          conditions:
+            - "Partial match: reference to equipment or a facility with ID and name"
       type: object
       required:
       - equipmentId
@@ -3404,9 +4110,23 @@ components:
           $ref: "#/components/schemas/normalString"
 
     serviceJourneyReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "SERVICE JOURNEY (journeys)"
+          definition: "A passenger carrying VEHICLE JOURNEY for one specified DAY TYPE."
+          conditions:
+            - "Exact match: reference to a specific service journey"
       $ref: "#/components/schemas/normalString"
 
     userNeedReference:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "USER NEED (Accessibility)"
+          definition: "A user's need for a particular SUITABILITY."
+          conditions:
+            - "Partial match: reference to an accessibility need of a traveller"
       type: object
       required:
       - id
@@ -3418,6 +4138,12 @@ components:
 
     # base types
     error:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "RFC 7807 problem detail object; no Transmodel equivalent"
       type: object
       additionalProperties: false
       description: JSON schema for exceptions based on RFC 7807
@@ -3459,6 +4185,12 @@ components:
             $ref: '#/components/schemas/link'
 
     link:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "OGC/IANA hypermedia link for navigation and actions; no direct Transmodel equivalent"
       type: object
       additionalProperties: false
       x-externalDocs:
@@ -3507,6 +4239,12 @@ components:
           $ref: "#/components/schemas/temporalParameter"
 
     date:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "RFC 3339 date primitive; supporting type"
       type: string
       format: full-date
       x-pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}$
@@ -3514,6 +4252,12 @@ components:
         https://www.rfc-editor.org/rfc/rfc3339#section-5.6, full-date
         (2019-10-12)
     dateTime:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "RFC 3339 date-time primitive; supporting type"
       type: string
       format: date-time
       x-pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$
@@ -3522,6 +4266,13 @@ components:
         (2019-10-12T07:20:50.52Z)
     day:
       x-tm: DAY OF WEEK
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "DAY OF WEEK (Timetables)"
+          definition: "A particular weekday (from Monday to Sunday)."
+          conditions:
+            - "Exact match: day of the week as an enum (MON–SUN)"
       type: string
       enum:
         - MON
@@ -3532,11 +4283,23 @@ components:
         - SAT
         - SUN
     float:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Decimal number primitive; supporting type"
       type: number
       description: the travelled distance. Only if applicable.
       format: float
       minimum: 0
     httpDate:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "HTTP date format string; supporting type"
       type: string
       description: A HTTP date string
       x-format: http-date
@@ -3544,49 +4307,109 @@ components:
         url: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
         description: http-date
     longInt:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Large integer primitive (>1000); supporting type"
       type: integer
       description: long number, for distances etc. (>1.000)
       default: 0
       minimum: 0
     longString:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Long text string primitive (0–10000 characters); supporting type"
       type: string
       description: long string, memos etc (length 0-10.000)
       maxLength: 10000
     normalInt:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Standard integer primitive (0–1000); supporting type"
       type: integer
       description: default length for an integer (0-1000)
       default: 0
       minimum: 0
       maximum: 1000
     normalString:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Standard string primitive (0–200 characters); supporting type"
       type: string
       description: default string, full names etc (length 0-200)
       maxLength: 200
     shortInt:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Small integer primitive (0–100); supporting type"
       type: integer
       description: a bit short integer (0-100)
       default: 0
       minimum: 0
       maximum: 100
     shortString:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Short string primitive (0–75 characters); supporting type"
       type: string
       description: short string, display names (length 0-75)
       maxLength: 75
     tinyInt:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Tiny integer primitive (0–10); supporting type"
       type: integer
       description: for really small numbers (0-10)
       default: 0
       minimum: 0
       maximum: 10
     tinyString:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "Tiny string / code primitive (0–10 characters); supporting type"
       type: string
       description: real short string, codes (length 0-10)
       maxLength: 10
     url:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "URI string primitive; supporting type"
       type: string
       description: valid URL
       format: uri
     uuid:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "No direct Transmodel equivalent"
+          conditions:
+            - "UUID version 4 identifier primitive; supporting type"
       type: string
       x-preferred-pattern: >-
         ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$

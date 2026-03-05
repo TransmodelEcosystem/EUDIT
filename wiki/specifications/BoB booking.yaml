@@ -148,6 +148,15 @@ paths:
           description: booking id not found
 definitions:
   bookingCall:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER RESERVATION CREATION ENTRY (SE Customer Reservation Log Entry MODEL)"
+          - "SALES TRANSACTION (ST Sales Transaction MODEL)"
+        definition: "A CUSTOMER RESERVATION CREATION ENTRY recording the reservation of an access right. A sale of a SALES OFFER PACKAGE."
+        conditions:
+          - "Partial match to CUSTOMER RESERVATION CREATION ENTRY: bookingCall initiates a reservation but precedes confirmation; it corresponds to the inputs that produce a CUSTOMER RESERVATION CREATION ENTRY."
+          - "Partial match to SALES TRANSACTION when the call immediately results in a purchase (confirmed booking). The signed MTB manifest and idempotency requestId are BoB-specific protocol concerns not modelled in Transmodel."
     type: object
     required:
       - manifest
@@ -157,12 +166,36 @@ definitions:
         type: string
         format: base64url
         description: Signed manifest with MTB template
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRAVEL DOCUMENT.IdentityToken (ST Sales Transaction MODEL)"
+            definition: "Secure token used to identify customer, May be anonymised."
+            conditions:
+              - "Partial match: the signed MTB (Mobile Ticket Binary) manifest is a base64url-encoded secure token encoding entitlements, analogous to TRAVEL DOCUMENT.IdentityToken in Transmodel."
+              - "The cryptographic signing container and base64url encoding format are BoB-specific and have no structural equivalent in Transmodel."
       travellerId:
         description: Traveller identifier from Traveller API
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRANSPORT CUSTOMER.Id (ST Fare Contract MODEL)"
+              - "CUSTOMER ACCOUNT.Id (ST Fare Contract MODEL)"
+            definition: "Identifier of a TRANSPORT CUSTOMER. / Identifier of a CUSTOMER ACCOUNT."
+            conditions:
+              - "Exact match to TRANSPORT CUSTOMER.Id when travellerId identifies a registered person in the fare system."
+              - "Partial match to CUSTOMER ACCOUNT.Id when travellerId is the account-level identifier rather than the person-level identifier."
       travellerPhone:
         description: Phone number (E.164)
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRANSPORT CUSTOMER.TelephoneNumber (ST Fare Contract MODEL)"
+            definition: "Telephone number of a TRANSPORT CUSTOMER."
+            conditions:
+              - "Exact match to TRANSPORT CUSTOMER.TelephoneNumber: the E.164-formatted phone number is the direct Transmodel attribute for a customer's telephone contact."
       requestId:
         description: |
           Request identifier allocated by manifest requestor.
@@ -170,7 +203,24 @@ definitions:
           Even though the scope of this property is (pid,entity_id), it is
           RECOMMENDED that it is generated as globally unique using UUIDv4.
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No Transmodel attribute models an API-level idempotency key for deduplication of retransmissions."
+            conditions:
+              - "No direct equivalent: requestId is a protocol-layer idempotency key ensuring safe retry of the booking call. Transmodel does not model API transport concerns."
+              - "The closest business-level analogue is CUSTOMER RESERVATION CREATION ENTRY.Id or SALES TRANSACTION.Id, but those carry post-creation identifiers, not pre-creation deduplication tokens."
   booking:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (ST Customer Purchase Package MODEL)"
+          - "CUSTOMER RESERVATION CREATION ENTRY (SE Customer Reservation Log Entry MODEL)"
+        definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised as one or several TRAVEL DOCUMENTs."
+        conditions:
+          - "Exact match to CUSTOMER PURCHASE PACKAGE for a confirmed booking: represents a completed purchase giving access rights."
+          - "Partial match to CUSTOMER RESERVATION CREATION ENTRY when status is 'pending': a reservation entry exists but the purchase is not yet finalised."
     type: object
     required:
       - bookingId
@@ -179,14 +229,37 @@ definitions:
       bookingId:
         description: Machine readable booking identifier
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE.Id (ST Customer Purchase Package MODEL)"
+            definition: "Identifier of a CUSTOMER PURCHASE PACKAGE."
+            conditions:
+              - "Exact match: bookingId is the unique identifier of the booking, directly corresponding to CUSTOMER PURCHASE PACKAGE.Id in Transmodel."
       confirmBefore:
         description: Booking must be confirmed before date/time, as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
         type: string
         format: date-time
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "PASSENGER SPOT ALLOCATION.ExpiryTime (ST Seat Allocation MODEL)"
+            definition: "Expiry time for provisional reservation unless confirmed."
+            conditions:
+              - "Exact match to PASSENGER SPOT ALLOCATION.ExpiryTime: the confirmBefore timestamp is the expiry deadline for a provisional (pending) reservation unless confirmed."
       confirmedWhen:
         description: Booking was confirmed at date/time, as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
         type: string
         format: date-time
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SALES TRANSACTION.StartOfValidity (ST Sales Transaction MODEL)"
+              - "PASSENGER SPOT ALLOCATION.LastUpdated (ST Seat Allocation MODEL)"
+            definition: "StartOfValidity: Start time of validity of product. LastUpdated: Timestamp for when log last updated."
+            conditions:
+              - "Partial match to SALES TRANSACTION.StartOfValidity: the confirmation timestamp marks when the purchase took effect, analogous to the start-of-validity recorded on a SALES TRANSACTION."
+              - "Partial match to PASSENGER SPOT ALLOCATION.LastUpdated when the confirmation corresponds to a status change on the spot allocation record."
       status:
         description: Status of the booking
         type: string
@@ -196,24 +269,85 @@ definitions:
           - cancelled
           - miss
           - completed
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE → CUSTOMER PURCHASE STATUS (ST Customer Purchase Package MODEL)"
+            definition: "A classification of possible statuses of CUSTOMER PURCHASE PACKAGE, e.g., booked, paid for, consumed."
+            conditions:
+              - "Exact match: the status field corresponds to the CUSTOMER PURCHASE STATUS association on CUSTOMER PURCHASE PACKAGE."
+              - "'pending' maps to 'booked' (reservation made, not yet paid/confirmed)."
+              - "'confirmed' maps to 'paid for' or 'activated' in Transmodel CUSTOMER PURCHASE STATUS."
+              - "'cancelled' maps to the cancelled state, triggering a CUSTOMER RESERVATION CANCELLATION ENTRY."
+              - "'miss' (no-show) has no direct Transmodel CUSTOMER PURCHASE STATUS value; closest is a void/expired state."
+              - "'completed' maps to 'consumed' in Transmodel CUSTOMER PURCHASE STATUS."
       rides:
         description: ordered list of rides
         type: array
         items:
           $ref: '#/definitions/ride'
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE → CUSTOMER PURCHASE PACKAGE ELEMENT (ST Customer Purchase Package MODEL)"
+              - "CUSTOMER RESERVATION CREATION ENTRY → TRIP (SE Customer Reservation Log Entry MODEL)"
+            definition: "A purchase of a SALES OFFER PACKAGE ELEMENT by a TRANSPORT CUSTOMER, with an indication of all selected parameters."
+            conditions:
+              - "Partial match to CUSTOMER PURCHASE PACKAGE → CUSTOMER PURCHASE PACKAGE ELEMENT: each ride is one element of the overall purchase, corresponding to one CUSTOMER PURCHASE PACKAGE ELEMENT."
+              - "Partial match to CUSTOMER RESERVATION CREATION ENTRY.reserve to (TRIP): the ordered list of rides maps to the LEGs of the TRIP associated with the reservation."
       travellerId:
         description: Traveller identifier from Traveller API
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRANSPORT CUSTOMER.Id (ST Fare Contract MODEL)"
+              - "CUSTOMER ACCOUNT.Id (ST Fare Contract MODEL)"
+            definition: "Identifier of a TRANSPORT CUSTOMER. / Identifier of a CUSTOMER ACCOUNT."
+            conditions:
+              - "Exact match to TRANSPORT CUSTOMER.Id when travellerId identifies a registered individual."
+              - "Partial match to CUSTOMER ACCOUNT.Id when the identifier is account-scoped rather than person-scoped."
       travellerPhone:
         description: Phone number (E.164)
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRANSPORT CUSTOMER.TelephoneNumber (ST Fare Contract MODEL)"
+            definition: "Telephone number of a TRANSPORT CUSTOMER."
+            conditions:
+              - "Exact match to TRANSPORT CUSTOMER.TelephoneNumber: the E.164-formatted phone number directly corresponds to this Transmodel attribute."
       confirmationCode:
         description: Human readable confirmation code
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SERVICE ACCESS CODE.AccessCode (AM Vehicle Access Credentials MODEL)"
+            definition: "Value for SERVICE ACCESS CODE."
+            conditions:
+              - "Exact match to SERVICE ACCESS CODE.AccessCode: the human-readable confirmation code is a textual access code for service validation, directly equivalent to this Transmodel attribute."
       travellerInformation:
         description: Human readble information pertaining to the journey
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "BOOKING ARRANGEMENT.BookingNote (RC Booking Arrangements MODEL)"
+            definition: "Additional comments about booking process."
+            conditions:
+              - "Partial match to BOOKING ARRANGEMENT.BookingNote: free-text human-readable journey or booking notes correspond to this Transmodel attribute for additional booking comments."
+              - "No single Transmodel attribute precisely covers arbitrary free-text passenger-facing journey information; Transmodel typically structures such information in SITUATION MESSAGE or PASSENGER INFORMATION EQUIPMENT."
   statusChangeRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER RESERVATION CANCELLATION ENTRY (SE Customer Reservation Log Entry MODEL)"
+          - "SALES TRANSACTION (ST Sales Transaction MODEL)"
+        definition: "A CUSTOMER RESERVATION ENTRY recording the cancellation of a reservation. A sale of a SALES OFFER PACKAGE."
+        conditions:
+          - "Exact match to CUSTOMER RESERVATION CANCELLATION ENTRY when status is 'cancelled': the request records the cancellation of an existing reservation."
+          - "Partial match to SALES TRANSACTION when status is 'confirmed': the request triggers the finalisation of the purchase, analogous to recording a SALES TRANSACTION."
     type: object
     required:
       - mtb
@@ -225,11 +359,37 @@ definitions:
         enum:
           - confirmed
           - cancelled
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE → CUSTOMER PURCHASE STATUS (ST Customer Purchase Package MODEL)"
+            definition: "A classification of possible statuses of CUSTOMER PURCHASE PACKAGE, e.g., booked, paid for, consumed."
+            conditions:
+              - "Exact match: the requested status transition maps directly to Transmodel CUSTOMER PURCHASE STATUS values."
+              - "'confirmed' corresponds to the 'paid for' or 'activated' CUSTOMER PURCHASE STATUS value."
+              - "'cancelled' corresponds to the cancelled state, producing a CUSTOMER RESERVATION CANCELLATION ENTRY in Transmodel."
       mtb:
         description: Signed MTB container (to provide proof of purchase for confirmation)
         type: string
         format: base64url
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRAVEL DOCUMENT.IdentityToken (ST Sales Transaction MODEL)"
+              - "MEDIUM ACCESS DEVICE.IdentityToken (SD Medium Application MODEL)"
+            definition: "Secure token used to identify customer, May be anonymised. / Secure token used to identify MEDIUM ACCESS DEVICE."
+            conditions:
+              - "Partial match to TRAVEL DOCUMENT.IdentityToken: the signed MTB container is the machine-readable proof-of-purchase token, functionally equivalent to the secure identity token of a TRAVEL DOCUMENT."
+              - "Partial match to MEDIUM ACCESS DEVICE.IdentityToken when the MTB is hosted on a mobile device acting as the access medium."
+              - "The cryptographic signing and base64url encoding are BoB-specific implementation details not modelled in Transmodel."
   cancellation:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER RESERVATION CANCELLATION ENTRY (SE Customer Reservation Log Entry MODEL)"
+        definition: "A CUSTOMER RESERVATION ENTRY recording the cancellation of a reservation."
+        conditions:
+          - "Exact match to CUSTOMER RESERVATION CANCELLATION ENTRY: the cancellation object records the event of a reservation being cancelled by a TRANSPORT CUSTOMER."
     type: object
     required:
       - cancellationId
@@ -237,7 +397,24 @@ definitions:
       cancellationId:
         description: Machine readable cancellation identifier (complex)
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER RESERVATION CANCELLATION ENTRY.Id (SE Customer Reservation Log Entry MODEL)"
+            definition: "Identifier of CUSTOMER RESERVATION CANCELLATION ENTRY."
+            conditions:
+              - "Exact match to CUSTOMER RESERVATION CANCELLATION ENTRY.Id: the cancellationId is the unique identifier of the cancellation record, directly corresponding to this Transmodel attribute."
   ride:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER RESERVATION CREATION ENTRY (SE Customer Reservation Log Entry MODEL)"
+          - "PASSENGER SPOT ALLOCATION (ST Seat Allocation MODEL)"
+        definition: "A CUSTOMER RESERVATION CREATION ENTRY recording the reservation of an access right. Current ALLOCATION of a LOCATABLE SPOT such as a passenger seat or on-board vehicle space to a customer between two STOP POINTs."
+        conditions:
+          - "Exact match to CUSTOMER RESERVATION CREATION ENTRY: a ride is one reserved segment on a vehicle journey, which is precisely what a CUSTOMER RESERVATION CREATION ENTRY records."
+          - "Partial match to PASSENGER SPOT ALLOCATION: when a specific seat or space is allocated, the ride corresponds to this allocation between two SCHEDULED STOP POINTs."
+          - "The ride's serviceJourneyReference links to SERVICE JOURNEY / DATED VEHICLE JOURNEY as its vehicle journey context."
     type: object
     required:
       - boardingPlace
@@ -248,33 +425,129 @@ definitions:
     properties:
       boardingPlace:
         $ref: '#/definitions/place'
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "PASSENGER SPOT ALLOCATION → SCHEDULED STOP POINT (starting at) (ST Seat Allocation MODEL)"
+              - "SCHEDULED STOP POINT (TP Service Pattern MODEL)"
+            definition: "A POINT where passengers can board or alight from vehicles. ForBoarding: Default for whether stop may be used for boarding."
+            conditions:
+              - "Exact match to PASSENGER SPOT ALLOCATION.starting at: the boardingPlace is the SCHEDULED STOP POINT at which the passenger boards, exactly as modelled by this association."
+              - "Exact match to SCHEDULED STOP POINT when the boardingPlace is identified by a stop network reference."
       alightingPlace:
         $ref: '#/definitions/place'
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "PASSENGER SPOT ALLOCATION → SCHEDULED STOP POINT (ending at) (ST Seat Allocation MODEL)"
+              - "SCHEDULED STOP POINT (TP Service Pattern MODEL)"
+            definition: "A POINT where passengers can board or alight from vehicles. ForAlighting: Default for whether stop may be used for alighting."
+            conditions:
+              - "Exact match to PASSENGER SPOT ALLOCATION.ending at: the alightingPlace is the SCHEDULED STOP POINT at which the passenger alights, exactly as modelled by this association."
+              - "Exact match to SCHEDULED STOP POINT when the alightingPlace is identified by a stop network reference."
       serviceJourneyReference:
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SERVICE JOURNEY.Id (TI Service Journey MODEL)"
+              - "DATED VEHICLE JOURNEY.Id (DJ Dated Journey MODEL)"
+            definition: "Identifier of SERVICE JOURNEY — a passenger carrying VEHICLE JOURNEY for one specified DAY TYPE. / Identifier of DATED VEHICLE JOURNEY on a particular OPERATING DAY."
+            conditions:
+              - "Exact match to SERVICE JOURNEY.Id: the serviceJourneyReference identifies the specific passenger-carrying vehicle journey the ride is booked on."
+              - "Partial match to DATED VEHICLE JOURNEY.Id when the reference incorporates an operating day, as implied by the presence of departureDateTime."
       departureDateTime:
         type: string
         format: date-time
         description: As ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TIMETABLED PASSING TIME.DepartureTime (JT Passing Times MODEL)"
+            definition: "Departure time at POINT IN JOURNEY PATTERN."
+            conditions:
+              - "Exact match to TIMETABLED PASSING TIME.DepartureTime: the departureDateTime specifies the scheduled departure time at the boarding stop point in the journey pattern."
       arrivalDateTime:
         type: string
         format: date-time
         description: As ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TIMETABLED PASSING TIME.ArrivalTime (JT Passing Times MODEL)"
+            definition: "Arrival time at POINT IN JOURNEY PATTERN."
+            conditions:
+              - "Exact match to TIMETABLED PASSING TIME.ArrivalTime: the arrivalDateTime specifies the scheduled arrival time at the alighting stop point in the journey pattern."
       productRequested:
         type: boolean
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE ELEMENT → SALES OFFER PACKAGE ELEMENT (ST Customer Purchase Package MODEL)"
+            definition: "A purchase of a SALES OFFER PACKAGE ELEMENT by a TRANSPORT CUSTOMER, with an indication of all selected parameters."
+            conditions:
+              - "Partial match: productRequested flags whether a supplementary FARE PRODUCT (e.g., seat reservation) was requested for this ride leg, corresponding to the presence of a CUSTOMER PURCHASE PACKAGE ELEMENT referencing an additional SALES OFFER PACKAGE ELEMENT."
+              - "Transmodel models the actual product selection as a structured association, not a boolean flag."
       earlierArrivalAcceptable:
         type: boolean
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "FLEXIBLE SERVICE PROPERTIES.ChangeOfTimePossible (TI Flexible Service MODEL)"
+            definition: "Whether time of service may be moved (usually a passing time update to optimise the service if there are earlier or later possibilities)."
+            conditions:
+              - "Partial match to FLEXIBLE SERVICE PROPERTIES.ChangeOfTimePossible: this flag expresses passenger acceptance of an adjusted (earlier) arrival time, analogous to the operator-side time-change flexibility property."
+              - "No direct single boolean attribute exists in Transmodel for passenger-declared arrival flexibility; it would typically be expressed through BOOKING ARRANGEMENT or USAGE PARAMETER constraints."
       laterDepartureAcceptable:
         type: boolean
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "FLEXIBLE SERVICE PROPERTIES.ChangeOfTimePossible (TI Flexible Service MODEL)"
+            definition: "Whether time of service may be moved (usually a passing time update to optimise the service if there are earlier or later possibilities)."
+            conditions:
+              - "Partial match to FLEXIBLE SERVICE PROPERTIES.ChangeOfTimePossible: this flag expresses passenger acceptance of a later departure, analogous to the time-flexibility property on the service."
+              - "No direct single boolean attribute exists in Transmodel for passenger-declared departure flexibility; it would typically be modelled via BOOKING ARRANGEMENT or USAGE PARAMETER."
   place:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SCHEDULED STOP POINT (TP Service Pattern MODEL)"
+          - "PLACE (CG Generic Place MODEL)"
+        definition: "A POINT where passengers can board or alight from vehicles. / A geographic place of any type which may be specified as the origin or destination of a trip."
+        conditions:
+          - "Exact match to SCHEDULED STOP POINT when identified by stopId: the BoB place with a stop reference is a SCHEDULED STOP POINT."
+          - "Partial match to PLACE (general concept) when described solely by geographic coordinates without a stop identifier."
     type: object
     properties:
       stopId:
         type: string
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SCHEDULED STOP POINT.Id (TP Service Pattern MODEL)"
+            definition: "Identifier of a SCHEDULED STOP POINT."
+            conditions:
+              - "Exact match to SCHEDULED STOP POINT.Id: the stopId is the network identifier of the stop, directly corresponding to SCHEDULED STOP POINT.Id in Transmodel."
       coordinate:
         $ref: '#/definitions/geoPosition'
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "POINT → LOCATION (CG Generic Point & Link MODEL)"
+            definition: "A 0-dimensional node of the network used for the spatial description of the network. POINTs may be located by a LOCATION in a given LOCATING SYSTEM."
+            conditions:
+              - "Exact match to POINT.locating → LOCATION: the coordinate provides the geographic WGS84 position of the place, corresponding to the LOCATION associated with a POINT subtype in Transmodel."
   geoPosition:
     description: Geopos (WGS84 decimal)
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "LOCATION (CG Generic Location MODEL)"
+        definition: "The position of a POINT with reference to a given LOCATING SYSTEM (e.g., coordinates)."
+        conditions:
+          - "Exact match to LOCATION: a geographic coordinate in WGS84 decimal degrees directly corresponds to a Transmodel LOCATION (Latitude, Longitude, Altitude)."
+          - "In Transmodel, LOCATION is an attribute-group of POINT subtypes; in BoB it is a first-class reusable object, which is a structural but not semantic difference."
     type: object
     required:
      - lat
@@ -283,9 +556,30 @@ definitions:
       lat:
         type: number
         format: double
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION.Latitude (CG Generic Location MODEL)"
+            definition: "Latitude of LOCATION."
+            conditions:
+              - "Exact match to LOCATION.Latitude: the lat field is the WGS84 decimal latitude component, directly corresponding to this Transmodel attribute."
       long:
         type: number
         format: double
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION.Longitude (CG Generic Location MODEL)"
+            definition: "Longitude of LOCATION."
+            conditions:
+              - "Exact match to LOCATION.Longitude: the long field is the WGS84 decimal longitude component, directly corresponding to this Transmodel attribute."
       alt:
         type: number
         format: double
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION.Altitude (CG Generic Location MODEL)"
+            definition: "Altitude of LOCATION."
+            conditions:
+              - "Exact match to LOCATION.Altitude: the alt field is the WGS84 altitude component, directly corresponding to this optional Transmodel attribute."
