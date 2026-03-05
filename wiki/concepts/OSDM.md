@@ -1,0 +1,162 @@
+Copyright UIC (see OSDM.io)
+
+- **AbstractBookingPart** :  commmon data of a booking in the API.
+- **AbstractOfferPart** : common data of an offer in the API.
+- **AbstractPassenger** : reused generic passenger data
+- **AbstractTravelAccount** : common data of a travel account 
+- **AccommodationSubType** : codes for specifities in reservations
+- **AccommodationType** : high level type of accomodation in reservations
+- **AccountingRef** : reference to accounting transactions for bookings
+- **ActualPassengerType** : passenger type applied in an offer or boking
+- **Address** : address
+- **Admission** : a booking part representing a contrcat of travel
+- **AdmissionOfferPart** : an offered booking part representing a contrcat of travel
+- **AfterSaleCondition** : after sales condition description for customers 
+- **AfterSaleConditionTypes** : classification of after sales conditions
+- **AfterSalesOverrideDetails** : Indication of an overwrite of after sales conditions 
+- **Alight** : arrivale (from OJP) 
+- **Ancillary** : add on product not represebting a travel contract, e.g. meals, merch, ...
+- **AncillaryGroup** : group of ancillaries to choose from 
+- **AncillaryOfferPart** : ancillary offered
+- **AncillaryRelation** : relations and rstrictions between ancillaries and reservations or admissions 
+- **AncillarySubType** : Detailed types of anxillaries
+- **AncillaryTypes** : High level types of ancillaries
+- **AnonymousPassengerSpecification** : passenger data subset to be used to request offers
+- **ApiNextVersion**: indication of upcoming API versions 
+- **ApiVersion** : available API versions 
+- **AppliedFee** : fees applied
+- **AppliedReductions** : reductions applied 
+- **AvailablePlace** : available place (seat,..) in a grapgical seat map for reservation. 
+_ **AvailablePlacePreferences** : available types or places (seats, berths,..) for reservation. 
+- **BankAccountReference** : bank account reference used in compensation or reemboursement. 
+- **Board** : boarding of a service (from OJP) 
+- **BoardingPositionAssignment**  : boarding of a service (from OJP) 
+- **BoardSpecification**  : boarding of a service (from OJP)  
+- **BookedOffer** : a booked offer of a provider. The booked offer can include multiple booked offer parts and is subject to change via after saes 
+- **BookedOfferSummary** : summary description of s booked offer 
+- **Booking** : A booking of multiple booked offer. The booking might include different trips and bookings.
+- **BookingAccess** : indication who can have access to the booking
+- **BookingArrangement** : Information as part ofg a trip on options for booking in case th booking is not possible via the API (e.g. booking on board only) from OJP
+- **BookingChangeType** : type of after sales transaction applied to a booking part
+- **BookingEvent** : event on a booking, compalint or reemboursement (e.g. cancellation, train delay, ...)  | 
+- **BookingPartSummary** : summary of a booking part
+- **BookingSearchParameters** : parameters to search a booking
+- **CancelFulfillmentsOffer** : an after sales offer to cancella fulfillment (ticket) 
+- **Car** : car data in car carriage on trains
+- **CardReference**: reference to a card (reduction card, custiomer card, ..) 
+- **CardTypeReference** : reference to a card type (reduction card type, ..)  
+- **CarrierConstraint** : usage restriction of a list of carriers 
+- **ClaimedJourneyDetails** : Journey details in a claim. 
+- **CoachAvailability** : availability of a coach in graphical reservation.
+- **CoachDeckLayout** : Schematic layout descriptions used in graphical reservation. 
+- **CombinationTag** : Tag governing offers from different providers with restrictions on combinability. 
+- **CompanyDetail** : details on a company 
+- **CompartmentAvailability** : availability for compartments in graphical reservation 
+- **CompartmentPreSelection** : providers pre-selection of compartments in graphical reservation 
+- **Complaint**  : A complaint due to service degradation or delay
+- **ComplaintDecision** : The decision on a complaint 
+- **Condition** : Generic description on conditions 
+- **ConfirmedRefund** : a refund confirmed by the customer 
+- **ConfirmedRelease** : a release confirmed by the curstomer. The release incalidates the remaining tickets and fixes the after sales tome without initiating the financial refund. 
+- **ContactDetail** : details on a contact (person or company) 
+- **ContinuousLeg** : transport leg using continuous modes  (from OJP)
+- **ContinuousService** :  continuous mode transport service (from OJP)  
+- **ContinuousServiceAvailabilityScope** : search parameter for available continuous mode services 
+- **ContinuousServiceBookingPart** : booking part of a continuous service
+- **ContinuousServiceOfferPart** : oofer part for a continuos service
+- **ContinuousServicePickUpPlace** : place to pich up a continuous service 
+- **ContinuousServiceProcessIndication** : indication of continuous mode usgae
+- **ContinuousServiceUsage** : usage of a continuous service
+- **ContinuousServiceVehicleAvailability** : aailability of continuous service vehicles 
+- **ContinuousServiceVehicleSelection** : selection of a continuous mode vehicle 
+- **CorporateCode** : indication of bilateral corporate offers 
+- **CurrencyConversion** : details on applied currency conversion 
+- **CustomerComplaint** : customer complaint 
+- **DatedJourney** : journey according to a schedul (from OJP) 
+- **DirectionChange** : indication on a change of direction of travel in graphical reservation 
+- **Document** : generic document provided (tickets, receipts,  
+- **Event** : Event send from the API provider to the API consumer 
+- **EventDetail** : detailed event description icluding a summary and a reference to the resource 
+- **ExchangeBreakdownItem** : details ion the parts included in an exchange 
+- **ExchangeOffer** : an offer for an exchange 
+- **ExchangeOfferRequest** : rewquest for an exchange offer to change passengers, roue/trains or taiffs 
+- **ExchangeOperation** : an omgoing exchange process on an echange offer
+- **ExchangeParts** : parts of an exchange
+- **ExchangePassengersOfferRequestSpecification** : specification of the passengers to be exchanged 
+- **ExchangeServiceOfferRequestSpecification** : specification of the service to be exchanged
+- **ExchangeTripOfferRequestSpecification** : sepcification of the trips to be exchanged 
+- **FacilityEnum** : facilities available on ta service (from OJP)
+- **FareAfterSalesRules** : after sales rules on non product fares 
+- **FareBookingPart** booking part on a non product fare 
+- **FareCombinationModel** : combination rules on non-product fares 
+- **FareConnectionPoint** : conncetion points between non-product fares
+- **FareOfferPart** : offer part for a non-product fare 
+- **FareReferenceStation** : set of stations regarded as equivalent in a fare 
+- **Fee** : a fee
+- **Fulfillment** : document for the traveller to be used during his trvel.Created after booking cionfirmation.
+- **FulfillmentConstraint** : restriction on allowed fulfillments on a non-product fare 
+- **FulfillmentDocument** : individual document in a fulfillment 
+- **FulfillmentItemSecurityFeature** : additional security items to be included in fulfillments used with non-product fares 
+- **FulfillmentOption** :  options for fulfillment available on the retailer side  
+- **FulfillmentUsage** : options to request individual fulfillment items from a generic fulfillment (e.g. to get single tickets from a carnet) 
+- **GraphicElement** : graphical element in a graphical reservation layout
+- **IdentificationCard** : details of an identification cared (passport, idCard, ..) 
+- **Intermediate** : intermediate stop in a trip leg (from OJP) 
+- **LegTrack** : track on alight or board (from OJP) 
+- **Line** : line number of a service (from OJP) 
+- **LuggageConstraint** : luggage restrictions foir a non-product fare 
+- **MotorCycle** : motor cycle in car carriage on trains
+- **MultiRideAccount** : travel account for multiple journeys showing the used and still available units
+- **NamedTravelAccountUnit** : travel account unit different from currencies (mile, points, ...)
+- **NonTripSearchCriteria** : search criteria for offers not based on a trip (passes, cards, ..) 
+- **Offer** : a any kind of offer provided to the customer. Consists of offer parts and might be based on a trip or on non-trip search criteria. 
+- **OfferSelection** : selection of offers to start the booking process
+- **OfferSummary** : summary of an offer 
+- **OnHoldOffer** : offer to extend the time limit until confirmation of an offer. 
+- **OverruleCode** : indication to override business rules (in case of thechnical oir staff errors, delays, ..)
+- **ParallelService** : services running in kombination but with different service numbers (from OJP) 
+- **Passenger** : passenger
+- **PassengerConstraints** : passengers constarints in a non-product fare to be added in the controlm bar code 
+- **PathGuidance** : guidance alon a path for warking or driving (from OJP) 
+- **PaymentMethod** : payment method indication and details on used and remaining vouchers 
+- **Place** :location (from OJP) 
+- **PlaceMasterData** : place master data provided in teh API  
+- **Polygon** : polygon used in zone descriptions 
+- **PostalAddress** : postal adress 
+- **Price** : price including VAT details 
+- **Problem** : generic problem data structure 
+- **Product** : generic description of a product on sale 
+- **ProductTag** : Product tag to search the provider catalog via the API (used for non-trip product search)
+- **ProductTagGroup** : grouping of product tags for selection by the user 
+- **PromotionCode** - code to access promotion offers 
+- **Purchaser** : purchaser of a  booking
+- **ReductionCardAccount** : individual reduction card
+- **ReductionCardType**: type of a reduction card
+- **ReductionGranted** : reduction granted in an offer or booking 
+- **RefundOffer** : offer on a refund 
+- **RefundSpecification** : specification of the parts to be refunded in a partial refund 
+- **RegionalConstraint** : regional constraint including the description of the route of a non-product fare
+- **RegionalValidity** : the description of the route of a non-product fare
+- **RegionalValiditySummary** : summary of the route of a non-product fare  
+- **RegulatoryConditionstring** : indication of the regilatory conditions applying to the booking part
+- **Reimbursement** : refund after the date of travel in cae it can not be made automatically (e.g in case confirming documentation is required) 
+- **ReleaseOffer** : offer ro replease a part of a booking. This fixes the refund date ands invalidates the tickets but does not include the financial treansaction. 
+- **RequestedInformationstring** : metadata on the personal data items to be provided before the booking confirmation
+- **Reservation** : booking part representing the reservation of seats, berths, ... 
+- **ReservationOfferPart** : booking part representing the offer for reservation of seats, berths, ... 
+- **Route**: route description as a part of the regional validity 
+- **SelectedPlace** : selected place for a reservation
+- **SelectionFee** : Fee to be applied on a place selection in graphical reservation 
+- **ServiceFormation** : formation of a service following OJP 
+- **Situation** : traffic situation (from OJP)
+- **TimedLeg** : journey leg according to a schedule (from OJP) 
+- **Tip** : a tip given to a driver 
+- **TrainLink** : a restriction of a nopn-product fare toi use a dedicated service only 
+- **TransferLeg** : transfer beteen services in a trip (from OJP) 
+- **Transportable** : non-human "passengers" taht need tickets and / or reservations e.g. bicycles, dogs, prams,.. 
+- **TravelAccountType** : types of travel accounts
+- **TravelAccountUsage** : usage of a travel account - used amout or units on a trip
+- **Trip** : journey (from OJP) 
+- **VoucherInformation** : voucher issuer and id
+- **Zone** : definition of a zone used in the regional validity 
+- **ZoneSpecification** :  definition of a zone provided as master datain the API

@@ -1,0 +1,48 @@
+## 6.5.2.1 Search for non-trip offers suitable for a media
+
+The use case covers the search for offers not based on a trip but limited to media compatibility.  
+
+### Summary
+
+Request the API provider for offers based on the customer's media and parameters.
+
+### Steps
+- read the media (contactless card) and extract the data (each contract ID, the media ID, technology, ...)
+- OPTINAL : ask the customer for additional information (reload or new contract, need for new media, etc ..)
+- ask the provider for offers that are suitable for the media (new contracts or reloadings that can be supported by the media) using : 
+    - validity of fare products,
+    - capabilities of the media (space left on the card, ...)
+    - customer profile (anonymous, with a commercial profile, with social rights, ets..)
+    - OPTIONAL : capabilities of the vending machine to manage the purchase and fulfilment
+- display the offers for selection.
+
+### Description
+
+Request the API provider for offers based on customer's media and search parameters.
+
+...... 
+
+The provider returns the list of offers for the parameters. 
+
+Pagination is required.
+
+The subsequent steps in the booking process are not specific to non-trip offers. 
+
+
+### Use case add-ons
+
+Fulfillment can be done later, with the first validation.
+
+
+### Non-functional requirements
+
+Avoid to propose fare products and contracts to the customer that cannot be used (travel, validation) with the media he already has.
+
+Reduce the search time for the agent or the customer : read the media and display the suitable offers. 
+
+
+
+### Known implementations
+
+Sales API for Conduent customers (private)
+
