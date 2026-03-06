@@ -1975,6 +1975,12 @@ components:
           definition: "A 0-dimensional node of the network used for the spatial description of the network."
           conditions:
             - "Partial match: WGS84 coordinate pair; comparable to a geometric POINT in Transmodel"
+        ERA:
+          concepts:
+            - "NetPointReference"
+          definition: "Represents a point reference in the network. Used for infrastructure elements positioned as a point (e.g. signals, ETCS balises, buffer stops)."
+          conditions:
+            - "Partial match: a WGS84 coordinate pair is the primitive basis of ERA's NetPointReference."
       type: array
       minItems: 2
       maxItems: 2
@@ -1991,6 +1997,12 @@ components:
           definition: "A 0-dimensional node of the network used for the spatial description of the network."
           conditions:
             - "Partial match: GeoJSON point geometry; comparable to a geometric POINT in Transmodel"
+        ERA:
+          concepts:
+            - "NetPointReference"
+          definition: "Represents a point reference in the network. Used for infrastructure elements positioned as a point (e.g. signals, ETCS balises, buffer stops)."
+          conditions:
+            - "Partial match: a GeoJSON point geometry maps to ERA's NetPointReference (point location in the topology)."
       type: object
       description: Geojson Coordinate
       required:
@@ -2007,6 +2019,12 @@ components:
           definition: "An oriented spatial object of dimension 1 with a view to the overall description of a network, describing a connection between two POINTs."
           conditions:
             - "Partial match: GeoJSON line geometry; comparable to a geometric LINK in Transmodel"
+        ERA:
+          concepts:
+            - "LinearElement"
+          definition: "Pieces of tracks composing the topology. Represents an edge in the topological graph."
+          conditions:
+            - "Partial match: a GeoJSON line (directed edge between two points) maps to ERA's LinearElement."
       type: object
       description: An array of WGS84 coordinate pairs
       required:
@@ -2025,6 +2043,12 @@ components:
           definition: "A two-dimensional location."
           conditions:
             - "Partial match: GeoJSON polygon geometry; comparable to a geometric ZONE in Transmodel"
+        ERA:
+          concepts:
+            - "NetAreaReference"
+          definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+          conditions:
+            - "Partial match: a GeoJSON polygon area maps to ERA's NetAreaReference."
       type: object
       description: geojson representation of a polygon. First and last point must be equal. See also https://geojson.org/geojson-spec.html#polygon and example https://geojson.org/geojson-spec.html#id4. The order should be lon, lat [[[lon1, lat1], [lon2,lat2], [lon3,lat3], [lon1,lat1]]], the first point should match the last point.
       required:
@@ -2045,6 +2069,12 @@ components:
           definition: "A two-dimensional location."
           conditions:
             - "Partial match: GeoJSON multi-polygon geometry; comparable to a composite ZONE in Transmodel"
+        ERA:
+          concepts:
+            - "NetAreaReference"
+          definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+          conditions:
+            - "Partial match: a GeoJSON multi-polygon maps to ERA's NetAreaReference."
       type: object
       description: geojson representation of a multi polygon. See also https://geojson.org/geojson-spec.html#multipolygon
       required:
@@ -2067,6 +2097,12 @@ components:
           definition: "A geographic place of any type which may be specified as the origin or destination of a trip."
           conditions:
             - "Partial match: GeoJSON feature (asset or seat with geometry); comparable to PLACE-related geometric entities in Transmodel"
+        ERA:
+          concepts:
+            - "PrimaryLocation"
+          definition: "A place used by an Infrastructure Manager to define a path for a train in TAF/TAP TSI framework/messages. A rail point where trains start, end, stop, run through, or change line."
+          conditions:
+            - "Partial match: a named GeoJSON feature used as trip origin/destination maps to ERA's PrimaryLocation."
       type: object
       required:
       - id
@@ -2272,6 +2308,12 @@ components:
           definition: "A part of a TRIP PATTERN corresponding to the movement of a user in a single vehicle, or a pedestrian mode such as walking."
           conditions:
             - "Exact match: a contiguous segment of a journey using a single mode of transport, from one location to another"
+        ERA:
+          concepts:
+            - "SectionOfLine"
+          definition: "The part of a line between adjacent operational points; may consist of several tracks."
+          conditions:
+            - "Partial match: a single-mode travel segment between two places maps to ERA's SectionOfLine."
       allOf:
         - $ref: "#/components/schemas/travelSpecification"
         - type: object
@@ -2351,6 +2393,12 @@ components:
           definition: "An ordered list of SCHEDULED STOP POINTs and TIMING POINTs on a single ROUTE, describing the pattern of working for public transport vehicles."
           conditions:
             - "Partial match: sequence of service journeys, dates and places describing the desired travel pattern"
+        ERA:
+          concepts:
+            - "SectionOfLine"
+          definition: "The part of a line between adjacent operational points; may consist of several tracks."
+          conditions:
+            - "Partial match: an ordered sequence of service journeys defines a path through ERA SectionOfLines."
       type: array
       items:
         type: object
@@ -2834,6 +2882,12 @@ components:
           definition: "A public transport vehicle used for carrying passengers."
           conditions:
             - "Partial match: a co-travelling vehicle or object (e.g. bicycle, car) as part of a travel party"
+        ERA:
+          concepts:
+            - "Vehicle"
+          definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+          conditions:
+            - "Partial match: a co-travelling vehicle or object maps to ERA's Vehicle class."
       allOf:
       - $ref: "#/components/schemas/travelParty"
       - type: object
@@ -3066,6 +3120,12 @@ components:
           definition: "A type of VALIDITY PARAMETER linked to a specific routing."
           conditions:
             - "Exact match: routing parameter describing via which journey pattern the product is valid"
+        ERA:
+          concepts:
+            - "SectionOfLine"
+          definition: "The part of a line between adjacent operational points; may consist of several tracks."
+          conditions:
+            - "Partial match: routing validity along a journey pattern links to ERA's SectionOfLine."
       type: object
       required:
       - journeyPattern
@@ -3677,6 +3737,12 @@ components:
           definition: "A public transport vehicle used for carrying passengers."
           conditions:
             - "Exact match: the physical vehicle or facility for executing a leg; depending on modality: VEHICLE for vehicles, PARKING BAY for parking spots, CYCLE STORAGE EQUIPMENT for bicycle storage; VEHICLE CHARGING EQUIPMENT is referenced in OMSA but not listed verbatim in the Transmodel glossary"
+        ERA:
+          concepts:
+            - "Vehicle"
+          definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+          conditions:
+            - "Exact match: a physical mobility asset (vehicle) directly maps to ERA's Vehicle class."
       description: the asset that can by applied to execute a leg.
       properties:
         type:
@@ -3927,6 +3993,12 @@ components:
           definition: "A legally incorporated body associated with any aspect of public transportation."
           conditions:
             - "Partial match: reference to a transport organisation (operator) with ID and name"
+        ERA:
+          concepts:
+            - "Body"
+          definition: "An organisation or a physical person."
+          conditions:
+            - "Partial match: a transport organisation corresponds to ERA's Body."
       type: object
       required:
       - organisationId
@@ -3944,6 +4016,12 @@ components:
           definition: "A geographic place of any type which may be specified as the origin or destination of a trip."
           conditions:
             - "Exact match: reference to a location via a prefix-based ID (GPS, NSR, P for custom address)"
+        ERA:
+          concepts:
+            - "PrimaryLocation"
+          definition: "A place used by an Infrastructure Manager to define a path for a train in TAF/TAP TSI framework/messages. A rail point where trains start, end, stop, run through, or change line."
+          conditions:
+            - "Partial match: a reference to a named place (trip origin/destination) maps to ERA's PrimaryLocation."
       type: object
       required:
       - placeId
@@ -4039,6 +4117,12 @@ components:
           definition: "A group of ROUTEs which is generally known to the public by a similar name or number."
           conditions:
             - "Exact match: reference to a line ID"
+        ERA:
+          concepts:
+            - "SectionOfLine"
+          definition: "The part of a line between adjacent operational points; may consist of several tracks."
+          conditions:
+            - "Partial match: a reference to a network line maps to ERA's SectionOfLine concept."
       $ref: "#/components/schemas/normalString"
 
     zoneReference:
@@ -4066,6 +4150,12 @@ components:
           definition: "A public transport vehicle used for carrying passengers."
           conditions:
             - "Partial match: reference to an asset (vehicle or facility) with ID and name"
+        ERA:
+          concepts:
+            - "Vehicle"
+          definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+          conditions:
+            - "Partial match: a reference to a physical vehicle/asset maps to ERA's Vehicle class."
       type: object
       required:
       - assetId

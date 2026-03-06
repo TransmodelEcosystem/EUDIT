@@ -1139,6 +1139,12 @@ definitions:
         definition: "A geographical circle defined by a center coordinate (WGS84) and a radius in meters, used to express spatial validity or filter areas."
         conditions:
           - "Partial match. circle corresponds to a circular ZONE or TOPOGRAPHIC PLACE boundary in Transmodel (Transport Network or Common Geometry). Transmodel uses abstract ZONE definitions; the geometric circle representation is an implementation detail."
+      ERA:
+        concepts:
+          - "NetAreaReference"
+        definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+        conditions:
+          - "Partial match: circular spatial validity zone maps to ERA's NetAreaReference."
     description: Geographical circle
     type: object
     required:
@@ -1161,6 +1167,12 @@ definitions:
         definition: "A geographical polygon defined as an ordered list of WGS84 coordinates, used to express spatial validity or filter areas."
         conditions:
           - "Partial match. polygon corresponds to a polygonal ZONE or TOPOGRAPHIC PLACE boundary geometry in Transmodel (Transport Network or Common Geometry MODEL)."
+      ERA:
+        concepts:
+          - "NetAreaReference"
+        definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+        conditions:
+          - "Partial match: polygonal spatial validity zone maps to ERA's NetAreaReference."
     description: Geographical polygon
     type: array
     items:
@@ -1173,6 +1185,12 @@ definitions:
         definition: "A geographical polygonal path (line) defined as an ordered list of WGS84 coordinates, used to express route-based spatial validity."
         conditions:
           - "Partial match. polyline corresponds to a path geometry in Transmodel; ROUTE LINK or SERVICE PATTERN (Transport Network MODEL) carry similar sequential coordinate sequences."
+      ERA:
+        concepts:
+          - "SectionOfLine"
+        definition: "The part of a line between adjacent operational points; may consist of several tracks."
+        conditions:
+          - "Partial match: route path geometry maps to ERA's SectionOfLine."
     description: Geographical polygonal path (line)
     type: array
     items:
@@ -1444,6 +1462,13 @@ definitions:
         definition: "An ordered list of stops, zone groups, or coordinates defining a route for spatial validity or product filtering."
         conditions:
           - "Partial match. route aligns with ROUTING VALIDITY or SERVICE PATTERN in Transmodel (Transport Network MODEL). Stop identifiers align with SCHEDULED STOP POINT; zone groupIds align with TARIFF ZONE."
+      ERA:
+        concepts:
+          - "SectionOfLine"
+          - "OperationalPoint"
+        definition: "The part of a line between adjacent operational points; may consist of several tracks. / Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided."
+        conditions:
+          - "Partial match: an ordered stop sequence defines a path through ERA SectionOfLines; each stopId is an ERA OperationalPoint."
     description: ordered list of stopIds, groupIds or coordinates to define a route
     type: array
     items:
@@ -1500,6 +1525,12 @@ definitions:
         definition: "A geographical area expressed as a union of circles, polygons, and/or polylines, used to define spatial validity."
         conditions:
           - "Partial match. area aligns with TOPOGRAPHIC PLACE boundary or FARE ZONE geometry in Transmodel (Transport Network MODEL). The union of geometric shapes has no direct Transmodel counterpart."
+      ERA:
+        concepts:
+          - "NetAreaReference"
+        definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+        conditions:
+          - "Partial match: union of geometric areas maps to ERA's NetAreaReference."
     type: object
     description: Geographical areas (union)
     properties:

@@ -650,6 +650,12 @@ definitions:
             definition: "A passenger carrying VEHICLE JOURNEY for one specified DAY TYPE."
             conditions:
               - "Partial match to SERVICE JOURNEY: the service object identifies the service/trip/block where the event occurred, by participant identifier, service identifier, trip identifier, and block identifier. This corresponds to identifying the SERVICE JOURNEY in Transmodel."
+          ERA:
+            concepts:
+              - "Vehicle"
+            definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+            conditions:
+              - "Partial match: the service journey is operated by an ERA Vehicle."
         type: object
         required:
           - pid
@@ -681,6 +687,12 @@ definitions:
             definition: "A place comprising one or more locations where vehicles may stop."
             conditions:
               - "Partial match to STOP PLACE: the stopArea object identifies the stop area (current and next) where the inspection/validation event occurred, analogous to a STOP PLACE in Transmodel."
+          ERA:
+            concepts:
+              - "OperationalPoint"
+            definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
+            conditions:
+              - "Partial match: the stop area where inspection occurs corresponds to ERA's OperationalPoint."
         type: object
         required:
           - pid

@@ -1069,6 +1069,12 @@ definitions:
         definition: "A registry record for a BoB participant, including its identifier, name, domain, cryptographic public keys, service endpoints, issuer constraints, and free-form info."
         conditions:
           - "Partial match. participantMetadata broadly corresponds to an ORGANISATION (or OPERATOR / AUTHORITY) registry entry in Transmodel AM. The pid/organisationName/domainName fields align with organisation identity attributes. mtbPublicKeys, authtokenPublicKeys, interfaceEndpoints, and issuerSignatureConstraints are BoB-specific PKI and network fields with no Transmodel counterpart."
+      ERA:
+        concepts:
+          - "Body"
+        definition: "An organisation or a physical person."
+        conditions:
+          - "Partial match: a BoB participant registry entry corresponds to ERA's Body (a legally incorporated organisation)."
     type: object
     required:
       - pid
@@ -1157,5 +1163,11 @@ definitions:
         definition: "Free-form participant profile data, defined by an external JSON schema, carrying supplementary information about the BoB participant."
         conditions:
           - "Partial match. Broadly aligns with extended ORGANISATION attributes in Transmodel AM, but the content is governed by an external schema (bob-schema-participant-info) and is not directly modelled in Transmodel."
+      ERA:
+        concepts:
+          - "Body"
+        definition: "An organisation or a physical person."
+        conditions:
+          - "Partial match: supplementary participant profile data maps to ERA's Body concept."
     description: Holds participant info. Specified in https://bitbucket.org/samtrafiken/bob-schema-participant-info/src/master/participant-info.json
     type: object

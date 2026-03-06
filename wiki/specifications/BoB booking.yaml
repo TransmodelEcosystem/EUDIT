@@ -434,6 +434,12 @@ definitions:
             conditions:
               - "Exact match to PASSENGER SPOT ALLOCATION.starting at: the boardingPlace is the SCHEDULED STOP POINT at which the passenger boards, exactly as modelled by this association."
               - "Exact match to SCHEDULED STOP POINT when the boardingPlace is identified by a stop network reference."
+          ERA:
+            concepts:
+              - "OperationalPoint"
+            definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
+            conditions:
+              - "Exact match: the boarding place stop reference is an ERA OperationalPoint."
       alightingPlace:
         $ref: '#/definitions/place'
         x-semantics:
@@ -445,6 +451,12 @@ definitions:
             conditions:
               - "Exact match to PASSENGER SPOT ALLOCATION.ending at: the alightingPlace is the SCHEDULED STOP POINT at which the passenger alights, exactly as modelled by this association."
               - "Exact match to SCHEDULED STOP POINT when the alightingPlace is identified by a stop network reference."
+          ERA:
+            concepts:
+              - "OperationalPoint"
+            definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
+            conditions:
+              - "Exact match: the alighting place stop reference is an ERA OperationalPoint."
       serviceJourneyReference:
         type: string
         x-semantics:
@@ -518,6 +530,12 @@ definitions:
         conditions:
           - "Exact match to SCHEDULED STOP POINT when identified by stopId: the BoB place with a stop reference is a SCHEDULED STOP POINT."
           - "Partial match to PLACE (general concept) when described solely by geographic coordinates without a stop identifier."
+      ERA:
+        concepts:
+          - "OperationalPoint"
+        definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
+        conditions:
+          - "Exact match: a BoB place identified by stopId corresponds to an ERA OperationalPoint."
     type: object
     properties:
       stopId:

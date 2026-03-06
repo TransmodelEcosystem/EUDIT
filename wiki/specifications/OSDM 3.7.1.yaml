@@ -16278,6 +16278,12 @@ components:
           definition: A classification for the general orientation of ROUTEs.
           conditions:
           - 'Partial match: schema maps to Transmodel class DIRECTION'
+        ERA:
+          concepts:
+          - OperationalPoint
+          definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
+          conditions:
+          - 'Partial match: a turn station is a specific OperationalPoint where a train reverses direction.'
     DistributionMode:
       description: "booking parts in product mode are provided as complete products\
         \ where the tickets and \nconditions are prepared by the OSDM provider. Booking\
@@ -21423,6 +21429,12 @@ components:
             a similar name or number.
           conditions:
           - 'Exact match: schema maps to Transmodel class LINE'
+        ERA:
+          concepts:
+          - SectionOfLine
+          definition: The part of a line between adjacent operational points; may consist of several tracks.
+          conditions:
+          - 'Partial match: a LINE in OSDM is composed of sections of line between operational points in ERA''s model.'
     LineNumber:
       type: string
       description: 'Especially on regional traffic, a vehicle is defined by a line
@@ -31269,6 +31281,12 @@ components:
             NOTE: A ROUTE may pass through the same POINT more than'
           conditions:
           - 'Exact match: schema maps to Transmodel class ROUTE'
+        ERA:
+          concepts:
+          - SectionOfLine
+          definition: The part of a line between adjacent operational points; may consist of several tracks.
+          conditions:
+          - 'Partial match: a ROUTE is an ordered path through the network, partially matching ERA''s SectionOfLine concept.'
     RouteItem:
       type: object
       additionalProperties: false
@@ -31359,6 +31377,12 @@ components:
             NOTE: A ROUTE may pass through the same POINT more than'
           conditions:
           - 'Partial match: schema maps to Transmodel class ROUTE'
+        ERA:
+          concepts:
+          - OperationalPoint
+          definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
+          conditions:
+          - 'Partial match: each RouteItem is a stop along a route, corresponding to an ERA OperationalPoint.'
     Section:
       type: object
       additionalProperties: false
@@ -31429,6 +31453,12 @@ components:
           definition: An ordered sequence of POINTs or LINKs.
           conditions:
           - 'Exact match: schema maps to Transmodel class SECTION'
+        ERA:
+          concepts:
+          - SectionOfLine
+          definition: The part of a line between adjacent operational points; may consist of several tracks.
+          conditions:
+          - 'Exact match: a SECTION between two trip points directly corresponds to ERA''s SectionOfLine.'
     SecurityElementFormat:
       type: string
       enum:
@@ -32424,6 +32454,12 @@ components:
             NOTE: A STOP '
           conditions:
           - 'Exact match: schema maps to Transmodel class STOP PLACE'
+        ERA:
+          concepts:
+          - OperationalPoint
+          definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
+          conditions:
+          - 'Partial match: a STOP PLACE is a named railway location where passengers board/alight, corresponding to ERA''s OperationalPoint.'
     StopPlaceRef:
       description: 'Reference to a Stop Place using URNs to define code.
 
@@ -32452,6 +32488,12 @@ components:
             NOTE: A STOP '
           conditions:
           - 'Partial match: schema maps to Transmodel class STOP PLACE'
+        ERA:
+          concepts:
+          - OperationalPoint
+          definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
+          conditions:
+          - 'Partial match: a reference to a STOP PLACE resolves to an ERA OperationalPoint.'
     SupportingDocument:
       type: object
       additionalProperties: false
@@ -33123,6 +33165,12 @@ components:
             that cannot be split during operational use.
           conditions:
           - 'Partial match: schema maps to Transmodel class TRAIN'
+        ERA:
+          concepts:
+          - Vehicle
+          definition: A specific vehicle or wagon able and allowed to operate over railway infrastructure.
+          conditions:
+          - 'Partial match: a TrainLink identifies a specific train (vehicle) operating between two stations, corresponding to ERA''s Vehicle.'
     TrainValidity:
       type: object
       additionalProperties: false
@@ -33502,6 +33550,12 @@ components:
           definition: Common properties of VEHICLE TYPEs.
           conditions:
           - 'Partial match: schema maps to Transmodel class TRANSPORT TYPE'
+        ERA:
+          concepts:
+          - VehicleType
+          definition: A vehicle type authorised to operate on the EU railway infrastructure, defining the basic design characteristics as covered by a type or design examination certificate (recorded in ERATV).
+          conditions:
+          - 'Partial match: TRANSPORT TYPE describes a class of transportable vehicle, aligning with ERA''s VehicleType.'
     TransportableSpecification:
       type: object
       additionalProperties: false
@@ -35481,6 +35535,12 @@ components:
           definition: An ordered sequence of POINTs or LINKs.
           conditions:
           - 'Partial match: schema maps to Transmodel class SECTION'
+        ERA:
+          concepts:
+          - SectionOfLine
+          definition: The part of a line between adjacent operational points; may consist of several tracks.
+          conditions:
+          - 'Partial match: a TripSection is a sub-part of a trip between two points, aligning with ERA''s SectionOfLine.'
     TripSpecification:
       type: object
       additionalProperties: false
@@ -36173,6 +36233,12 @@ components:
           definition: A public transport vehicle used for carrying passengers.
           conditions:
           - 'Exact match: schema maps to Transmodel class VEHICLE'
+        ERA:
+          concepts:
+          - Vehicle
+          definition: A specific vehicle or wagon able and allowed to operate over railway infrastructure.
+          conditions:
+          - 'Exact match: a railway vehicle directly corresponds to ERA''s Vehicle class.'
     VehicleAvailability:
       type: object
       additionalProperties: false
@@ -36618,6 +36684,12 @@ components:
             to those of an encompassing space, (e.g., DEC'
           conditions:
           - 'Exact match: schema maps to Transmodel class ZONE'
+        ERA:
+          concepts:
+          - NetAreaReference
+          definition: Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations).
+          conditions:
+          - 'Partial match: a ZONE as a two-dimensional network area partially matches ERA''s NetAreaReference.'
     ZoneCollectionResponse:
       type: object
       additionalProperties: false

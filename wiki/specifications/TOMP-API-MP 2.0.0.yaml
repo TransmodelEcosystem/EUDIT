@@ -116,6 +116,12 @@ components:
             - "Partial match to DATED VEHICLE JOURNEY lifecycle events: the notificationType enum values PREPARING/PREPARED/STARTED/PAUSED/RESUMED/ENDED correspond to execution-state transitions of a DATED VEHICLE JOURNEY (or leg thereof)."
             - "Partial match to SALES TRANSACTION: PRICE_FINAL indicates the finalisation of the fare for the leg, analogous to the completion of a SALES TRANSACTION."
             - "No direct equivalent for LOCKED/UNLOCKED (vehicle access-control states), USER_ACTION/USER_NO_SHOW/VEHICLE_ARRIVED/VEHICLE_NO_SHOW/ETA/USER_OUT_OF_LIMITS/WARNING/INFORMATION/OTHER/PROGRESS/SUPPORT/ACCEPTED/NOT_ACCEPTED/SUCCESS/FAILURE: these are MaaS operational-messaging concepts with no direct Transmodel counterpart."
+        ERA:
+          concepts:
+            - "Vehicle"
+          definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+          conditions:
+            - "Partial match: notification lifecycle events (PREPARING/STARTED/ENDED) track the operational state of an ERA Vehicle."
       type: object
       required:
         - notificationType
@@ -261,6 +267,12 @@ components:
               conditions:
                 - "Partial match to VEHICLE: assetInfo describes the current state of the transport asset (vehicle), including its location, active/paused state, distance travelled, and charge level."
                 - "Partial match to DATED VEHICLE JOURNEY: the distance and duration fields correspond to execution metrics of a DATED VEHICLE JOURNEY."
+            ERA:
+              concepts:
+                - "Vehicle"
+              definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+              conditions:
+                - "Partial match: assetInfo identifies the specific vehicle used in the journey, corresponding to an ERA Vehicle."
           properties:
             location:
               $ref: "./TOMP-API 2.0.0.yaml#/components/schemas/placeReference"
@@ -306,6 +318,12 @@ components:
           conditions:
             - "Partial match to DATED VEHICLE JOURNEY: START_LEG requests the start of a leg, corresponding to the initiation of a DATED VEHICLE JOURNEY execution."
             - "No direct equivalent for REPLACE_ASSET: substituting one vehicle asset for another during a leg has no direct counterpart in the Transmodel information model."
+        ERA:
+          concepts:
+            - "Vehicle"
+          definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
+          conditions:
+            - "Partial match: confirmation input tracks vehicle journey completion states, corresponding to an ERA Vehicle's operational lifecycle."
       type: object
       required:
         - confirmationType

@@ -1806,6 +1806,12 @@ definitions:
         definition: "A circular geographical area defined by a centre point and radius in metres."
         conditions:
           - "Partial match. circle maps to a circular ZONE boundary in Transmodel (CG)."
+      ERA:
+        concepts:
+          - "NetAreaReference"
+        definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+        conditions:
+          - "Partial match: a circular area boundary maps to ERA's NetAreaReference."
     description: Geographical circle (area)
     type: object
     required:
@@ -1828,6 +1834,12 @@ definitions:
         definition: "A polygonal geographical area defined as an ordered list of geo-positions."
         conditions:
           - "Partial match. polygon maps to a polygonal ZONE boundary in Transmodel (CG)."
+      ERA:
+        concepts:
+          - "NetAreaReference"
+        definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
+        conditions:
+          - "Partial match: a polygonal area boundary maps to ERA's NetAreaReference."
     description: Geographical polygon (area)
     type: array
     items:
@@ -1841,6 +1853,12 @@ definitions:
         definition: "A geographical path defined as an ordered list of geo-positions."
         conditions:
           - "Partial match. polyline maps to a ROUTE LINK path geometry in Transmodel (TP), representing a linear geographical constraint."
+      ERA:
+        concepts:
+          - "SectionOfLine"
+        definition: "The part of a line between adjacent operational points; may consist of several tracks."
+        conditions:
+          - "Partial match: a linear path geometry maps to ERA's SectionOfLine."
     description: Geographical polygonal path (line)
     type: array
     items:
@@ -1929,6 +1947,12 @@ definitions:
         definition: "A place (stop) with a stop identifier, name, and optional geo-position."
         conditions:
           - "Exact match. place maps to a SCHEDULED STOP POINT in Transmodel (TP). stopId=SCHEDULED STOP POINT identifier; name=stop name; coordinate=LOCATION."
+      ERA:
+        concepts:
+          - "OperationalPoint"
+        definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
+        conditions:
+          - "Exact match: place (with stopId) maps to ERA OperationalPoint."
     type: object
     properties:
       stopId:

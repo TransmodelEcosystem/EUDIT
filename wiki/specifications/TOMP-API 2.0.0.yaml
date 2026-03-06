@@ -3119,6 +3119,12 @@ components:
           definition: A public transport vehicle used for carrying passengers.
           conditions:
           - 'Partial match: GeoJSON collection of available vehicles; VEHICLE is the Transmodel physical transport vehicle'
+        ERA:
+          concepts:
+          - Vehicle
+          definition: A specific vehicle or wagon able and allowed to operate over railway infrastructure.
+          conditions:
+          - 'Partial match: a GeoJSON collection of available mobility assets corresponds to ERA''s Vehicle.'
       description: a list of available assets.
       type: object
       properties:
@@ -6002,6 +6008,12 @@ components:
           definition: A public transport vehicle used for carrying passengers.
           conditions:
           - 'Partial match: physical vehicle or transport asset; VEHICLE is the Transmodel public transport vehicle'
+        ERA:
+          concepts:
+          - Vehicle
+          definition: A specific vehicle or wagon able and allowed to operate over railway infrastructure.
+          conditions:
+          - 'Partial match: a physical mobility asset (vehicle) directly maps to ERA''s Vehicle class.'
       description: the asset that can by applied to execute a leg.
       type: object
       required:
@@ -6135,6 +6147,12 @@ components:
           definition: A classification of public transport vehicles according to the vehicle scheduling requirements in mode and capacity (e.
           conditions:
           - 'Partial match: cargo/weight limits; VEHICLE TYPE holds capacity attributes including weight limits'
+        ERA:
+          concepts:
+          - VehicleType
+          definition: A vehicle type authorised to operate on the EU railway infrastructure, defining the basic design characteristics as covered by a type or design examination certificate (recorded in ERATV).
+          conditions:
+          - 'Partial match: cargo/weight limit characteristics of a vehicle type align with ERA''s VehicleType.'
       type: object
       description: applicable properties to specify cargo space/loads
       properties:
@@ -6648,6 +6666,12 @@ components:
               definition: Identifier of ZONE.
               conditions:
               - 'Partial match: preferred zones; ZONE is the Transmodel two-dimensional location'
+            ERA:
+              concepts:
+              - NetAreaReference
+              definition: Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations).
+              conditions:
+              - 'Partial match: preferred network zones reference ERA''s NetAreaReference.'
           type: array
           items:
             $ref: '#/components/schemas/zoneReference'
@@ -7125,6 +7149,12 @@ components:
               definition: Identifier of a STOP PLACE.
               conditions:
               - 'Partial match: boarding stop; STOP PLACE is where passengers board vehicles'
+            ERA:
+              concepts:
+              - OperationalPoint
+              definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
+              conditions:
+              - 'Partial match: the boarding stop place corresponds to ERA''s OperationalPoint.'
           type: object
           properties:
             onboardStayDuration:
@@ -7689,6 +7719,12 @@ components:
           definition: A geographic place of any type which may be specified as the origin or destination of a trip.
           conditions:
           - 'Exact match: PLACE is the Transmodel geographic entity used as origin, destination, or address in a trip'
+        ERA:
+          concepts:
+          - PrimaryLocation
+          definition: A place used by an Infrastructure Manager to define a path for a train in TAF/TAP TSI framework/messages. A rail point where trains start, end, stop, run through, or change line.
+          conditions:
+          - 'Partial match: a named trip origin/destination place corresponds to ERA''s PrimaryLocation.'
       type: object
       description: >-
         address parts, where addressLine1 and 2 should contain the complete
@@ -7914,6 +7950,12 @@ components:
           definition: A legally incorporated body associated with any aspect of public transportation.
           conditions:
           - 'Partial match: reference to an ORGANISATION entity; ORGANISATION is the Transmodel legally incorporated transport body'
+        ERA:
+          concepts:
+          - Body
+          definition: An organisation or a physical person.
+          conditions:
+          - 'Partial match: a transport organisation reference maps to ERA''s Body class.'
       $ref: '#/components/schemas/normalString'
     placeReference:
       x-semantics:
@@ -7960,6 +8002,12 @@ components:
           definition: The role of an organisation that provides a service to the customer who uses a product - in particular the carrier role for public transport, but also…
           conditions:
           - 'Partial match: reference to a transport operator; SERVICE OPERATOR ROLE is the carrier-role of an organisation'
+        ERA:
+          concepts:
+          - OrganisationRole
+          definition: Represents an n-ary relationship between a Body and a role.
+          conditions:
+          - 'Partial match: a transport operator role reference maps to ERA''s OrganisationRole.'
       $ref: '#/components/schemas/normalString'
     zoneReference:
       x-semantics:
