@@ -6713,6 +6713,30 @@ components:
           conditions:
           - 'No direct Transmodel equivalent: API-level construct with no domain counterpart
             in Transmodel'
+          GBFS:
+            concepts:
+            - system_pricing_plans.currency
+            definition: 'ISO 4217 currency code used in a GBFS pricing plan, e.g.
+              EUR, USD.'
+            conditions:
+            - 'Exact match: both represent an ISO 4217 currency code used to denominate
+              a monetary price.'
+          GTFS:
+            concepts:
+            - fare_attributes.currency_type
+            definition: 'ISO 4217 currency code for the currency of the GTFS fare
+              amount.'
+            conditions:
+            - 'Exact match: OSDM Currency is the ISO 4217 currency code, directly
+              matching GTFS fare_attributes.currency_type.'
+          DATEX-II:
+            concepts:
+            - Currency
+            definition: 'A DATEX-II enumeration of ISO 4217 currency codes used
+              to denominate monetary values in traffic/parking data.'
+            conditions:
+            - 'Exact match: both represent ISO 4217 currency codes; DATEX-II Currency
+              enumeration covers the same concept.'
     AccountingRef:
       description: 'reference to accounting data in case the accounting is not provided
         by the API provider
@@ -15045,6 +15069,31 @@ components:
               conditions:
               - 'No direct Transmodel equivalent: property has no counterpart in the
                 matched Transmodel class'
+            DATEX-II:
+              concepts:
+              - PointCoordinates
+              definition: 'Latitude and longitude coordinates representing a geographic
+                point in the DATEX-II location model.'
+              conditions:
+              - 'Exact match: geoLocation is a GeoPosition (lat/lon point) directly
+                matching DATEX-II PointCoordinates.'
+            GBFS:
+              concepts:
+              - vehicle_status.lat
+              - vehicle_status.lon
+              definition: 'Current latitude and longitude of a GBFS shared vehicle
+                as reported in the vehicle_status feed.'
+              conditions:
+              - 'Exact match: geoLocation is the current geographic position of an
+                asset, matching GBFS vehicle_status lat/lon.'
+            GTFS:
+              concepts:
+              - stops.stop_lat
+              - stops.stop_lon
+              definition: 'Latitude and longitude of a GTFS stop location.'
+              conditions:
+              - 'Partial match: geoLocation encodes a point coordinate equivalent
+                to GTFS stop_lat/stop_lon but is used on vehicles/assets here.'
         vehicleType:
           $ref: '#/components/schemas/ContinuousServiceVehicleType'
           x-semantics:
@@ -15168,6 +15217,31 @@ components:
               conditions:
               - 'No direct Transmodel equivalent: property has no counterpart in the
                 matched Transmodel class'
+            DATEX-II:
+              concepts:
+              - PointCoordinates
+              definition: 'Latitude and longitude coordinates representing a geographic
+                point in the DATEX-II location model.'
+              conditions:
+              - 'Exact match: geoPosition is a GeoPosition (lat/lon) directly
+                matching DATEX-II PointCoordinates.'
+            GBFS:
+              concepts:
+              - station_information.lat
+              - station_information.lon
+              definition: 'Latitude and longitude of a GBFS station as reported
+                in station_information feed.'
+              conditions:
+              - 'Exact match: geoPosition encodes a station/stop geographic coordinate,
+                matching GBFS station_information lat/lon.'
+            GTFS:
+              concepts:
+              - stops.stop_lat
+              - stops.stop_lon
+              definition: 'Latitude and longitude of a GTFS stop location.'
+              conditions:
+              - 'Exact match: geoPosition is a lat/lon coordinate matching GTFS
+                stops.stop_lat and stops.stop_lon.'
         startUsageDescription:
           description: start usage procedure description
           type: string
@@ -21435,6 +21509,31 @@ components:
           definition: The part of a line between adjacent operational points; may consist of several tracks.
           conditions:
           - 'Partial match: a LINE in OSDM is composed of sections of line between operational points in ERA''s model.'
+          GBFS:
+            concepts:
+            - system_information
+            definition: 'Top-level feed describing the shared-mobility system; does
+              not have a direct line concept but provides the operator network identity.'
+            conditions:
+            - 'Partial match: GBFS has no line concept; system_information provides
+              operator/network identity that partially corresponds to LINE branding.'
+          GTFS:
+            concepts:
+            - routes.route_id
+            - routes.route_long_name
+            definition: 'A route in GTFS is a group of trips displayed to riders
+              as a single service, identified by route_id and described by name.'
+            conditions:
+            - 'Exact match: a LINE in OSDM directly corresponds to a GTFS route —
+              a named, branded service group between origin and destination.'
+          DATEX-II:
+            concepts:
+            - Road
+            definition: 'A road as a linear infrastructure element in DATEX-II, characterised
+              by a name, number, and network membership.'
+            conditions:
+            - 'Partial match: both represent a named linear network element; DATEX-II
+              Road covers road infrastructure while OSDM LINE covers rail/transit.'
     LineNumber:
       type: string
       description: 'Especially on regional traffic, a vehicle is defined by a line
@@ -26521,6 +26620,31 @@ components:
             unit, ticket unit or token etc.'
           conditions:
           - 'Partial match: schema maps to Transmodel class PRICE UNIT'
+          GBFS:
+            concepts:
+            - system_pricing_plans.price
+            - system_pricing_plans.per_km_pricing
+            definition: 'GBFS system_pricing_plans.price is the base monetary amount
+              charged for a shared-vehicle rental plan.'
+            conditions:
+            - 'Exact match: both represent a monetary price amount as a numeric value
+              associated with a transport service or product.'
+          GTFS:
+            concepts:
+            - fare_attributes.price
+            definition: 'The fare price in GTFS fare_attributes, expressed as a decimal
+              value in the currency specified by currency_type.'
+            conditions:
+            - 'Exact match: OSDM Price maps directly to GTFS fare_attributes.price
+              — the numeric monetary amount of a fare.'
+          DATEX-II:
+            concepts:
+            - ParkingRate
+            definition: 'A DATEX-II structure describing the rate charged for using
+              a parking facility, including amount and currency.'
+            conditions:
+            - 'Partial match: both express a monetary charge for using a transport-related
+              facility; DATEX-II ParkingRate is parking-specific, OSDM Price is general.'
     CurrencyConversion:
       description: 'details on a currency conversion applied
 
@@ -31287,6 +31411,33 @@ components:
           definition: The part of a line between adjacent operational points; may consist of several tracks.
           conditions:
           - 'Partial match: a ROUTE is an ordered path through the network, partially matching ERA''s SectionOfLine concept.'
+          GBFS:
+            concepts:
+            - station_information
+            definition: 'Describes individual docking stations; does not carry route/path
+              geometry in GBFS v3.'
+            conditions:
+            - 'Partial match: GBFS has no route geometry concept; station_information
+              lists waypoints but lacks ordered path semantics.'
+          GTFS:
+            concepts:
+            - shapes.shape_id
+            - shapes.shape_pt_lat
+            - shapes.shape_pt_lon
+            - shapes.shape_pt_sequence
+            definition: 'GTFS shapes.txt defines the geographic path of a trip as
+              an ordered sequence of lat/lon points.'
+            conditions:
+            - 'Exact match: OSDM Route is an ordered sequence of network points,
+              directly matching GTFS shapes which encode the geographic path of a service.'
+          DATEX-II:
+            concepts:
+            - GmlLineString
+            definition: 'A GML-encoded linear geometry in DATEX-II representing an
+              ordered sequence of coordinate points.'
+            conditions:
+            - 'Partial match: both represent an ordered point sequence forming a path;
+              DATEX-II GmlLineString is geometry only, OSDM Route carries richer semantics.'
     RouteItem:
       type: object
       additionalProperties: false
@@ -31459,6 +31610,24 @@ components:
           definition: The part of a line between adjacent operational points; may consist of several tracks.
           conditions:
           - 'Exact match: a SECTION between two trip points directly corresponds to ERA''s SectionOfLine.'
+          GBFS:
+            concepts:
+            - station_information.station_id
+            definition: 'Identifies a GBFS station used as an origin or destination
+              waypoint in a shared-vehicle trip segment.'
+            conditions:
+            - 'Partial match: GBFS does not model trip sections; station_id can
+              represent the endpoints of a leg but lacks section-level semantics.'
+          GTFS:
+            concepts:
+            - stop_times.stop_sequence
+            - stop_times.departure_time
+            - stop_times.arrival_time
+            definition: 'GTFS stop_times records define each scheduled stop within
+              a trip, with sequence, arrival, and departure times.'
+            conditions:
+            - 'Exact match: a SECTION is a trip segment between two consecutive stops,
+              directly corresponding to a pair of consecutive GTFS stop_times rows.'
     SecurityElementFormat:
       type: string
       enum:
@@ -32460,6 +32629,33 @@ components:
           definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
           conditions:
           - 'Partial match: a STOP PLACE is a named railway location where passengers board/alight, corresponding to ERA''s OperationalPoint.'
+          GBFS:
+            concepts:
+            - station_information
+            definition: 'A station in GBFS describes a docking location for shared
+              vehicles, including name, lat/lon, and capacity.'
+            conditions:
+            - 'Partial match: both represent named physical boarding locations with
+              geographic coordinates; GBFS scope is shared-mobility only.'
+          GTFS:
+            concepts:
+            - stops.stop_id
+            - stops.stop_name
+            - stops.stop_lat
+            - stops.stop_lon
+            definition: 'A stop in GTFS is a location where vehicles pick up or drop
+              off riders, identified by id, name, and coordinates.'
+            conditions:
+            - 'Exact match: GTFS stop directly corresponds to a STOP PLACE — a named
+              boarding/alighting point with geographic coordinates.'
+          DATEX-II:
+            concepts:
+            - MeasurementSiteRecord
+            definition: 'A site where measurements are made, characterised by a location
+              and associated physical attributes, defined in DATEX-II.'
+            conditions:
+            - 'Partial match: both record a named fixed infrastructure location; DATEX-II
+              focus is traffic measurement whereas OSDM is passenger boarding.'
     StopPlaceRef:
       description: 'Reference to a Stop Place using URNs to define code.
 
@@ -32494,6 +32690,30 @@ components:
           definition: Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers.
           conditions:
           - 'Partial match: a reference to a STOP PLACE resolves to an ERA OperationalPoint.'
+          GBFS:
+            concepts:
+            - station_information.station_id
+            definition: 'Unique identifier for a GBFS station, used to reference a
+              docking location across GBFS feeds.'
+            conditions:
+            - 'Partial match: both are references/identifiers that resolve to a physical
+              stop/station location; GBFS restricted to shared-mobility context.'
+          GTFS:
+            concepts:
+            - stops.stop_id
+            definition: 'Identifies a stop in GTFS; referenced by stop_times and
+              other records to associate trips with locations.'
+            conditions:
+            - 'Exact match: a StopPlaceRef is a reference to a stop location, directly
+              equivalent to GTFS stops.stop_id used as a foreign key.'
+          DATEX-II:
+            concepts:
+            - PointByCoordinates
+            definition: 'A point location defined by explicit latitude/longitude coordinates
+              in the DATEX-II location referencing model.'
+            conditions:
+            - 'Partial match: both reference a point location; DATEX-II uses coordinates
+              directly whereas OSDM uses an opaque id reference.'
     SupportingDocument:
       type: object
       additionalProperties: false
@@ -33171,6 +33391,32 @@ components:
           definition: A specific vehicle or wagon able and allowed to operate over railway infrastructure.
           conditions:
           - 'Partial match: a TrainLink identifies a specific train (vehicle) operating between two stations, corresponding to ERA''s Vehicle.'
+          GBFS:
+            concepts:
+            - vehicle_status
+            definition: 'Describes the real-time status of an individual shared vehicle,
+              including its current location and availability.'
+            conditions:
+            - 'Partial match: both identify a specific vehicle instance in operation;
+              GBFS vehicle_status is real-time state, TrainLink is a scheduled trip context.'
+          GTFS:
+            concepts:
+            - trips.trip_id
+            - trips.route_id
+            - trips.service_id
+            definition: 'A trip in GTFS is a sequence of stops made by a vehicle
+              at specific times, identified by trip_id and associated with a route.'
+            conditions:
+            - 'Partial match: TrainLink identifies a specific vehicle journey between
+              two stations; GTFS trip_id represents the full trip, not just a link segment.'
+          DATEX-II:
+            concepts:
+            - Vehicle
+            definition: 'A road vehicle characterised by its type, dimensions, and
+              load, as defined in the DATEX-II vehicle model.'
+            conditions:
+            - 'Partial match: both identify a specific vehicle instance; DATEX-II
+              Vehicle is road-centric while TrainLink is rail-specific.'
     TrainValidity:
       type: object
       additionalProperties: false
@@ -33556,6 +33802,31 @@ components:
           definition: A vehicle type authorised to operate on the EU railway infrastructure, defining the basic design characteristics as covered by a type or design examination certificate (recorded in ERATV).
           conditions:
           - 'Partial match: TRANSPORT TYPE describes a class of transportable vehicle, aligning with ERA''s VehicleType.'
+          GBFS:
+            concepts:
+            - vehicle_types.form_factor
+            - vehicle_types.propulsion_type
+            definition: 'GBFS vehicle_types defines the class of shared vehicle by
+              its physical form (bicycle, scooter, car) and propulsion method.'
+            conditions:
+            - 'Partial match: both classify vehicles by type and propulsion; GBFS
+              scope is shared micro-mobility/car-share, OSDM covers scheduled public transport.'
+          GTFS:
+            concepts:
+            - routes.route_type
+            definition: 'GTFS route_type is an integer code indicating the type of
+              transportation used on a route (e.g., 2 = Rail, 3 = Bus).'
+            conditions:
+            - 'Exact match: TRANSPORT TYPE in OSDM classifies the mode of transport,
+              directly corresponding to GTFS routes.route_type.'
+          DATEX-II:
+            concepts:
+            - VehicleCharacteristics
+            definition: 'Describes the physical and operational characteristics of
+              a vehicle class in DATEX-II, including type, weight, and dimensions.'
+            conditions:
+            - 'Partial match: both classify vehicle types with physical/operational
+              attributes; DATEX-II is road-vehicle oriented, OSDM covers rail modes.'
     TransportableSpecification:
       type: object
       additionalProperties: false

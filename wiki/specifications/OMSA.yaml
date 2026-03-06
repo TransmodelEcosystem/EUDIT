@@ -1635,6 +1635,19 @@ components:
           definition: "A set of parameters giving details of an intended consumption of access rights by a TRANSPORT CUSTOMER (e.g., origin and destination of a travel,..."
           conditions:
             - "Partial match: contains the search parameters for requesting offers, comparable to TRAVEL SPECIFICATION and associated demand factors"
+        GTFS:
+          concepts:
+            - "trips.trip_headsign"
+            - "stop_times.arrival_time"
+          definition: "trips.txt carries the destination and route context for a search; stop_times.txt provides scheduled times for departure/arrival."
+          conditions:
+            - "Partial match: the from/to/time parameters in searchOfferInput correspond to GTFS trip and stop_times search inputs."
+        GBFS:
+          concepts:
+            - "system_pricing_plans"
+          definition: "Pricing plans offered by the system, defining base price, per-km rate, per-minute rate, and currency."
+          conditions:
+            - "Partial match: a searchOfferInput for shared mobility triggers evaluation of applicable GBFS system_pricing_plans."
       allOf:
       - $ref: "#/components/schemas/defaultInput"
       - type: object
@@ -1981,6 +1994,26 @@ components:
           definition: "Represents a point reference in the network. Used for infrastructure elements positioned as a point (e.g. signals, ETCS balises, buffer stops)."
           conditions:
             - "Partial match: a WGS84 coordinate pair is the primitive basis of ERA's NetPointReference."
+        DATEX-II:
+          concepts:
+            - "PointCoordinates"
+          definition: "A pair of coordinates describing the position of a point in two-dimensional space using a defined coordinate system."
+          conditions:
+            - "Exact match: a [lon, lat] coordinate pair directly corresponds to DATEX-II PointCoordinates."
+        GBFS:
+          concepts:
+            - "station_information.lat"
+            - "station_information.lon"
+          definition: "WGS84 latitude and longitude of a station, as defined in the GBFS station_information feed."
+          conditions:
+            - "Exact match: a WGS84 coordinate pair is the primitive form of GBFS station_information lat/lon."
+        GTFS:
+          concepts:
+            - "stops.stop_lat"
+            - "stops.stop_lon"
+          definition: "WGS84 latitude and longitude of a stop or station, as defined in stops.txt."
+          conditions:
+            - "Exact match: a WGS84 coordinate pair directly corresponds to GTFS stops.stop_lat/stop_lon."
       type: array
       minItems: 2
       maxItems: 2
@@ -2003,6 +2036,19 @@ components:
           definition: "Represents a point reference in the network. Used for infrastructure elements positioned as a point (e.g. signals, ETCS balises, buffer stops)."
           conditions:
             - "Partial match: a GeoJSON point geometry maps to ERA's NetPointReference (point location in the topology)."
+        DATEX-II:
+          concepts:
+            - "PointCoordinates"
+          definition: "A pair of coordinates describing the position of a point in two-dimensional space using a defined coordinate system."
+          conditions:
+            - "Exact match: GeoJSON Point geometry with a single coordinate pair directly corresponds to DATEX-II PointCoordinates."
+        GBFS:
+          concepts:
+            - "vehicle_status.lat"
+            - "vehicle_status.lon"
+          definition: "WGS84 latitude and longitude of a free-floating vehicle, as defined in the GBFS vehicle_status feed."
+          conditions:
+            - "Exact match: GeoJSON Point geometry represents the real-time position of a GBFS vehicle (vehicle_status.lat/lon)."
       type: object
       description: Geojson Coordinate
       required:
@@ -2025,6 +2071,19 @@ components:
           definition: "Pieces of tracks composing the topology. Represents an edge in the topological graph."
           conditions:
             - "Partial match: a GeoJSON line (directed edge between two points) maps to ERA's LinearElement."
+        DATEX-II:
+          concepts:
+            - "GmlLineString"
+          definition: "A GML line string geometry representing an ordered sequence of coordinate positions forming a continuous path."
+          conditions:
+            - "Exact match: a GeoJSON LineString (ordered array of coordinate pairs) is structurally equivalent to a DATEX-II GmlLineString."
+        GTFS:
+          concepts:
+            - "shapes.shape_pt_lat"
+            - "shapes.shape_pt_lon"
+          definition: "Ordered WGS84 latitude/longitude points defining the geographic path of a trip, as defined in shapes.txt."
+          conditions:
+            - "Partial match: a GeoJSON line geometry encodes the same route shape as a GTFS shapes.txt sequence."
       type: object
       description: An array of WGS84 coordinate pairs
       required:
@@ -2049,6 +2108,18 @@ components:
           definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
           conditions:
             - "Partial match: a GeoJSON polygon area maps to ERA's NetAreaReference."
+        DATEX-II:
+          concepts:
+            - "GmlPolygon"
+          definition: "A GML polygon geometry consisting of an outer boundary ring and optional inner boundary rings, defining a planar area."
+          conditions:
+            - "Exact match: a GeoJSON Polygon (exterior ring + optional holes) is structurally equivalent to a DATEX-II GmlPolygon."
+        GBFS:
+          concepts:
+            - "geofencing_zones"
+          definition: "GeoJSON FeatureCollection describing geographic areas with operational rules (no-ride zones, slow zones, preferred parking areas)."
+          conditions:
+            - "Partial match: a GeoJSON polygon represents the boundary of a GBFS geofencing zone."
       type: object
       description: geojson representation of a polygon. First and last point must be equal. See also https://geojson.org/geojson-spec.html#polygon and example https://geojson.org/geojson-spec.html#id4. The order should be lon, lat [[[lon1, lat1], [lon2,lat2], [lon3,lat3], [lon1,lat1]]], the first point should match the last point.
       required:
@@ -2075,6 +2146,13 @@ components:
           definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
           conditions:
             - "Partial match: a GeoJSON multi-polygon maps to ERA's NetAreaReference."
+        DATEX-II:
+          concepts:
+            - "GmlPolygon"
+            - "NamedArea"
+          definition: "GmlPolygon: planar area defined by boundary rings. NamedArea: a named geographic area used for location referencing."
+          conditions:
+            - "Partial match: a GeoJSON MultiPolygon composing several boundary rings corresponds to a set of DATEX-II GmlPolygons aggregated under a NamedArea."
       type: object
       description: geojson representation of a multi polygon. See also https://geojson.org/geojson-spec.html#multipolygon
       required:
@@ -2103,6 +2181,18 @@ components:
           definition: "A place used by an Infrastructure Manager to define a path for a train in TAF/TAP TSI framework/messages. A rail point where trains start, end, stop, run through, or change line."
           conditions:
             - "Partial match: a named GeoJSON feature used as trip origin/destination maps to ERA's PrimaryLocation."
+        DATEX-II:
+          concepts:
+            - "Parking"
+          definition: "A site where vehicles or bicycles can be parked, including car parks, park-and-ride facilities, and cycle parking."
+          conditions:
+            - "Partial match: when the GeoJSON feature represents a parking or station location, it aligns with DATEX-II Parking."
+        GBFS:
+          concepts:
+            - "station_information"
+          definition: "Static metadata for a docking station — identifier, name, coordinates, capacity, and rental methods."
+          conditions:
+            - "Partial match: a GeoJSON feature representing a shared-mobility station corresponds to the GBFS station_information object."
       type: object
       required:
       - id
@@ -2177,6 +2267,12 @@ components:
           definition: "A package to be sold as a whole, consisting of one or several FARE PRODUCTs materialised thanks to one or several TRAVEL DOCUMENTs."
           conditions:
             - "Partial match: collection of offers as the result of a search; comparable to a collection of SALES OFFER PACKAGEs"
+        GTFS:
+          concepts:
+            - "fare_products.txt"
+          definition: "File defining all purchasable fare products in the feed, each with a unique identifier, name, fare media, amount, and currency."
+          conditions:
+            - "Partial match: an offer collection returned from a search corresponds to the set of applicable GTFS fare_products."
       type: object
       required:
         - type
@@ -2211,6 +2307,13 @@ components:
           definition: "A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER, giving access rights corresponding to those of one or several FARE PRODUCTs materialised..."
           conditions:
             - "Exact match: before purchase this is a TRAVEL OFFER PACKAGE; after confirmation it becomes a CUSTOMER PURCHASE PACKAGE"
+        GTFS:
+          concepts:
+            - "fare_products.txt"
+            - "fare_leg_rules.txt"
+          definition: "fare_products.txt defines purchasable fare products; fare_leg_rules.txt maps products to journey legs."
+          conditions:
+            - "Partial match: an OMSA package bundling legs and fare products corresponds to a GTFS fare_products entry scoped by fare_leg_rules."
       allOf:
       - $ref: "#/components/schemas/travelSpecification"
       - $ref: "#/components/schemas/placeDefinitions"
@@ -2314,6 +2417,19 @@ components:
           definition: "The part of a line between adjacent operational points; may consist of several tracks."
           conditions:
             - "Partial match: a single-mode travel segment between two places maps to ERA's SectionOfLine."
+        DATEX-II:
+          concepts:
+            - "TravelTimeData"
+          definition: "Travel time and delay information for a specific road section or itinerary, including measured and predicted values."
+          conditions:
+            - "Partial match: a leg's duration and timing attributes overlap with DATEX-II TravelTimeData for a given route section."
+        GTFS:
+          concepts:
+            - "trips.trip_id"
+            - "stop_times.trip_id"
+          definition: "A sequence of two or more stops that occur during a specific time period, as defined in trips.txt and stop_times.txt."
+          conditions:
+            - "Partial match: a leg using a scheduled service corresponds to a GTFS trip segment between two stop_times entries."
       allOf:
         - $ref: "#/components/schemas/travelSpecification"
         - type: object
@@ -2369,6 +2485,13 @@ components:
           definition: "An immaterial marketable element (access rights, discount rights, etc.), specific to a CHARGING MOMENT."
           conditions:
             - "Exact match: a saleable product with a fare and associated use rights"
+        GTFS:
+          concepts:
+            - "fare_products.fare_product_id"
+            - "fare_products.fare_product_name"
+          definition: "A purchasable fare product, defined in fare_products.txt with a unique identifier, name, associated fare media, amount, and currency."
+          conditions:
+            - "Exact match: the OMSA product (fare product with id and name) directly corresponds to a GTFS fare_products entry."
       type: object
       properties:
         type:
@@ -2399,6 +2522,19 @@ components:
           definition: "The part of a line between adjacent operational points; may consist of several tracks."
           conditions:
             - "Partial match: an ordered sequence of service journeys defines a path through ERA SectionOfLines."
+        GTFS:
+          concepts:
+            - "trips.trip_id"
+            - "trips.route_id"
+          definition: "A sequence of stops served by a vehicle during a specific time period on a specific route, as defined in trips.txt."
+          conditions:
+            - "Partial match: an ordered sequence of service journeys/dates maps to GTFS trips linked to routes."
+        DATEX-II:
+          concepts:
+            - "TravelTimeData"
+          definition: "Travel time and delay information for a specific road section or itinerary, including measured and predicted values."
+          conditions:
+            - "Partial match: a trip pattern's ordered list of travel segments overlaps with DATEX-II TravelTimeData for an itinerary."
       type: array
       items:
         type: object
@@ -2453,6 +2589,14 @@ components:
           definition: "A set of parameters giving details of an intended consumption of access rights by a TRANSPORT CUSTOMER (e.g., origin and destination of a travel,..."
           conditions:
             - "Exact match: the actual travel specification (from/to/via/times) in a package or leg"
+        GTFS:
+          concepts:
+            - "trips.txt"
+            - "stop_times.arrival_time"
+            - "stop_times.departure_time"
+          definition: "trips.txt defines individual trips with origin/destination; stop_times.txt specifies arrival and departure times at each stop."
+          conditions:
+            - "Partial match: a travel specification's from/to places and times correspond to GTFS trip origin/destination stops and stop_times."
       type: object
       properties:
         from:
@@ -3743,6 +3887,20 @@ components:
           definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
           conditions:
             - "Exact match: a physical mobility asset (vehicle) directly maps to ERA's Vehicle class."
+        GBFS:
+          concepts:
+            - "vehicle_status"
+            - "vehicle_types"
+          definition: "vehicle_status: real-time location and state of individual vehicles. vehicle_types: catalogue of vehicle types offered by the system."
+          conditions:
+            - "Exact match: an OMSA asset (individual physical vehicle) directly corresponds to a GBFS vehicle_status entry, typed by vehicle_types."
+        DATEX-II:
+          concepts:
+            - "Vehicle"
+            - "VehicleCharacteristics"
+          definition: "Vehicle: a mechanically propelled conveyance on a road. VehicleCharacteristics: physical and operational attributes of a vehicle."
+          conditions:
+            - "Partial match: an OMSA asset representing a vehicle aligns with DATEX-II Vehicle and its VehicleCharacteristics."
       description: the asset that can by applied to execute a leg.
       properties:
         type:
@@ -3999,6 +4157,25 @@ components:
           definition: "An organisation or a physical person."
           conditions:
             - "Partial match: a transport organisation corresponds to ERA's Body."
+        GBFS:
+          concepts:
+            - "system_information"
+          definition: "Metadata about the shared-mobility system — operator identity, brand name, timezone, language, contact details."
+          conditions:
+            - "Partial match: organisationReference (operator ID + name) maps to GBFS system_information's operator identity fields."
+        GTFS:
+          concepts:
+            - "agency.agency_id"
+            - "agency.agency_name"
+          definition: "Unique identifier and full name of the transit agency providing service, as defined in agency.txt."
+          conditions:
+            - "Exact match: organisationReference (organisationId + name) directly corresponds to GTFS agency.agency_id and agency_name."
+        DATEX-II:
+          concepts:
+            - "Organisation"
+          definition: "A legally constituted body, company or authority with responsibility for road traffic management, information services, or transport operations."
+          conditions:
+            - "Exact match: a transport operator organisation maps to DATEX-II Organisation."
       type: object
       required:
       - organisationId
@@ -4022,6 +4199,19 @@ components:
           definition: "A place used by an Infrastructure Manager to define a path for a train in TAF/TAP TSI framework/messages. A rail point where trains start, end, stop, run through, or change line."
           conditions:
             - "Partial match: a reference to a named place (trip origin/destination) maps to ERA's PrimaryLocation."
+        GTFS:
+          concepts:
+            - "stops.stop_id"
+            - "stops.stop_name"
+          definition: "Unique identifier and name of a stop or station, as defined in stops.txt."
+          conditions:
+            - "Exact match: a placeReference identifying a public transport stop corresponds to GTFS stops.stop_id."
+        DATEX-II:
+          concepts:
+            - "NamedArea"
+          definition: "A named geographic area used as a location reference, defined by administrative or topological boundaries."
+          conditions:
+            - "Partial match: a placeReference identifying a zone or area corresponds to DATEX-II NamedArea; for point stops, PointCoordinates is more precise."
       type: object
       required:
       - placeId

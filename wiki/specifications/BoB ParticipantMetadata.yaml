@@ -1075,6 +1075,28 @@ definitions:
         definition: "An organisation or a physical person."
         conditions:
           - "Partial match: a BoB participant registry entry corresponds to ERA's Body (a legally incorporated organisation)."
+      GBFS:
+        concepts:
+          - "system_information.system_id"
+          - "system_information.name"
+          - "system_information.operator"
+        definition: "GBFS system_information describes the shared-mobility operator with a unique system id, human-readable name, and operator name."
+        conditions:
+          - "Partial match: both represent an identified organisation operating a mobility service; GBFS is shared-mobility, BoB covers public transport operators."
+      GTFS:
+        concepts:
+          - "agency.agency_id"
+          - "agency.agency_name"
+          - "agency.agency_url"
+        definition: "A GTFS agency is a transit operator providing services, identified by agency_id and described by name and URL."
+        conditions:
+          - "Exact match: a BoB participant corresponds to a GTFS agency — an identified transit operator with name, id, and contact information."
+      DATEX-II:
+        concepts:
+          - "Organisation"
+        definition: "An organisation in DATEX-II represents a legal entity involved in transport operations, characterised by name and identity."
+        conditions:
+          - "Exact match: a BoB participant is a legally incorporated organisation, directly matching DATEX-II Organisation which models transport-related legal entities."
     type: object
     required:
       - pid
@@ -1169,5 +1191,25 @@ definitions:
         definition: "An organisation or a physical person."
         conditions:
           - "Partial match: supplementary participant profile data maps to ERA's Body concept."
+      GBFS:
+        concepts:
+          - "system_information"
+        definition: "Top-level GBFS feed providing supplementary information about the shared-mobility system and its operator."
+        conditions:
+          - "Partial match: BoB participantInfo holds supplementary operator/participant metadata, similar to extended system_information fields in GBFS."
+      GTFS:
+        concepts:
+          - "agency.agency_name"
+          - "agency.agency_url"
+          - "agency.agency_phone"
+        definition: "GTFS agency fields provide supplementary contact and identity information about a transit operator."
+        conditions:
+          - "Partial match: BoB participantInfo holds extended profile data for a participant; GTFS agency fields cover the public-facing supplementary information."
+      DATEX-II:
+        concepts:
+          - "Organisation"
+        definition: "An organisation in DATEX-II represents a legal entity involved in transport operations, characterised by name and identity."
+        conditions:
+          - "Partial match: BoB participantInfo is supplementary metadata for an organisation, broadly aligning with DATEX-II Organisation extended attributes."
     description: Holds participant info. Specified in https://bitbucket.org/samtrafiken/bob-schema-participant-info/src/master/participant-info.json
     type: object

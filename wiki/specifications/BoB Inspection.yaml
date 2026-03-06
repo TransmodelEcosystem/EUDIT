@@ -656,6 +656,25 @@ definitions:
             definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
             conditions:
               - "Partial match: the service journey is operated by an ERA Vehicle."
+          GBFS:
+            concepts:
+              - "vehicle_status.vehicle_id"
+            definition: "Unique identifier for a GBFS shared vehicle reported in the vehicle_status feed."
+            conditions:
+              - "Partial match: both identify a specific vehicle in service; GBFS vehicle_status is real-time state while BoB service references a scheduled journey."
+          GTFS:
+            concepts:
+              - "trips.trip_id"
+              - "trips.service_id"
+            definition: "A GTFS trip identifies a scheduled vehicle journey with a specific sequence of stops and departure times."
+            conditions:
+              - "Partial match: BoB service identifies the trip/journey context for a validation event, corresponding to GTFS trip_id and service_id."
+          DATEX-II:
+            concepts:
+              - "Vehicle"
+            definition: "A specific vehicle or road vehicle type characterised in DATEX-II by its physical and operational attributes."
+            conditions:
+              - "Partial match: BoB service references the vehicle journey context; DATEX-II Vehicle identifies the physical vehicle, not the journey."
         type: object
         required:
           - pid
@@ -693,6 +712,26 @@ definitions:
             definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
             conditions:
               - "Partial match: the stop area where inspection occurs corresponds to ERA's OperationalPoint."
+          GBFS:
+            concepts:
+              - "station_information.station_id"
+              - "station_information.name"
+            definition: "Unique identifier and name for a GBFS docking station representing a physical boarding/alighting location."
+            conditions:
+              - "Partial match: both identify a named physical stop/station location; GBFS scope is shared-mobility, BoB stopArea covers public transport."
+          GTFS:
+            concepts:
+              - "stops.stop_id"
+              - "stops.stop_name"
+            definition: "A GTFS stop is a named location where vehicles pick up or drop off riders, identified by stop_id and stop_name."
+            conditions:
+              - "Exact match: BoB stopArea is the stop/station where inspection occurs, directly corresponding to a GTFS stop identified by stop_id."
+          DATEX-II:
+            concepts:
+              - "PointByCoordinates"
+            definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
+            conditions:
+              - "Partial match: BoB stopArea identifies a named stop location; DATEX-II PointByCoordinates encodes the geographic point but lacks id/name semantics."
         type: object
         required:
           - pid

@@ -9,6 +9,9 @@ This directory contains concept glossaries for the foundational standards and on
 | [Transmodel.md](Transmodel.md) | Transmodel v6.2 | Authoritative Transmodel concept glossary (ALL CAPS concept names) |
 | [ERA.md](ERA.md) | ERA Ontology v3.1.8 | European railway infrastructure and vehicle type classes (RINF/ERATV) |
 | [OMSA.md](OMSA.md) | OMSA | Open Mobility Service API concept definitions |
+| [DATEX-II.md](DATEX-II.md) | DATEX-II v3.6 | European traffic and travel data exchange classes (PascalCase XSD types) |
+| [GBFS.md](GBFS.md) | GBFS v3.0 | General Bikeshare Feed Specification — shared mobility feed objects (snake_case) |
+| [GTFS.md](GTFS.md) | GTFS Schedule + Flex | General Transit Feed Specification — schedule and demand-responsive file/field concepts (snake_case) |
 
 ## Per-Standard Mappings
 

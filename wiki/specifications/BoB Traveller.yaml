@@ -1812,6 +1812,25 @@ definitions:
         definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
         conditions:
           - "Partial match: a circular area boundary maps to ERA's NetAreaReference."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones defines geographic areas (polygons) with rules for vehicle operation; no native circle geometry."
+        conditions:
+          - "Partial match: both define circular/area geographic boundaries for transport rules; GBFS uses polygon geometry rather than circle."
+      GTFS:
+        concepts:
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+        definition: "GTFS shapes encode path geometry as ordered lat/lon points; does not natively represent circular areas."
+        conditions:
+          - "Partial match: GTFS has no circle geometry; shape points are the closest geometric primitive for defining areas."
+      DATEX-II:
+        concepts:
+          - "NamedArea"
+        definition: "A named geographic area in DATEX-II, described by a set of coordinates forming a boundary."
+        conditions:
+          - "Partial match: both represent a geographic boundary area; DATEX-II NamedArea uses polygon boundaries rather than circle radius."
     description: Geographical circle (area)
     type: object
     required:
@@ -1840,6 +1859,26 @@ definitions:
         definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
         conditions:
           - "Partial match: a polygonal area boundary maps to ERA's NetAreaReference."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones defines GeoJSON polygon areas with operational rules for shared vehicles."
+        conditions:
+          - "Exact match: both represent a polygonal geographic boundary; GBFS geofencing_zones uses GeoJSON Polygon geometry."
+      GTFS:
+        concepts:
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+          - "shapes.shape_pt_sequence"
+        definition: "GTFS shapes.txt defines an ordered list of lat/lon points; an area boundary can be expressed as a closed shape."
+        conditions:
+          - "Partial match: GTFS shapes encode ordered coordinates matching polygon vertex lists; GTFS shapes are path geometry, not area semantics."
+      DATEX-II:
+        concepts:
+          - "GmlPolygon"
+        definition: "A GML-encoded polygon geometry in DATEX-II representing a closed area boundary."
+        conditions:
+          - "Exact match: BoB polygon is an ordered list of WGS84 coordinates forming a closed boundary, matching DATEX-II GmlPolygon."
     description: Geographical polygon (area)
     type: array
     items:
@@ -1859,6 +1898,27 @@ definitions:
         definition: "The part of a line between adjacent operational points; may consist of several tracks."
         conditions:
           - "Partial match: a linear path geometry maps to ERA's SectionOfLine."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones encodes geographic boundaries; no direct polyline/path concept exists in GBFS."
+        conditions:
+          - "Partial match: GBFS does not model linear path geometry; the closest concept is the boundary of a geofencing zone."
+      GTFS:
+        concepts:
+          - "shapes.shape_id"
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+          - "shapes.shape_pt_sequence"
+        definition: "GTFS shapes.txt records define an ordered sequence of lat/lon points forming the geographic path of a trip."
+        conditions:
+          - "Exact match: BoB polyline is an ordered list of geo-positions forming a path, directly matching GTFS shapes which encode trip path geometry."
+      DATEX-II:
+        concepts:
+          - "GmlLineString"
+        definition: "A GML-encoded sequence of coordinate points forming a linear geometry in DATEX-II."
+        conditions:
+          - "Exact match: BoB polyline is an ordered list of coordinates forming a line, directly matching DATEX-II GmlLineString."
     description: Geographical polygonal path (line)
     type: array
     items:
@@ -1953,6 +2013,30 @@ definitions:
         definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
         conditions:
           - "Exact match: place (with stopId) maps to ERA OperationalPoint."
+      GBFS:
+        concepts:
+          - "station_information.station_id"
+          - "station_information.name"
+          - "station_information.lat"
+          - "station_information.lon"
+        definition: "A GBFS station is a named docking location for shared vehicles with an id, name, and geographic coordinates."
+        conditions:
+          - "Partial match: both are named physical locations with an id and coordinates; BoB place covers all public transport stops, GBFS station is shared-mobility specific."
+      GTFS:
+        concepts:
+          - "stops.stop_id"
+          - "stops.stop_name"
+          - "stops.stop_lat"
+          - "stops.stop_lon"
+        definition: "A GTFS stop is a named location where vehicles pick up or drop off riders, with a unique id, name, and coordinates."
+        conditions:
+          - "Exact match: BoB place with stopId, name, and coordinate directly corresponds to a GTFS stop — a named boarding/alighting point."
+      DATEX-II:
+        concepts:
+          - "PointByCoordinates"
+        definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
+        conditions:
+          - "Partial match: BoB place coordinate field matches DATEX-II PointByCoordinates; BoB place also carries id and name not present in DATEX-II."
     type: object
     properties:
       stopId:

@@ -122,6 +122,18 @@ components:
           definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
           conditions:
             - "Partial match: notification lifecycle events (PREPARING/STARTED/ENDED) track the operational state of an ERA Vehicle."
+        GBFS:
+          concepts:
+            - vehicle_status
+          definition: "GBFS feed describing the real-time state of individual vehicles, including current status, location, and availability."
+          conditions:
+            - "Partial match: notificationInput lifecycle values (PREPARING/STARTED/ENDED/LOCKED/UNLOCKED) correspond to vehicle_status.is_reserved and is_disabled state transitions for a GBFS vehicle."
+        GTFS:
+          concepts:
+            - booking_rules.booking_type
+          definition: "GTFS-Flex booking_rules.booking_type defines the type of on-demand booking event required before a trip."
+          conditions:
+            - "Partial match: USER_ACTION and USER_NO_SHOW notifications align with GTFS-Flex on-demand booking event types where traveller interaction is required."
       type: object
       required:
         - notificationType
@@ -273,6 +285,19 @@ components:
               definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
               conditions:
                 - "Partial match: assetInfo identifies the specific vehicle used in the journey, corresponding to an ERA Vehicle."
+            GBFS:
+              concepts:
+                - vehicle_status
+              definition: "GBFS vehicle_status describes the real-time state of an individual vehicle, including its current location, charge level, and availability."
+              conditions:
+                - "Exact match: assetInfo.location, currentCharge, and assetState directly mirror the vehicle_status fields current_range_meters, is_reserved/is_disabled, and current_fuel_percent."
+            DATEX-II:
+              concepts:
+                - Vehicle
+                - VehicleCharacteristics
+              definition: "DATEX-II Vehicle is a road vehicle; VehicleCharacteristics describes its operational properties including fuel type, load capacity, and vehicle type."
+              conditions:
+                - "Partial match: assetInfo describes operational vehicle state (charge, usage state, location) corresponding to a DATEX-II Vehicle with VehicleCharacteristics."
           properties:
             location:
               $ref: "./TOMP-API 2.0.0.yaml#/components/schemas/placeReference"
@@ -324,6 +349,12 @@ components:
           definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
           conditions:
             - "Partial match: confirmation input tracks vehicle journey completion states, corresponding to an ERA Vehicle's operational lifecycle."
+        GBFS:
+          concepts:
+            - vehicle_status
+          definition: "GBFS vehicle_status describes the real-time state of a vehicle including reservation and rental state."
+          conditions:
+            - "Partial match: START_LEG confirmation corresponds to initiating a GBFS vehicle rental (is_reserved transitioning to active use); REPLACE_ASSET has no GBFS equivalent."
       type: object
       required:
         - confirmationType

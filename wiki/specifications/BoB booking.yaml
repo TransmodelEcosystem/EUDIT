@@ -440,6 +440,24 @@ definitions:
             definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
             conditions:
               - "Exact match: the boarding place stop reference is an ERA OperationalPoint."
+          GBFS:
+            concepts:
+              - "station_information.station_id"
+            definition: "Unique identifier for a GBFS docking station, used as a reference to a physical boarding/alighting location."
+            conditions:
+              - "Partial match: both reference named physical stop/station locations; GBFS scope is shared-mobility."
+          GTFS:
+            concepts:
+              - "stops.stop_id"
+            definition: "Identifies a stop in GTFS; referenced in stop_times to associate trips with boarding locations."
+            conditions:
+              - "Exact match: the boarding place stop reference is equivalent to GTFS stops.stop_id used as a foreign key to a boarding point."
+          DATEX-II:
+            concepts:
+              - "PointByCoordinates"
+            definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
+            conditions:
+              - "Partial match: both reference a point location; DATEX-II uses coordinates directly whereas BoB uses an opaque id reference."
       alightingPlace:
         $ref: '#/definitions/place'
         x-semantics:
@@ -457,6 +475,24 @@ definitions:
             definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
             conditions:
               - "Exact match: the alighting place stop reference is an ERA OperationalPoint."
+          GBFS:
+            concepts:
+              - "station_information.station_id"
+            definition: "Unique identifier for a GBFS docking station, used as a reference to a physical boarding/alighting location."
+            conditions:
+              - "Partial match: both reference named physical stop/station locations; GBFS scope is shared-mobility."
+          GTFS:
+            concepts:
+              - "stops.stop_id"
+            definition: "Identifies a stop in GTFS; referenced in stop_times to associate trips with alighting locations."
+            conditions:
+              - "Exact match: the alighting place stop reference is equivalent to GTFS stops.stop_id used as a foreign key to an alighting point."
+          DATEX-II:
+            concepts:
+              - "PointByCoordinates"
+            definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
+            conditions:
+              - "Partial match: both reference a point location; DATEX-II uses coordinates directly whereas BoB uses an opaque id reference."
       serviceJourneyReference:
         type: string
         x-semantics:
@@ -536,6 +572,28 @@ definitions:
         definition: "Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided; also any location at boundaries between Member States or infrastructure managers."
         conditions:
           - "Exact match: a BoB place identified by stopId corresponds to an ERA OperationalPoint."
+      GBFS:
+        concepts:
+          - "station_information.station_id"
+          - "station_information.name"
+        definition: "A GBFS station describing a named docking location for shared vehicles, with an id, name, and geographic coordinates."
+        conditions:
+          - "Partial match: both represent named physical locations; BoB place covers all public transport stops, GBFS station_information is shared-mobility specific."
+      GTFS:
+        concepts:
+          - "stops.stop_id"
+          - "stops.stop_name"
+          - "stops.stop_lat"
+          - "stops.stop_lon"
+        definition: "A stop in GTFS is a location where vehicles pick up or drop off riders, identified by id, name, and geographic coordinates."
+        conditions:
+          - "Exact match: BoB place with stopId directly corresponds to a GTFS stop — a named boarding/alighting point identified by stop_id."
+      DATEX-II:
+        concepts:
+          - "PointByCoordinates"
+        definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
+        conditions:
+          - "Partial match: BoB place can carry geographic coordinates like DATEX-II PointByCoordinates, but BoB place is richer with id and name."
     type: object
     properties:
       stopId:

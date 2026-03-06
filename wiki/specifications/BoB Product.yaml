@@ -1145,6 +1145,25 @@ definitions:
         definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
         conditions:
           - "Partial match: circular spatial validity zone maps to ERA's NetAreaReference."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones defines geographic areas with rules for vehicle operation; no native circle geometry."
+        conditions:
+          - "Partial match: both define circular/area geographic boundaries; GBFS uses polygon geometry rather than circle radius."
+      GTFS:
+        concepts:
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+        definition: "GTFS shapes encode path geometry as ordered lat/lon points; does not natively represent circular areas."
+        conditions:
+          - "Partial match: GTFS has no circle area geometry; shape coordinates are the closest geometric primitives."
+      DATEX-II:
+        concepts:
+          - "NamedArea"
+        definition: "A named geographic area in DATEX-II, described by a set of coordinates forming a boundary."
+        conditions:
+          - "Partial match: both represent geographic boundary areas; DATEX-II NamedArea uses polygon boundaries rather than circle radius."
     description: Geographical circle
     type: object
     required:
@@ -1173,6 +1192,26 @@ definitions:
         definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
         conditions:
           - "Partial match: polygonal spatial validity zone maps to ERA's NetAreaReference."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones defines GeoJSON polygon areas with operational rules for shared vehicles."
+        conditions:
+          - "Exact match: both represent a polygonal geographic boundary; GBFS geofencing_zones uses GeoJSON Polygon geometry."
+      GTFS:
+        concepts:
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+          - "shapes.shape_pt_sequence"
+        definition: "GTFS shapes.txt defines an ordered list of lat/lon points; a closed shape can represent an area boundary."
+        conditions:
+          - "Partial match: GTFS shapes encode ordered coordinates matching polygon vertex lists; GTFS shapes are path geometry, not explicit area semantics."
+      DATEX-II:
+        concepts:
+          - "GmlPolygon"
+        definition: "A GML-encoded polygon geometry in DATEX-II representing a closed area boundary."
+        conditions:
+          - "Exact match: BoB polygon is an ordered list of WGS84 coordinates forming a closed boundary, matching DATEX-II GmlPolygon."
     description: Geographical polygon
     type: array
     items:
@@ -1191,6 +1230,27 @@ definitions:
         definition: "The part of a line between adjacent operational points; may consist of several tracks."
         conditions:
           - "Partial match: route path geometry maps to ERA's SectionOfLine."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones defines geographic boundaries; no direct polyline/path concept exists in GBFS."
+        conditions:
+          - "Partial match: GBFS does not model linear path geometry; geofencing zone boundaries are the closest area concept."
+      GTFS:
+        concepts:
+          - "shapes.shape_id"
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+          - "shapes.shape_pt_sequence"
+        definition: "GTFS shapes.txt records define an ordered sequence of lat/lon points forming the geographic path of a trip."
+        conditions:
+          - "Exact match: BoB polyline is an ordered list of geo-positions forming a path, directly matching GTFS shapes which encode trip path geometry."
+      DATEX-II:
+        concepts:
+          - "GmlLineString"
+        definition: "A GML-encoded sequence of coordinate points forming a linear geometry in DATEX-II."
+        conditions:
+          - "Exact match: BoB polyline is an ordered list of coordinates forming a line, directly matching DATEX-II GmlLineString."
     description: Geographical polygonal path (line)
     type: array
     items:
@@ -1469,6 +1529,27 @@ definitions:
         definition: "The part of a line between adjacent operational points; may consist of several tracks. / Any location for train service operations where train services may begin/end or change route, and where passenger or freight services may be provided."
         conditions:
           - "Partial match: an ordered stop sequence defines a path through ERA SectionOfLines; each stopId is an ERA OperationalPoint."
+      GBFS:
+        concepts:
+          - "station_information.station_id"
+        definition: "GBFS station_information identifies docking stations; no ordered route/stop-sequence concept exists in GBFS."
+        conditions:
+          - "Partial match: GBFS does not model ordered stop sequences; individual station_ids correspond to BoB route stop points."
+      GTFS:
+        concepts:
+          - "stop_times.stop_id"
+          - "stop_times.stop_sequence"
+          - "routes.route_id"
+        definition: "GTFS stop_times defines the ordered sequence of stops for a trip, with each stop identified by stop_id and positioned by stop_sequence."
+        conditions:
+          - "Exact match: BoB route is an ordered list of stop identifiers, directly corresponding to the ordered sequence of stops in GTFS stop_times."
+      DATEX-II:
+        concepts:
+          - "GmlLineString"
+          - "PointByCoordinates"
+        definition: "A GML linear geometry or point coordinate in DATEX-II for representing network paths and locations."
+        conditions:
+          - "Partial match: BoB route encodes an ordered stop sequence; DATEX-II represents the underlying geometry but lacks stop-sequence semantics."
     description: ordered list of stopIds, groupIds or coordinates to define a route
     type: array
     items:
@@ -1531,6 +1612,25 @@ definitions:
         definition: "Represents an area reference in the network. Used for infrastructure elements positioned in relation to the topology as a subnetwork (e.g. tunnels, non-stopping areas, stations)."
         conditions:
           - "Partial match: union of geometric areas maps to ERA's NetAreaReference."
+      GBFS:
+        concepts:
+          - "geofencing_zones"
+        definition: "GBFS geofencing_zones defines geographic areas (polygons) with rules for vehicle operation, supporting unions of zones."
+        conditions:
+          - "Partial match: both define composite geographic areas; GBFS geofencing_zones is the closest concept, using GeoJSON MultiPolygon geometry."
+      GTFS:
+        concepts:
+          - "shapes.shape_pt_lat"
+          - "shapes.shape_pt_lon"
+        definition: "GTFS has no native geographic area concept; shape coordinates are the lowest-level geographic primitive."
+        conditions:
+          - "Partial match: GTFS does not model area unions; shape coordinates can approximate area boundaries but lack area semantics."
+      DATEX-II:
+        concepts:
+          - "NamedArea"
+        definition: "A named geographic area in DATEX-II described by a set of coordinates; multiple areas can be combined."
+        conditions:
+          - "Partial match: both can represent composite geographic areas; DATEX-II NamedArea covers individual named areas, union semantics are implicit."
     type: object
     description: Geographical areas (union)
     properties:
