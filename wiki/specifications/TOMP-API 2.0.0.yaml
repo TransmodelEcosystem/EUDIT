@@ -3145,6 +3145,18 @@ components:
           definition: 'vehicle_status: real-time availability of individual vehicles. station_status: real-time availability at docking stations.'
           conditions:
           - 'Exact match: an assetCollection listing available vehicles/stations corresponds to GBFS vehicle_status or station_status entries.'
+        OCPI:
+          concepts:
+          - Location
+          definition: 'A Location object describes the location and its properties where a charge point or shared-mobility unit is installed.'
+          conditions:
+          - 'Partial match: an assetCollection listing units at a site corresponds to an OCPI Location grouping multiple EVSEs or assets at one physical site.'
+        APDS:
+          concepts:
+          - Place
+          definition: 'An APDS Place represents a physical location (e.g. a car park or parking zone) that can contain spaces or equipment.'
+          conditions:
+          - 'Partial match: an assetCollection as a facility containing bookable units maps to an APDS Place containing parking spaces or mobility units.'
       description: a list of available assets.
       type: object
       properties:
@@ -6199,6 +6211,18 @@ components:
           definition: Physical and operational attributes of a vehicle, including vehicle type, fuel type, load type, and gross weight.
           conditions:
           - 'Partial match: cargo capacity limits of a vehicle align with DATEX-II VehicleCharacteristics load and weight attributes.'
+        OCPI:
+          concepts:
+          - Connector
+          definition: 'A Connector is the socket or cable and plug available for the EV to use, including physical and electrical specifications.'
+          conditions:
+          - 'Partial match: cargo physical constraints (max length, width, weight) correspond to OCPI Connector physical specification attributes.'
+        APDS:
+          concepts:
+          - RightSpecification
+          definition: 'An APDS RightSpecification defines the conditions and constraints under which a parking or mobility right may be exercised.'
+          conditions:
+          - 'Partial match: cargo limit constraints on vehicle usage map to APDS RightSpecification conditions governing use of a mobility service.'
       type: object
       description: applicable properties to specify cargo space/loads
       properties:
@@ -7823,6 +7847,18 @@ components:
           definition: Unique identifier and name of a stop or station as defined in stops.txt.
           conditions:
           - 'Partial match: a TOMP place representing a public transport stop corresponds to GTFS stops.stop_id and stop_name.'
+        OCPI:
+          concepts:
+          - Location
+          definition: 'A Location object describes the location and its properties where a charge point or shared-mobility unit is installed, identified by name and coordinates.'
+          conditions:
+          - 'Partial match: a TOMP place as a named geographic location with coordinates maps to an OCPI Location representing a named physical site.'
+        APDS:
+          concepts:
+          - Place
+          definition: 'An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights.'
+          conditions:
+          - 'Partial match: a TOMP place with name and lat/lon directly maps to an APDS Place representing a named physical location.'
       type: object
       description: >-
         address parts, where addressLine1 and 2 should contain the complete
@@ -8125,6 +8161,18 @@ components:
           definition: A legally constituted body with responsibility for road traffic management, information services, or transport operations.
           conditions:
           - 'Partial match: a transport operator reference maps to DATEX-II Organisation.'
+        OCPI:
+          concepts:
+          - BusinessDetails
+          definition: 'BusinessDetails holds the name, logo, and website of a charge point operator or mobility provider.'
+          conditions:
+          - 'Exact match: an operatorReference carrying operator id and name directly corresponds to OCPI BusinessDetails identifying a mobility operator.'
+        APDS:
+          concepts:
+          - Organisation
+          definition: 'An APDS Organisation represents a legal entity that operates a parking or mobility service.'
+          conditions:
+          - 'Exact match: an operatorReference identifying a transport operator maps to an APDS Organisation representing the service operator.'
       $ref: '#/components/schemas/normalString'
     zoneReference:
       x-semantics:

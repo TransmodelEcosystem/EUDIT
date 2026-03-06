@@ -458,6 +458,18 @@ definitions:
             definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
             conditions:
               - "Partial match: both reference a point location; DATEX-II uses coordinates directly whereas BoB uses an opaque id reference."
+            OCPI:
+              concepts:
+                - "Location"
+              definition: "An OCPI Location identifies a named physical site by id and coordinates where mobility services are provided."
+              conditions:
+                - "Partial match: a boarding place reference identifies the named stop where the passenger boards, corresponding to an OCPI Location as the mobility service site."
+            APDS:
+              concepts:
+                - "Place"
+              definition: "An APDS Place is a physical location used to anchor rights and events."
+              conditions:
+                - "Partial match: a boarding place reference maps to an APDS Place used as the occupancy event anchor location."
       alightingPlace:
         $ref: '#/definitions/place'
         x-semantics:
@@ -614,6 +626,18 @@ definitions:
             definition: "A 0-dimensional node of the network used for the spatial description of the network. POINTs may be located by a LOCATION in a given LOCATING SYSTEM."
             conditions:
               - "Exact match to POINT.locating → LOCATION: the coordinate provides the geographic WGS84 position of the place, corresponding to the LOCATION associated with a POINT subtype in Transmodel."
+        OCPI:
+          concepts:
+            - "Location"
+          definition: "An OCPI Location identifies a named physical site by id and coordinates where mobility services are provided."
+          conditions:
+            - "Partial match: a BoB place as a named stop with coordinates maps to an OCPI Location as a named physical site."
+        APDS:
+          concepts:
+            - "Place"
+          definition: "An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights."
+          conditions:
+            - "Partial match: a BoB place with id, name, and coordinate maps to an APDS Place representing a named physical location."
   geoPosition:
     description: Geopos (WGS84 decimal)
     x-semantics:

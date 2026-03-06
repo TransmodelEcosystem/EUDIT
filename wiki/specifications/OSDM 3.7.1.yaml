@@ -15094,6 +15094,18 @@ components:
               conditions:
               - 'Partial match: geoLocation encodes a point coordinate equivalent
                 to GTFS stop_lat/stop_lon but is used on vehicles/assets here.'
+            OCPI:
+              concepts:
+              - GeoLocation
+              definition: 'An OCPI GeoLocation holds the WGS84 latitude and longitude of a charge point or site.'
+              conditions:
+              - 'Exact match: geoLocation as a WGS84 lat/lon point directly corresponds to OCPI GeoLocation.'
+            APDS:
+              concepts:
+              - PlaceLocation
+              definition: 'An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place.'
+              conditions:
+              - 'Exact match: geoLocation as a WGS84 coordinate point directly corresponds to APDS PlaceLocation.'
         vehicleType:
           $ref: '#/components/schemas/ContinuousServiceVehicleType'
           x-semantics:
@@ -15242,6 +15254,18 @@ components:
               conditions:
               - 'Exact match: geoPosition is a lat/lon coordinate matching GTFS
                 stops.stop_lat and stops.stop_lon.'
+            OCPI:
+              concepts:
+              - GeoLocation
+              definition: 'An OCPI GeoLocation holds the WGS84 latitude and longitude of a charge point or site.'
+              conditions:
+              - 'Exact match: geoPosition as a WGS84 lat/lon point directly corresponds to OCPI GeoLocation.'
+            APDS:
+              concepts:
+              - PlaceLocation
+              definition: 'An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place.'
+              conditions:
+              - 'Exact match: geoPosition as a WGS84 coordinate point directly corresponds to APDS PlaceLocation.'
         startUsageDescription:
           description: start usage procedure description
           type: string
@@ -15869,6 +15893,18 @@ components:
           conditions:
           - 'No direct Transmodel equivalent: API-level construct with no domain counterpart
             in Transmodel'
+        OCPI:
+          concepts:
+          - Price
+          definition: 'OCPI Price carries a currency field (ISO 4217 code) alongside the monetary amount.'
+          conditions:
+          - 'Exact match: OSDM Currency as an ISO 4217 currency code corresponds to the currency field in OCPI Price.'
+        APDS:
+          concepts:
+          - Rate
+          definition: 'An APDS Rate includes a currency field (ISO 4217) specifying the denomination of the rate amount.'
+          conditions:
+          - 'Exact match: OSDM Currency as an ISO 4217 code directly corresponds to the currency field of APDS Rate.'
     CurrencyAmount:
       type: object
       description: amount in a currency used when not VAT can be provided
@@ -26645,6 +26681,18 @@ components:
             conditions:
             - 'Partial match: both express a monetary charge for using a transport-related
               facility; DATEX-II ParkingRate is parking-specific, OSDM Price is general.'
+        OCPI:
+          concepts:
+          - Price
+          definition: 'An OCPI Price represents a monetary amount with a currency, used in Tariff and CDR structures.'
+          conditions:
+          - 'Exact match: OSDM Price expresses a monetary amount in a currency, directly corresponding to OCPI Price.'
+        APDS:
+          concepts:
+          - Rate
+          definition: 'An APDS Rate defines the monetary pricing applicable to a right, including amount and currency.'
+          conditions:
+          - 'Partial match: OSDM Price as a monetary amount maps to APDS Rate; APDS Rate also carries validity and applicability conditions not present in OSDM Price.'
     CurrencyConversion:
       description: 'details on a currency conversion applied
 
@@ -32656,6 +32704,18 @@ components:
             conditions:
             - 'Partial match: both record a named fixed infrastructure location; DATEX-II
               focus is traffic measurement whereas OSDM is passenger boarding.'
+        OCPI:
+          concepts:
+          - Location
+          definition: 'An OCPI Location describes the named physical site where shared-mobility or charging infrastructure is installed, identified by coordinates and name.'
+          conditions:
+          - 'Partial match: an OSDM StopPlace as a named passenger boarding location with coordinates maps to an OCPI Location as a named physical site.'
+        APDS:
+          concepts:
+          - Place
+          definition: 'An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights.'
+          conditions:
+          - 'Partial match: an OSDM StopPlace as a named infrastructure location maps to an APDS Place representing a named physical location.'
     StopPlaceRef:
       description: 'Reference to a Stop Place using URNs to define code.
 

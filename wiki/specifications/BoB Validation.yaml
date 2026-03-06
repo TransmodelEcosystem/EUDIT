@@ -1110,6 +1110,18 @@ definitions:
             definition: "A specific vehicle or road vehicle type characterised in DATEX-II by its physical and operational attributes."
             conditions:
               - "Partial match: BoB service references the vehicle journey context; DATEX-II Vehicle identifies the physical vehicle, not the journey."
+            OCPI:
+              concepts:
+                - "Session"
+              definition: "An OCPI Session represents an active mobility or charging session linked to a specific asset and location."
+              conditions:
+                - "Partial match: BoB service identifying the journey context of a validation event corresponds to an OCPI Session tracking the active use of a mobility asset."
+            APDS:
+              concepts:
+                - "OccupancyEvent"
+              definition: "An APDS OccupancyEvent records the start or end of an occupancy period at a place."
+              conditions:
+                - "Partial match: BoB service identifying the journey where validation occurred maps to an APDS OccupancyEvent anchoring the mobility occupancy period."
         type: object
         required:
           - pid
@@ -1171,6 +1183,18 @@ definitions:
             definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
             conditions:
               - "Partial match: BoB stopArea identifies a named stop location; DATEX-II PointByCoordinates encodes the geographic point but lacks id/name semantics."
+            OCPI:
+              concepts:
+                - "Location"
+              definition: "An OCPI Location identifies a named physical site by id and coordinates where mobility services are provided."
+              conditions:
+                - "Partial match: BoB stopArea as a named stop with an identifier maps to an OCPI Location as a named physical mobility site."
+            APDS:
+              concepts:
+                - "Place"
+              definition: "An APDS Place is a physical location described by an identifier and name, used to anchor rights and events."
+              conditions:
+                - "Partial match: BoB stopArea as a named stop identifier maps to an APDS Place used as the anchor location for occupancy events."
         type: object
         required:
           - pid

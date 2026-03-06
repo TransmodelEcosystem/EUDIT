@@ -134,6 +134,18 @@ components:
           definition: "GTFS-Flex booking_rules.booking_type defines the type of on-demand booking event required before a trip."
           conditions:
             - "Partial match: USER_ACTION and USER_NO_SHOW notifications align with GTFS-Flex on-demand booking event types where traveller interaction is required."
+        OCPI:
+          concepts:
+            - Command
+          definition: "An OCPI Command is a remote instruction sent to a charge point or mobility asset (e.g. START_SESSION, STOP_SESSION, RESERVE_NOW)."
+          conditions:
+            - "Partial match: a notificationInput as a lifecycle control event sent to a mobility asset (PREPARING/STARTED/ENDED) corresponds to an OCPI Command initiating or terminating an asset session."
+        APDS:
+          concepts:
+            - OccupancyEvent
+          definition: "An APDS OccupancyEvent records the start or end of an occupancy period at a place, such as arrival or departure."
+          conditions:
+            - "Partial match: a notificationInput signalling lifecycle transitions (STARTED/ENDED) of a mobility leg corresponds to an APDS OccupancyEvent marking the start or end of occupancy."
       type: object
       required:
         - notificationType
@@ -355,6 +367,18 @@ components:
           definition: "GBFS vehicle_status describes the real-time state of a vehicle including reservation and rental state."
           conditions:
             - "Partial match: START_LEG confirmation corresponds to initiating a GBFS vehicle rental (is_reserved transitioning to active use); REPLACE_ASSET has no GBFS equivalent."
+        OCPI:
+          concepts:
+            - Session
+          definition: "An OCPI Session represents an active charging or mobility session, tracking state from PENDING through ACTIVE to COMPLETED."
+          conditions:
+            - "Partial match: a confirmationInput triggering START_LEG corresponds to initiating an OCPI Session, transitioning the asset from reserved to active use."
+        APDS:
+          concepts:
+            - AssignedRight
+          definition: "An APDS AssignedRight is the activation of a right specification for a specific occupancy period; it represents a confirmed booking in effect."
+          conditions:
+            - "Partial match: a START_LEG confirmationInput activating a journey leg corresponds to an APDS AssignedRight confirming the occupancy of a mobility slot."
       type: object
       required:
         - confirmationType

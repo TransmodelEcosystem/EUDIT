@@ -1831,6 +1831,18 @@ definitions:
         definition: "A named geographic area in DATEX-II, described by a set of coordinates forming a boundary."
         conditions:
           - "Partial match: both represent a geographic boundary area; DATEX-II NamedArea uses polygon boundaries rather than circle radius."
+      OCPI:
+        concepts:
+          - "GeoLocation"
+        definition: "OCPI uses GeoLocation for point positions; circular area boundaries are not directly modelled in OCPI."
+        conditions:
+          - "Partial match: a BoB circle defines an area around a GeoLocation centre point; OCPI has no dedicated circle type."
+      APDS:
+        concepts:
+          - "AreaLocation"
+        definition: "An APDS AreaLocation defines a geographic area by shape; a circular area is a supported variant."
+        conditions:
+          - "Partial match: a BoB circle (centre + radius) corresponds to an APDS AreaLocation of circular shape."
     description: Geographical circle (area)
     type: object
     required:
@@ -1879,6 +1891,18 @@ definitions:
         definition: "A GML-encoded polygon geometry in DATEX-II representing a closed area boundary."
         conditions:
           - "Exact match: BoB polygon is an ordered list of WGS84 coordinates forming a closed boundary, matching DATEX-II GmlPolygon."
+      OCPI:
+        concepts:
+          - "GeoLocation"
+        definition: "OCPI uses GeoLocation for point positions; polygon boundaries are not directly modelled in OCPI."
+        conditions:
+          - "Partial match: a BoB polygon defines an area boundary using coordinate points; OCPI has no dedicated polygon type."
+      APDS:
+        concepts:
+          - "Polygon"
+        definition: "An APDS Polygon is a closed sequence of WGS84 coordinate pairs defining a geographic area boundary."
+        conditions:
+          - "Exact match: BoB polygon as a closed coordinate ring directly corresponds to APDS Polygon."
     description: Geographical polygon (area)
     type: array
     items:
@@ -1919,6 +1943,18 @@ definitions:
         definition: "A GML-encoded sequence of coordinate points forming a linear geometry in DATEX-II."
         conditions:
           - "Exact match: BoB polyline is an ordered list of coordinates forming a line, directly matching DATEX-II GmlLineString."
+      OCPI:
+        concepts:
+          - "GeoLocation"
+        definition: "OCPI uses GeoLocation for point positions; linear paths are not directly modelled in OCPI."
+        conditions:
+          - "Partial match: a BoB polyline defines a route as a sequence of coordinate points; OCPI has no dedicated polyline type."
+      APDS:
+        concepts:
+          - "PlaceLocation"
+        definition: "An APDS PlaceLocation specifies geographic coordinates; a sequence of PlaceLocations can represent a path."
+        conditions:
+          - "Partial match: a BoB polyline as an ordered sequence of coordinate points maps loosely to a sequence of APDS PlaceLocations."
     description: Geographical polygonal path (line)
     type: array
     items:
@@ -2037,6 +2073,18 @@ definitions:
         definition: "A point location defined by explicit latitude/longitude coordinates in the DATEX-II location referencing model."
         conditions:
           - "Partial match: BoB place coordinate field matches DATEX-II PointByCoordinates; BoB place also carries id and name not present in DATEX-II."
+      OCPI:
+        concepts:
+          - "Location"
+        definition: "An OCPI Location identifies a named physical site by id and coordinates where mobility services are provided."
+        conditions:
+          - "Partial match: a BoB place with id, name, and coordinate maps to an OCPI Location as a named physical site."
+      APDS:
+        concepts:
+          - "Place"
+        definition: "An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights."
+        conditions:
+          - "Partial match: a BoB place with id, name, and coordinate maps to an APDS Place representing a named physical location."
     type: object
     properties:
       stopId:

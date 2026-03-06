@@ -1097,6 +1097,18 @@ definitions:
         definition: "An organisation in DATEX-II represents a legal entity involved in transport operations, characterised by name and identity."
         conditions:
           - "Exact match: a BoB participant is a legally incorporated organisation, directly matching DATEX-II Organisation which models transport-related legal entities."
+      OCPI:
+        concepts:
+          - "BusinessDetails"
+        definition: "BusinessDetails holds the name, logo, and website of a charge point operator or mobility provider."
+        conditions:
+          - "Exact match: a BoB participant carrying organisationName and domainName directly corresponds to OCPI BusinessDetails identifying a mobility operator."
+      APDS:
+        concepts:
+          - "Organisation"
+        definition: "An APDS Organisation represents a legal entity that operates a parking or mobility service, identified by name and id."
+        conditions:
+          - "Exact match: a BoB participant as a legally incorporated mobility operator maps directly to an APDS Organisation."
     type: object
     required:
       - pid
@@ -1211,5 +1223,17 @@ definitions:
         definition: "An organisation in DATEX-II represents a legal entity involved in transport operations, characterised by name and identity."
         conditions:
           - "Partial match: BoB participantInfo is supplementary metadata for an organisation, broadly aligning with DATEX-II Organisation extended attributes."
+      OCPI:
+        concepts:
+          - "BusinessDetails"
+        definition: "BusinessDetails holds the name, logo, and website of a charge point operator or mobility provider."
+        conditions:
+          - "Partial match: BoB participantInfo holds supplementary profile data for a participant, corresponding to the extended identity fields in OCPI BusinessDetails."
+      APDS:
+        concepts:
+          - "Organisation"
+        definition: "An APDS Organisation represents a legal entity that operates a parking or mobility service, identified by name and id."
+        conditions:
+          - "Partial match: BoB participantInfo as supplementary participant metadata maps to extended attributes of an APDS Organisation."
     description: Holds participant info. Specified in https://bitbucket.org/samtrafiken/bob-schema-participant-info/src/master/participant-info.json
     type: object

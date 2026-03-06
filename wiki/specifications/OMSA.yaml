@@ -2014,6 +2014,18 @@ components:
           definition: "WGS84 latitude and longitude of a stop or station, as defined in stops.txt."
           conditions:
             - "Exact match: a WGS84 coordinate pair directly corresponds to GTFS stops.stop_lat/stop_lon."
+        OCPI:
+          concepts:
+            - "GeoLocation"
+          definition: "An OCPI GeoLocation holds the WGS84 latitude and longitude of a charge point or site."
+          conditions:
+            - "Exact match: a WGS84 coordinate pair (lat, lon) directly corresponds to OCPI GeoLocation."
+        APDS:
+          concepts:
+            - "PlaceLocation"
+          definition: "An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place."
+          conditions:
+            - "Exact match: a WGS84 coordinate pair directly corresponds to APDS PlaceLocation coordinates."
       type: array
       minItems: 2
       maxItems: 2
@@ -2049,6 +2061,18 @@ components:
           definition: "WGS84 latitude and longitude of a free-floating vehicle, as defined in the GBFS vehicle_status feed."
           conditions:
             - "Exact match: GeoJSON Point geometry represents the real-time position of a GBFS vehicle (vehicle_status.lat/lon)."
+        OCPI:
+          concepts:
+            - "GeoLocation"
+          definition: "An OCPI GeoLocation holds the WGS84 latitude and longitude of a charge point or site."
+          conditions:
+            - "Exact match: GeoJSON Point geometry encoding a lat/lon coordinate directly corresponds to OCPI GeoLocation."
+        APDS:
+          concepts:
+            - "PlaceLocation"
+          definition: "An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place."
+          conditions:
+            - "Exact match: GeoJSON Point geometry maps to APDS PlaceLocation as both represent a WGS84 coordinate point."
       type: object
       description: Geojson Coordinate
       required:
@@ -2120,6 +2144,18 @@ components:
           definition: "GeoJSON FeatureCollection describing geographic areas with operational rules (no-ride zones, slow zones, preferred parking areas)."
           conditions:
             - "Partial match: a GeoJSON polygon represents the boundary of a GBFS geofencing zone."
+        OCPI:
+          concepts:
+            - "GeoLocation"
+          definition: "OCPI uses GeoLocation for point positions; polygon boundaries are implicit in Location display_name / EV zone definitions."
+          conditions:
+            - "Partial match: a GeoJSON polygon defines an area boundary; OCPI uses GeoLocation for points and does not define a dedicated polygon type."
+        APDS:
+          concepts:
+            - "Polygon"
+          definition: "An APDS Polygon is a closed sequence of WGS84 coordinate pairs defining a geographic area boundary."
+          conditions:
+            - "Exact match: GeoJSON polygon geometry corresponds directly to APDS Polygon as both are closed coordinate-ring area definitions."
       type: object
       description: geojson representation of a polygon. First and last point must be equal. See also https://geojson.org/geojson-spec.html#polygon and example https://geojson.org/geojson-spec.html#id4. The order should be lon, lat [[[lon1, lat1], [lon2,lat2], [lon3,lat3], [lon1,lat1]]], the first point should match the last point.
       required:
@@ -2153,6 +2189,18 @@ components:
           definition: "GmlPolygon: planar area defined by boundary rings. NamedArea: a named geographic area used for location referencing."
           conditions:
             - "Partial match: a GeoJSON MultiPolygon composing several boundary rings corresponds to a set of DATEX-II GmlPolygons aggregated under a NamedArea."
+        OCPI:
+          concepts:
+            - "GeoLocation"
+          definition: "OCPI uses GeoLocation for point positions; composite area boundaries are not directly modelled."
+          conditions:
+            - "Partial match: a GeoJSON MultiPolygon defines a composite area; OCPI has no dedicated MultiPolygon type but Location bounds can imply it."
+        APDS:
+          concepts:
+            - "MultiPolygon"
+          definition: "An APDS MultiPolygon is a collection of polygon geometries representing a composite geographic area."
+          conditions:
+            - "Exact match: GeoJSON MultiPolygon geometry directly corresponds to APDS MultiPolygon as both represent composite closed-area boundaries."
       type: object
       description: geojson representation of a multi polygon. See also https://geojson.org/geojson-spec.html#multipolygon
       required:
@@ -2492,6 +2540,18 @@ components:
           definition: "A purchasable fare product, defined in fare_products.txt with a unique identifier, name, associated fare media, amount, and currency."
           conditions:
             - "Exact match: the OMSA product (fare product with id and name) directly corresponds to a GTFS fare_products entry."
+        OCPI:
+          concepts:
+            - "Session"
+          definition: "An OCPI Session represents an active mobility or charging session with start/end time, energy used, and location."
+          conditions:
+            - "Partial match: a leg as a single-mode travel segment with start/end times and location corresponds to an OCPI Session tracking the active use of a mobility unit."
+        APDS:
+          concepts:
+            - "OccupancyEvent"
+          definition: "An APDS OccupancyEvent records the start or end of an occupancy period at a place, including timestamps and place reference."
+          conditions:
+            - "Partial match: a leg as a travel segment with start/end events at named places corresponds to an APDS OccupancyEvent marking the occupancy lifecycle of the mobility unit."
       type: object
       properties:
         type:
@@ -2535,6 +2595,18 @@ components:
           definition: "Travel time and delay information for a specific road section or itinerary, including measured and predicted values."
           conditions:
             - "Partial match: a trip pattern's ordered list of travel segments overlaps with DATEX-II TravelTimeData for an itinerary."
+        OCPI:
+          concepts:
+            - "Session"
+          definition: "An OCPI Session tracks an active mobility session; a sequence of sessions could represent a multi-leg trip pattern."
+          conditions:
+            - "Partial match: a tripPattern as an ordered journey sequence maps loosely to a series of OCPI Sessions representing each leg of the trip."
+        APDS:
+          concepts:
+            - "Segment"
+          definition: "An APDS Segment is an ordered division of a route or itinerary between two successive points."
+          conditions:
+            - "Partial match: a tripPattern as an ordered list of service journeys with places maps to a sequence of APDS Segments defining the itinerary."
       type: array
       items:
         type: object
@@ -3032,6 +3104,18 @@ components:
           definition: "A specific vehicle or wagon able and allowed to operate over railway infrastructure."
           conditions:
             - "Partial match: a co-travelling vehicle or object maps to ERA's Vehicle class."
+        OCPI:
+          concepts:
+            - "EVSE"
+          definition: "An OCPI EVSE (Electric Vehicle Supply Equipment) is a single bookable physical unit at a location, with connectors and status."
+          conditions:
+            - "Partial match: a travellingAsset as a co-travelling vehicle or object corresponds to an OCPI EVSE as an individually bookable physical unit."
+        APDS:
+          concepts:
+            - "Place"
+          definition: "An APDS Place can represent a single occupiable or bookable physical unit within a facility."
+          conditions:
+            - "Partial match: a travellingAsset as a bookable physical vehicle or object maps loosely to an APDS Place representing an occupiable unit."
       allOf:
       - $ref: "#/components/schemas/travelParty"
       - type: object
@@ -4176,6 +4260,18 @@ components:
           definition: "A legally constituted body, company or authority with responsibility for road traffic management, information services, or transport operations."
           conditions:
             - "Exact match: a transport operator organisation maps to DATEX-II Organisation."
+        OCPI:
+          concepts:
+            - "BusinessDetails"
+          definition: "BusinessDetails holds the name, logo, and website of a charge point operator or mobility provider."
+          conditions:
+            - "Exact match: an organisationReference carrying operator id and name directly corresponds to OCPI BusinessDetails identifying a mobility operator."
+        APDS:
+          concepts:
+            - "Organisation"
+          definition: "An APDS Organisation represents a legal entity that operates a parking or mobility service."
+          conditions:
+            - "Exact match: an organisationReference identifying a transport operator maps to an APDS Organisation representing the service operator."
       type: object
       required:
       - organisationId
@@ -4212,6 +4308,18 @@ components:
           definition: "A named geographic area used as a location reference, defined by administrative or topological boundaries."
           conditions:
             - "Partial match: a placeReference identifying a zone or area corresponds to DATEX-II NamedArea; for point stops, PointCoordinates is more precise."
+        OCPI:
+          concepts:
+            - "Location"
+          definition: "An OCPI Location identifies a named physical site by id and coordinates where mobility services are provided."
+          conditions:
+            - "Partial match: a placeReference as an identifier for a named place (trip origin/destination) corresponds to an OCPI Location reference identifying a mobility site."
+        APDS:
+          concepts:
+            - "Place"
+          definition: "An APDS Place is a physical location described by an identifier, name, and coordinates used to anchor rights and events."
+          conditions:
+            - "Exact match: a placeReference as a named location identifier maps directly to an APDS Place used as an anchor for mobility rights and events."
       type: object
       required:
       - placeId
