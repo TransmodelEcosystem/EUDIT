@@ -1,0 +1,117 @@
+swagger: '2.0'
+info:
+  version: 1.3.3
+  title: BoB.Authentication.API
+basePath: /api/v1
+schemes:
+  - https
+paths:
+  '/auth/{entityId}':
+    get:
+      tags:
+        - auth
+      summary: Get Authentication Token
+      description: |
+        getAuthenticationToken is used to get an authentication token given an
+        entity identifier (provided in request URI) and a TLS client certificate.
+
+        Result is provided both as a JWT in compact format as well as a serialized
+        JWT header/payload to ease parsing. In addition to the standard JWT claims,
+        BoB JWTs may contain the following additional claims:
+        * bobHok â€“ holder of key claim, a SHA1 fingerprint (as hex) of the entity's
+        TLS client certificate (optional but strongly recommended)
+        * bobAuthZ â€“ authorization group (mandatory)
+      operationId: getAuthenticationToken
+      produces:
+        - application/json
+      parameters:
+        - name: entityId
+          in: path
+          description: identifier of entity that is the subject requesting the JWT
+          required: true
+          type: string
+        - name: X-SSL-Client-SHA1
+          in: header
+          description: SHA1 fingerprint (as hex) of TLS client certificate (added by API server or reverse proxy)
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/authToken'
+definitions:
+  authToken:
+    type: object
+    required:
+      - jwtCompact
+    properties:
+      jwtCompact:
+        description: JWT as JWS Compact Serialization
+        type: string
+        example: "REDACTED_JWT"
+      header:
+        $ref: '#/definitions/jwsHeader'
+      payload:
+        $ref: '#/definitions/jwtClaim'
+  jwsHeader:
+    title: RFC 7515 JWS header
+    type: object
+    required:
+      - alg
+      - kid
+    properties:
+      alg:
+        title: Algorithm
+        type: string
+        example: "ES256"
+      kid:
+        title: Key ID
+        type: string
+        example: "auth20170320"
+  jwtClaim:
+    title: RFC 7519 JWT claim
+    type: object
+    required:
+      - iss
+      - sub
+      - exp
+      - bobAuthZ
+    properties:
+      iss:
+        title: Issuer claim
+        description: Entity ID of issuer
+        type: string
+        example: "1"
+      sub:
+        title: Subject claim
+        description: Entity ID of subject
+        type: string
+        example: "validator37"
+      nbf:
+        title: Not-before claim
+        description: NumericDate indicating start of claim validity
+        type: integer
+        format: int64
+        example: 1489998201
+      iat:
+        title: Issued-at claim
+        description: NumericDate indicating time of claim issuance
+        type: integer
+        format: int64
+        example: 1489998201
+      exp:
+        title: Expiration time
+        description: NumericDate indicating end of claim validity
+        type: integer
+        format: int64
+        example: 1490001801
+      bobHok:
+        title: Holder of key claim
+        description: SHA1 fingerprint (as hex) of entity TLS client certificate
+        type: string
+        example: "0a9a063eb8d540cbf7dfba7697c674d14a174f7d"
+      bobAuthZ:
+        title: Authorization Class claim
+        description: Entity authorization class (AuthZ group)
+        type: string
+        example: "val"

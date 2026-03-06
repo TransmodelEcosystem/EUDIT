@@ -1,0 +1,201 @@
+swagger: '2.0'
+info:
+  version: 2.1.1
+  title: BoB.Device.API
+basePath: /api/v2
+schemes:
+  - https
+paths:
+  '/device/key':
+    post:
+      tags:
+        - device
+      summary: Get current device key by Device ID
+      operationId: getDeviceKey
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: keyRequest
+          in: body
+          description: Device key request
+          required: true
+          schema:
+            $ref: '#/definitions/deviceKeyRequest'
+      responses:
+        '201':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/deviceKeyResponse'
+  '/device/kdk':
+    get:
+      tags:
+        - validation
+      summary: Get all currently valid key derivation keys (KDK)
+      operationId: getDeviceKDK
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/jwkSet'
+  '/device/userAgent':
+    get:
+      tags:
+        - user agent
+      summary: Get the complete set of user agents
+      operationId: getUserAgents
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/userAgents'
+  '/device/userAgent/{ua}':
+    get:
+      tags:
+        - user agent
+      summary: Get user agent
+      operationId: getUserAgent
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ua
+          in: path
+          description: User agent id
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/userAgent'
+definitions:
+  deviceKeyRequest:
+    type: object
+    required:
+      - did
+    properties:
+      did:
+        description: Device Identifier
+        type: string
+        format: base64url
+  deviceKeyResponse:
+    type: object
+    required:
+      - kid
+      - did
+      - kty
+      - k
+      - exp
+    properties:
+      kid:
+        description: Master Key Identifier
+        type: string
+      did:
+        description: Device Identifier
+        type: string
+        format: base64url
+      kty:
+        description: JWA key type (always 'oct')
+        type: string
+      k:
+        description: Symmetric key
+        type: string
+        format: base64url
+      iat:
+        description: Issued at timestamp
+        type: integer
+        format: int64
+      exp:
+        description: Expire timestamp
+        type: integer
+        format: int64
+      ua:
+        description: |
+          User agent id to put into the ua field of the
+          Device Signature Protected Header of the MTB
+        type: integer
+  jwkSet:
+    type: object
+    description: JWK Set
+    required:
+      - keys
+    properties:
+      keys:
+        type: array
+        items:
+          $ref: '#/definitions/jwkSymmetric'
+  jwkSymmetric:
+    description: Symmetric JSON Web Key
+    type: object
+    required:
+      - kty
+      - kid
+      - k
+    properties:
+      kty:
+        description: JWA key type
+        type: string
+      kid:
+        description: JWK key identifier
+        type: string
+      k:
+        description: Symmetric key
+        type: string
+        format: base64url
+      kdf:
+        description: Key derivation function (default mts2)
+        type: string
+        enum:
+          - mts2
+  userAgent:
+    description: |
+      A user agent object, a dictionary of keys and values.
+    type: object
+    additionalProperties:
+      description: |
+        Keys and values of a user agent. The suggested usage for this dictionary is to select
+        appropriate header fields defined in the  User-Agent Client Hints Draft Community
+        Report at https://wicg.github.io/ua-client-hints/ as keys.
+      type: string
+    example:
+      Sec-CH-UA: "\"Sales App\";v=\"3\""
+      Sec-CH-UA-Full-Version-List: "\"Sales App\";v=\"3.1.204\""
+      Sec-CH-UA-Model: "iPhone SE 2022"
+      Sec-CH-UA-Platform: "iOS"
+      Sec-CH-UA-Platform-Version: "15.6.1"
+  userAgents:
+    description: Dictionary with user agent ids (ua) as property keys and user agent objects as property values
+    type: object
+    additionalProperties:
+      type: object
+    example:
+      1: {"Sec-CH-UA": "\"Sales App\";v=\"3\"", "Sec-CH-UA-Full-Version-List": "\"Sales App\";v=\"3.1.204\"", "Sec-CH-UA-Model": "iPhone SE 2022", "Sec-CH-UA-Platform": "iOS", "Sec-CH-UA-Platform-Version": "15.6.1"}
+      2: {"Sec-CH-UA": "\"Sales App\";v=\"3\"", "Sec-CH-UA-Full-Version-List": "\"Sales App\";v=\"3.1.204\"", "Sec-CH-UA-Model": "Galaxy S22", "Sec-CH-UA-Platform": "Android", "Sec-CH-UA-Platform-Version": "13"}
+      3: {"Sec-CH-UA": "\"Sales App\";v=\"3\"", "Sec-CH-UA-Full-Version-List": "\"Sales App\";v=\"3.1.204\"", "Sec-CH-UA-Model": "iPhone 13 Pro", "Sec-CH-UA-Platform": "iOS", "Sec-CH-UA-Platform-Version": "15.6.1"}

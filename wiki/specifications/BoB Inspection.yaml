@@ -1,0 +1,542 @@
+swagger: '2.0'
+info:
+  version: 2.3.0
+  title: BoB.Inspection.API
+basePath: /api/v2
+schemes:
+  - https
+paths:
+  '/inspection/{ticketId}':
+    post:
+      tags:
+        - inspection
+      summary: Inspect ticket by Ticket ID
+      description: |
+        Inspect ticket by Ticket ID and return a reference to a ticket event.
+
+        **Online inspection** - If an eventResult is not provided, the result of
+                             the inspection is not known and the server is
+                             requested to perform inspection. In this case, the
+                             entire MTB must be submitted via a query parameter.
+
+        **Offline inspection** - If an eventResult is provided, the result of the
+                             inspection is known and the server does not have to
+                             perform inspection. In this case, the entire MTB
+                             does not need to be submitted via a query
+                             parameter.
+      operationId: inspectTicket
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ticketId
+          in: path
+          description: Ticket Identifier
+          required: true
+          type: string
+          format: string
+        - name: inspectionEvent
+          in: body
+          description: Inspection event
+          required: true
+          schema:
+            $ref: '#/definitions/ticketEvent'
+        - name: mtb
+          in: query
+          description: MTB
+          required: false
+          type: string
+          format: base64url
+      responses:
+        '201':
+          description: Created
+          headers:
+            location:
+              description: "URI of the new ticketEvent, see RFC 2616 section 14.30"
+              type: string
+          schema:
+            $ref: '#/definitions/ticketEventResult'
+        '303':
+          description: Ticket event already exists
+          headers:
+            location:
+              description: "URI of the existing ticketEvent, see RFC 2616 section 14.30"
+              type: string
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/inspection':
+    post:
+      tags:
+        - inspection
+      summary: Report already performed inspections
+      description: |
+        Already performed offline inspections may be submitted in batch via
+        reportInspections. The entire batch must be accepted/rejected - there's
+        no status reporting on individual events. Online inspection is not
+        supported.
+      operationId: reportInspections
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: inspectionReport
+          in: body
+          description: Inspection report
+          required: true
+          schema:
+            $ref: '#/definitions/inspectionReport'
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: Unauthorised
+definitions:
+  inspectionReport:
+    type: array
+    items:
+      $ref: '#/definitions/ticketEvent'
+  geoPosition:
+    description: Geographical position (WGS84 decimal)
+    type: object
+    required:
+      - lat
+      - long
+    properties:
+      lat:
+        description: Latitude
+        type: number
+        format: double
+        example: 59.329627
+      long:
+        description: Longitude
+        type: number
+        format: double
+        example: 18.059201
+      alt:
+        description: Altitude
+        type: number
+        format: double
+        example: 10.2
+  mtbReference:
+    description: MTB reference
+    type: object
+    required:
+      - pid
+      - issuerSignature
+    properties:
+      pid:
+        description: Participant identifier
+        type: integer
+        format: int64
+        example: 1
+      issuerSignature:
+        description: MTB issuer signature
+        type: string
+        format: base64url
+        example: "MEQCIGSYn88hmpE8h0zvFfn+Pvx..."
+  deviceReference:
+    description: Device reference, unique reference for device that creates device signed tickets
+    type: object
+    required:
+      - pid
+      - did
+    properties:
+      pid:
+        description: Participant identifier
+        type: integer
+        format: int64
+        example: 1
+      did:
+        description: Device identifier
+        type: string
+        format: base64url
+        example: "U2FtdHJhZmlrZW4="
+      ua:
+        description: |
+          User agent id.
+          To get user agent information, use the user agent id to match an
+          entry in the response from the endpoint GET /device/userAgent. 
+          Or, use it in a request to the endpoint GET /device/userAgent/{ua}.
+          Both of these endpoints are part of the Device API implemented by
+          the participant identified by pid.
+        type: integer
+        example: 835
+  ticketEventResult:
+    description: |
+      The result of a ticket inspection or validation operation registration
+    type: object
+    properties:
+      ticketEventPassengerMessage:
+        description: |
+          Message to be presented to passenger when registering an inspection
+          or validation event
+        type: string
+        example: "Valid"
+      ticketEventInspectMessage:
+        description: |
+          Message to be presented to inspector when registering an inspection event
+        type: string
+        example: "Valid ticket"
+      ticketEventStatus:
+        description: |
+          Status code for inspection or validation event
+        type: integer
+        format: int32
+        example: 0
+      ticketMetadata:
+        $ref: '#/definitions/ticketMetadata'
+      ticketEvent:
+        $ref: '#/definitions/ticketEvent'
+      ticketActivationStatus:
+        $ref: '#/definitions/ticketActivationStatus'
+  ticketActivationStatus:
+    description: Activation status
+    type: object
+    required:
+      - active
+    properties:
+      active:
+        description: True if ticket is active, otherwise false.
+        type: boolean
+      relativeValidity:
+        description: Validity period in ISO 8601 duration format (MTS8, chapter 2.4)
+        type: string
+        example: PT24H
+      latestActivation:
+        description: Date and time for latest activation as ISO 8601:2004 profile
+          extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: '2020-08-28T14:20:39+00:00'
+      latestActivationExpire:
+        description: Date and time for expiration of latest activation as ISO 8601:2004 profile
+          extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: '2020-08-29T03:00:00+00:00'
+      numberOfActivations:
+        description: |
+          Total number of times the product set can be activated
+        type: integer
+        format: int64
+        example: 1
+      remainingActivations:
+        description: |
+          Remaining number of times the product set can be activated
+        type: integer
+        format: int64
+        example: 1
+  ticketMetadata:
+    description: Metadata associated with a ticket
+    type: object
+    properties:
+      relativeValidityStart:
+        description: Start of ticket validity period as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-08-17T09:15:00Z"
+      travellerPhotoURL:
+        description: URL to photo of traveller
+        type: string
+        example: "https://example.com/my-photo.jpg"
+      ticketEventIds:
+        description: List of all event identifiers associated with this ticket
+        type: array
+        items:
+          type: string
+        example:
+          - "ce81fb07-5e91-4fcd-bdf5-4cf07c24d16f"
+          - "a775bdcf-95ac-4e05-9af4-4a627e10ebbb"
+  ticketEvent:
+    description: Ticket event data from inspection or validator device
+    type: object
+    required:
+      - time
+      - ticketId
+      - localEventId
+    properties:
+      time:
+        description: Time stamp as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-08-17T09:15:00Z"
+      ticketId:
+        description: Unique identifier for ticket
+        type: string
+        example: "5f83125b-8c38-442d-ab8c-ac7f56541462"
+      eventId:
+        description: Event identifier (allocated at event creation)
+        type: string
+        example: "19cc3963-692b-4369-8eea-529fba1c138a"
+      localEventId:
+        description: |
+          Event identifier (allocated at validation/inspection).
+          This property MUST be provided in order to detect retransmissions.
+          Even though the scope of this property is (pid,entity_id), it is
+          RECOMMENDED that it is generated as globally unique using UUIDv4.
+        type: string
+        example: fc4a1663-e85f-45a3-9b7f-e09758dd2d6d
+      eventType:
+        description: Type of event, inspection or validation
+        type: string
+        enum:
+          - inspection
+          - validation
+        example: "inspection"
+      eventResult:
+        title: Result code
+        description: |
+          0 = success
+          1 = other failure
+          2 = failed spatial constraints
+          3 = failed time constraints
+          4 = failed device header conditions
+          5 = failed issuer signature validation
+          6 = failed device signature validation
+          7 = failed blacklist check
+          8 = failed passback check
+          9 = failed fraud check
+        type: integer
+        enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+        example: 5
+      eventReason:
+        description: Reason for failure/success
+        type: string
+        example: "Issuer signature validation failed"
+      mtbReference:
+        description: MTB reference
+        $ref: '#/definitions/mtbReference'
+      deviceReference:
+        description: Device reference, unique reference for device that creates device signed tickets
+        $ref: '#/definitions/deviceReference'
+      geo:
+        description: Geographical position (WGS84 decimal)
+        $ref: '#/definitions/geoPosition'
+      modeOfTransport:
+        description: |
+          High-level category of transport mode, such as 'bus', 'rail', 'tram', or 'water'.
+          This value indicates the general type of vehicle or infrastructure used. Valid
+          values are defined in the transport-mode.json schema, available at:
+          https://bitbucket.org/samtrafiken/bob-schema-generic-categories/src/master/transport-mode.json
+        type: string
+        example: "bus"
+      subModeOfTransport:
+        description: |
+          More specific subcategory corresponding to the selected modeOfTransport. For example,
+          if modeOfTransport is 'bus', valid subModeOfTransport values could include 'localBus',
+          'regionalBus', or 'demandAndResponseBus'. The complete list of allowed submode values
+          for each mode is defined in the transport-mode.json schema:
+          https://bitbucket.org/samtrafiken/bob-schema-generic-categories/src/master/transport-mode.json
+        type: string
+        example: "localBus"
+      zone:
+        description: Zone information
+        type: object
+        required:
+          - pid
+          - zoneId
+        properties:
+          pid:
+            description: Participant identifier associated with zone
+            type: integer
+            format: int64
+            example: 1
+          zoneId:
+            description: Zone identifier
+            type: string
+            example: "zone1"
+      service:
+        description: Service information
+        type: object
+        required:
+          - pid
+          - serviceId
+        properties:
+          pid:
+            description: Participant identifier associated with service, trip and block
+            type: integer
+            format: int64
+            example: 1
+          serviceId:
+            description: Service identifier
+            type: string
+            example: "3"
+          tripId:
+            description: Trip identifier
+            type: string
+            example: "152"
+          blockId:
+            description: Block identifier
+            type: string
+            example: "A"
+      stopArea:
+        description: Stop area information
+        type: object
+        required:
+          - pid
+          - stopAreaId
+        properties:
+          pid:
+            description: Participant identifier associated with stop area
+            type: integer
+            format: int64
+            example: 1
+          stopAreaId:
+            description: Identifier for current stop area
+            type: string
+            example: "1"
+          nextStopAreaId:
+            description: Identifier for next stop area
+            type: string
+            example: "2"
+      validator:
+        type: object
+        properties:
+          validatorId:
+            description: What validator originated the event
+            type: string
+            example: "d494e5c8-12d9-4265-a78c-6bfe881280a1"
+          location:
+            description: Where is validator mounted (e.g., vehicle number)
+            type: string
+            example: "100"
+          sublocation:
+            description: More specific location information (e.g., door number)
+            type: string
+            example: "A1"
+      inspector:
+        type: object
+        properties:
+          inspectorId:
+            description: What inspector originated the event
+            type: string
+            example: "d494e5c8-12d9-4265-a78c-6bfe881280a1"
+      operatingDayDate:
+        description: Date of the operating day
+        format: date
+        type: string
+        example: "2021-01-23"
+      tokenTransaction:
+        $ref: '#/definitions/tokenTransaction'
+  tokenTransaction:
+    type: object
+    required:
+      - tpk
+      - aiData
+      - aiRequest
+      - aiResponse
+    properties:
+      tpk:
+        $ref: '#/definitions/jwkPublic'
+      aiData:
+        $ref: '#/definitions/aiData'
+      aiRequest:
+        $ref: '#/definitions/aiRequest'
+      aiResponse:
+        $ref: '#/definitions/aiResponse'
+  jwkPublic:
+    type: object
+    description: Public JSON Web Key (RFC 7517)
+    required:
+      - kty
+      - kid
+    properties:
+      kty:
+        description: JWA key type
+        type: string
+        enum:
+          - RSA
+          - EC
+        example: "EC"
+      kid:
+        description: JWK key identifier
+        type: string
+        example: "k2"
+      crv:
+        description: Curve type (required for kty=EC)
+        type: string
+        example: "P-256"
+      x:
+        description: EC x coordinate (required for kty=EC)
+        type: string
+        format: byte
+        example: "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU"
+      y:
+        description: EC y coordinate (required for kty=EC)
+        type: string
+        format: byte
+        example: "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+      n:
+        description: RSA modulus parameter (required for kty=RSA)
+        type: string
+        format: byte
+        example: "pjdss8ZaDfEH6K6U7GeW2nxDqR4IP049fk1fK0lndimb..."
+      e:
+        description: RSA exponent parameter (required for kty=RSA)
+        type: string
+        format: byte
+        example: "AQAB"
+  aiData:
+    description: Data used to produce Authentication input for token authentication
+    type: object
+    required:
+      - time
+      - terminalId
+    properties:
+      pid:
+        description: Terminal Participant Identifier
+        type: integer
+        format: int64
+        example: 1
+      terminalId:
+        description: Identifier of the terminal
+        type: string
+      aid:
+        description: Full AID (in lowercase hex) as read from the PICC
+        type: string
+      signatureCounter:
+        description: Signature counter as read from the PICC
+        type: integer
+        format: int64
+      time:
+        description: Current time as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: "2021-08-17T09:15:00Z"
+      loc:
+        description: Current geographical location of the terminal (WGS84 decimal tuple)
+        type: string
+        pattern: "^\\-?[0-9]*(\\.[0-9]+)?,\\-?[0-9]*(\\.[0-9]+)?$"
+        example: "59.329627,18.059201"
+  aiRequest:
+    description: Authentication request as sent to the PICC
+    type: string
+    format: base64url
+  aiResponse:
+    description: Authentication response as received from PICC
+    type: string
+    format: base64url

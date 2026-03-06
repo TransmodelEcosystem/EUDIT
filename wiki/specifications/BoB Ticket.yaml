@@ -1,0 +1,1643 @@
+swagger: '2.0'
+info:
+  version: 3.4.0
+  title: BoB.Ticket.API
+basePath: /api/v3
+schemes:
+  - https
+paths:
+  '/ticket':
+    get:
+      tags:
+        - ticket
+      summary: Get issued tickets
+      description: |
+        Get all issued tickets that meets the requirements specified by the
+        parameters. Which parameters you can filter on are described below.
+      operationId: getAllTickets
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: pid
+          in: query
+          description: Filter on participant ID requesting the ticket
+          required: False
+          type: integer
+          format: int64
+        - name: requestId
+          in: query
+          description: Filter on request ID
+          required: False
+          type: string
+        - name: travellerId
+          in: query
+          description: Filter on travellers ID
+          required: False
+          type: string
+        - name: tokenId
+          in: query
+          description: Filter on token ID
+          required: False
+          type: string
+        - name: active
+          in: query
+          description: Filter on active tickets
+          required: False
+          type: boolean
+        - name: suspended
+          in: query
+          description: Filter on suspended tickets
+          required: False
+          type: boolean
+        - name: refunded
+          in: query
+          description: Filter on refunded tickets
+          required: False
+          type: boolean
+        - name: refundable
+          in: query
+          description: Filter on refundable tickets
+          required: False
+          type: boolean
+        - name: hindered
+          in: query
+          description: Filter on tickets with hinderedStatus set
+          required: False
+          type: boolean
+      responses:
+        '200':
+          description: |
+            Successful operation, return list of tickets. If filter doesn't
+            produce any matches an empty array will be returned.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ticket'
+        '401':
+          description: Unauthorised
+    post:
+      tags:
+        - ticket
+      summary: Issue tickets
+      description: |
+        Issue tickets from supplied manifest. The manifest should come from the
+        product server for a matching participant id. Manifests from an unknown
+        participants, expired manifest or with an illegal signature will be
+        rejected.
+      operationId: issueTickets
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: manifestCall
+          in: body
+          description: Manifest to issue tickets from
+          required: true
+          schema:
+            $ref: '#/definitions/manifestCall'
+      responses:
+        '201':
+          description: Successful operation, return identifiers for issued tickets
+          headers:
+            location:
+              description: URI of created ticket bundle, see RFC 2616 section 14.30
+              type: string
+          schema:
+            $ref: '#/definitions/ticketIssueResponse'
+        '303':
+          description: Ticket already exists
+          headers:
+            location:
+              description: URI of the existing ticket, see RFC 2616 section 14.30
+              type: string
+        '400':
+          description: Manifest is invalid or from unknown participant
+        '401':
+          description: Unauthorised
+  '/ticket/{ticketId}':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket data and information
+      description: |
+        Get data and information about ticket with specified ticket identifier,
+        issued by this server
+      operationId: getTicket
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticket'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+    patch:
+      tags:
+        - ticket
+      summary: Update ticket information
+      description: |
+        Update information about ticket with specified ticket identifier.
+      operationId: updateTicket
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ticketId
+          in: path
+          description: Ticket identifier
+          required: true
+          type: string
+        - name: ticketUpdateRequest
+          in: body
+          description: Ticket update
+          required: true
+          schema:
+            $ref: '#/definitions/ticketUpdateRequest'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticket'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/refundableStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket refundable status
+      description: |
+        Get information if ticket specified with ticket identifier is
+        refundable. If ticket is refundable also supply information
+        about refundable amount and VAT.
+      operationId: getTicketRefundableStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/refundableStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/refundStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket refund status
+      description: |
+        Get information if ticket specified with ticket identifier has
+        been refunded or not. If ticket was refunded also supply information
+        about refunded amount and VAT.
+      operationId: getTicketRefundStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/refundStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+    put:
+      tags:
+        - ticket
+      summary: Refund ticket
+      description: |
+        Refund ticket specified with ticket identifier
+      operationId: setTicketRefundStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation, ticket was refunded
+        '400':
+          description: Ticket could not be refunded
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/recoverableStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket recoverable status
+      description: |
+        Get information if ticket specified with ticket identifier is
+        recoverable. If ticket is refundable also supply information
+        about recoverable amount and VAT.
+      operationId: getTicketRecoverableStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/recoverableStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/recoverStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket recover status
+      operationId: getTicketRecoverStatus
+      description: |
+        Get information if ticket specified with ticket identifier has
+        been recovered or not. If ticket was recovered also supply information
+        about recovered amount and VAT.
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/recoverStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+    put:
+      tags:
+        - ticket
+      summary: Recover ticket
+      description: |
+        Recover ticket specified with ticket identifier
+      operationId: setTicketRecoverStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation, ticket recovered
+        '400':
+          description: Ticket could not be recovered
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/hinderedStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket hindered status
+      description: |
+        Get information if ticket specified with ticket identifier has
+        hindered status set or not, e.g. there was a failure carrying out the
+        services of the issued ticket.
+      operationId: getTicketHinderedStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/hinderedStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+    put:
+      tags:
+        - ticket
+      summary: Set ticket hindered
+      description: |
+        Set ticket hindered status to indicate that the traveller was unable (hindered) to use it. Detail about the
+        cause should be set for the ticket that is marked as hindered when using this operation.
+      operationId: setTicketHinderedStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+        - name: hinderedCause
+          in: body
+          description: Hindered details
+          required: true
+          schema:
+            $ref: '#/definitions/hinderedCause'
+      responses:
+        '200':
+          description: Successful operation, ticket hindered status set
+        '400':
+          description: Ticket hindered status could not be set
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/revoke':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket revoke status
+      description: |
+        Get information if ticket specified with ticket identifier has
+        been revoked or not. If ticket was revoked the response should
+        tell when the ticket was revoked.
+      operationId: getTicketRevokeStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ticketId
+          in: path
+          description: Ticket identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/revokeStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+    put:
+      tags:
+        - ticket
+      summary: Revoke ticket
+      description: |
+        Revoke is used to set the specified ticketId in revoked state and to add the ticketId to a blacklist used in validation/inspection.
+        When a ticket is in revoked state it can not be used for travel. 
+        Revocation of a ticket can occur for several reasons, for instance if a ticket is refunded, in cases of fraud, by request from the ticket owner, in cases of loss etc.
+      operationId: setTicketRevokeStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation, ticket in revoked state
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/active':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket active status
+      description: |
+        Get active status for ticket with specified ticket identifier
+      operationId: getTicketActiveStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticketActiveStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+    put:
+      tags:
+        - ticket
+      summary: Activate or deactivate ticket
+      description: |
+       Activate or deactivate ticket with specified ticket identifier
+      operationId: setTicketActiveStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+        - name: activeStatus
+          description: |
+            Set to true to activate ticket, false to deactivate
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ticketActiveStatus'
+      responses:
+        '200':
+          description: Successful operation, the status of the ticket is changed
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/activationStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket activation status
+      description: |
+        Get activation status for ticket with specified ticket identifier.
+      operationId: getTicketActivationStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: True
+          type: string
+        - name: ticketId
+          in: path
+          description: Ticket id
+          required: True
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticketActivationStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/suspendedStatus':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket suspension status
+      description: |
+        Get suspension status for ticket with specified ticket identifier.
+      operationId: getTicketSuspensionStatus
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: True
+          type: string
+        - name: ticketId
+          in: path
+          description: Ticket id
+          required: True
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/suspensionStatus'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/event':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket events
+      description: |
+        Get all ticket events for specified ticket identifier. If no
+        events are available an empty list will be returned.
+      operationId: ticketEvents
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+      responses:
+        '200':
+          description: Successful operation, list of all events for specified ticket identifier
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ticketEventResult'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket not found
+  '/ticket/{ticketId}/event/{eventId}':
+    get:
+      tags:
+        - ticket
+      summary: Get ticket event
+      description: |
+        Get ticket event specified with event identifier and ticket identifier.
+        Note! This is the server event identifier and not the local event identfier.
+      operationId: ticketEvent
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - $ref: '#/parameters/ticketId'
+        - name: eventId
+          in: path
+          description: Event identifier
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticketEventResult'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket and event combination not found
+  '/ticketbundle':
+    post:
+      tags:
+        - ticketbundle
+      summary: Create new ticket bundle
+      description: |
+        Create a new ticket bundle. The tickets are specified in the
+        request payload as a list of ticket identfiers. All tickets must
+        have been previously issued using the same manifest.
+      operationId: createTicketBundle
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ticketBundleRequest
+          in: body
+          description: List of ticket identifiers of tickets to be included in ticket bundle
+          required: true
+          schema:
+            $ref: '#/definitions/ticketBundleRequest'
+      responses:
+        '201':
+          description: Successful operation
+          headers:
+            location:
+              description: URI of created ticket bundle, see RFC 2616 section 14.30
+              type: string
+          schema:
+            $ref: '#/definitions/ticketBundle'
+        '400':
+          description: All the tickets did not come from the same ticket bundle
+        '401':
+          description: Unauthorised
+  '/ticketbundle/{ticketBundleId}':
+    get:
+      tags:
+        - ticketbundle
+      summary: Get ticket bundle
+      description: Get ticket bundle specified by the ticket bundle identifier
+      operationId: getTicketBundle
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ticketBundleId
+          in: path
+          description: Ticket bundle id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticketBundle'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket bundle not found
+    patch:
+      tags:
+        - ticketbundle
+      summary: Update ticket bundle
+      description: Update ticket bundle specified by the ticket bundle identifier
+      operationId: updateTicketBundle
+      produces:
+        - application/json
+      parameters:
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: ticketBundleId
+          in: path
+          description: Ticket bundle id
+          required: true
+          type: string
+        - name: ticketBundleUpdateRequest
+          in: body
+          description: Ticket bundle update
+          required: true
+          schema:
+            $ref: '#/definitions/ticketBundleUpdateRequest'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ticketBundle'
+        '401':
+          description: Unauthorised
+        '404':
+          description: Ticket bundle not found
+definitions:
+  ticketEventResult:
+    description: The result of a ticket inspection or validation operation registration
+    type: object
+    required:
+      - ticketEvent
+    properties:
+      ticketEventPassengerMessage:
+        description: |
+          Message to be presented to passenger when registering an inspection
+          or validation event
+        type: string
+        example: "Valid"
+      ticketEventInspectMessage:
+        description: |
+          Message to be presented to inspector when registering an inspection event
+        type: string
+        example: "Valid ticket"
+      ticketEventStatus:
+        description: |
+          Status code for inspection or validation event
+        type: integer
+        format: int32
+        example: 0
+      ticketMetadata:
+        $ref: '#/definitions/ticketMetadata'
+      ticketEvent:
+        $ref: '#/definitions/ticketEvent'
+  ticketBundleRequest:
+    description: List of ticket identifiers of tickets to be included in ticket bundle
+    type: object
+    required:
+      - ticketIds
+    properties:
+      ticketIds:
+        description: List ticket identifiers
+        type: array
+        items:
+          type: string
+        example:
+          - "a36136f3-be91-4a7f-a452-1c9066391dea"
+          - "f4b99743-e4ff-4967-a5a2-5a1835996d0e"
+      deviceId:
+        description: |
+          Identifier of the device to which the ticket will be bound. If set to null, 
+          the ticket will not be bound any device.
+        type: string
+        x-nullable: true
+        example: "nhiwXCelqdkeX"
+      deviceSignatureIssuer:
+        description: PID of device signature issuer
+        type: integer
+        format: int64
+        example: 16
+      signatureLifetime:
+        description: Requested maximum issuer signature lifetime (seconds)
+        type: integer
+        format: int64
+        example: 172800
+      tokenIssuer:
+        description: PID of token issuer
+        type: integer
+        format: int64
+        example: 16
+      tokenId:
+        type: string
+        example: "ABC12345"
+      tokenPublicKey:
+        $ref: '#/definitions/jwkPublic'
+  ticketBundleUpdateRequest:
+    description: Update ticket bundle
+    type: object
+    properties:
+      deviceId:
+        description: |
+          Identifier of the device to which the ticket will be bound. If set to null, 
+          the ticket will not be bound any device.
+        type: string
+        x-nullable: true
+        example: "nhiwXCelqdkeX"
+      deviceSignatureIssuer:
+        description: PID of device signature issuer
+        type: integer
+        format: int64
+        example: 16
+      signatureLifetime:
+        description: Requested maximum issuer signature lifetime (seconds)
+        type: integer
+        format: int64
+        example: 172800
+      tokenIssuer:
+        description: PID of token issuer
+        type: integer
+        format: int64
+        x-nullable: true
+      tokenId:
+        type: string
+        x-nullable: true
+      tokenPublicKey:
+        $ref: '#/definitions/jwkPublic'
+        x-nullable: true
+  ticketMetadata:
+    description: Metadata associated with a ticket
+    type: object
+    properties:
+      relativeValidityStart:
+        description: Start of ticket relative validity as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-08-17T09:15:00Z"
+      travellerPhotoURL:
+        description: URL to photo of traveller
+        type: string
+        example: "https://example.com/my-photo.jpg"
+      ticketEventIds:
+        description: List of all event identifiers associated with this ticket
+        type: array
+        items:
+          type: string
+        example:
+          - "ce81fb07-5e91-4fcd-bdf5-4cf07c24d16f"
+          - "a775bdcf-95ac-4e05-9af4-4a627e10ebbb"
+  geoPosition:
+    description: Geographical position (WGS84 decimal)
+    type: object
+    required:
+      - lat
+      - long
+    properties:
+      lat:
+        description: Latitude
+        type: number
+        format: double
+        example: 59.329627
+      long:
+        description: Longitude
+        type: number
+        format: double
+        example: 18.059201
+      alt:
+        description: Altitude
+        type: number
+        format: double
+        example: 10.2
+  ticketEvent:
+    description: Ticket event data from inspection or validator device
+    type: object
+    required:
+      - time
+      - ticketId
+      - localEventId
+    properties:
+      time:
+        description: Time stamp as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-08-17T09:15:00Z"
+      ticketId:
+        description: Unique identifier for ticket
+        type: string
+        example: "53c8971e-79bd-4429-9227-dd4f43d0f83b"
+      ticketReferences:
+        type: array
+        items:
+          $ref: '#/definitions/ticketReference'
+      eventId:
+        description: Event identifier (allocated at event creation)
+        type: string
+        example: "19cc3963-692b-4369-8eea-529fba1c138a"
+      localEventId:
+        description: Event identifier (allocated at validation/inspection)
+        type: string
+        example: "61bf29f3-f04d-4dcc-bd19-1475f2048072"
+      eventType:
+        description: Type of event, inspection or validation
+        type: string
+        enum:
+          - inspection
+          - validation
+        example: "validation"
+      eventResult:
+        title: Result code
+        description: |
+          0 = success
+          1 = other failure
+          2 = failed spatial constraints
+          3 = failed time constraints
+          4 = failed device header conditions
+          5 = failed issuer signature validation
+          6 = failed device signature validation
+          7 = failed blacklist check
+          8 = failed passback check
+          9 = failed fraud check
+        type: integer
+        enum:
+          - 0
+          - 1
+          - 2
+          - 3
+          - 4
+          - 5
+          - 6
+          - 7
+          - 8
+          - 9
+        example: 0
+      eventReason:
+        description: Reason for failure/success
+        type: string
+        example: "Signature validation failed"
+      mtbReference:
+        description: MTB reference
+        $ref: '#/definitions/mtbReference'
+      deviceReference:
+        description: Device reference, unique reference for device that creates device signed tickets
+        $ref: '#/definitions/deviceReference'
+      geo:
+        description: Geographical position (WGS84 decimal)
+        $ref: '#/definitions/geoPosition'
+      modeOfTransport:
+        description: |
+          High-level category of transport mode, such as 'bus', 'rail', 'tram', or 'water'.
+          This value indicates the general type of vehicle or infrastructure used. Valid
+          values are defined in the transport-mode.json schema, available at:
+          https://bitbucket.org/samtrafiken/bob-schema-generic-categories/src/master/transport-mode.json
+        type: string
+        example: "bus"
+      subModeOfTransport:
+        description: |
+          More specific subcategory corresponding to the selected modeOfTransport. For example,
+          if modeOfTransport is 'bus', valid subModeOfTransport values could include 'localBus',
+          'regionalBus', or 'demandAndResponseBus'. The complete list of allowed submode values
+          for each mode is defined in the transport-mode.json schema:
+          https://bitbucket.org/samtrafiken/bob-schema-generic-categories/src/master/transport-mode.json
+        type: string
+        example: "localBus"
+      zone:
+        description: Zone information
+        type: object
+        required:
+          - pid
+          - zoneId
+        properties:
+          pid:
+            description: Participant identifier associated with zone
+            type: integer
+            format: int64
+            example: 16
+          zoneId:
+            description: Zone identifier
+            type: string
+            example: "1"
+      service:
+        description: Service information
+        type: object
+        required:
+          - pid
+          - serviceId
+        properties:
+          pid:
+            description: Participant identifier associated with service, trip and block
+            type: integer
+            format: int64
+            example: 16
+          serviceId:
+            description: Service identifier
+            type: string
+            example: "3"
+          tripId:
+            description: Trip identifier
+            type: string
+            example: "152"
+          blockId:
+            description: Block identifier
+            type: string
+            example: "A"
+      stopArea:
+        description: Stop area information
+        type: object
+        required:
+          - pid
+          - stopAreaId
+        properties:
+          pid:
+            description: Participant identifier associated with stop area
+            type: integer
+            format: int64
+            example: 16
+          stopAreaId:
+            description: Identifier for current stop area
+            type: string
+            example: "1"
+          nextStopAreaId:
+            description: Identifier for next stop area
+            type: string
+            example: "2"
+      validator:
+        type: object
+        properties:
+          validatorId:
+            description: What validator originated the event
+            type: string
+            example: "d494e5c8-12d9-4265-a78c-6bfe881280a1"
+          location:
+            description: Where is validator mounted (e.g., vehicle number)
+            type: string
+            example: "100"
+          sublocation:
+            description: More specific location information (e.g., door number)
+            type: string
+            example: "A1"
+      inspector:
+        type: object
+        properties:
+          inspectorId:
+            description: What inspector originated the event
+            type: string
+            example: "d494e5c8-12d9-4265-a78c-6bfe881280a1"
+      operatingDayDate:
+        description: Date of the operating day
+        format: date
+        type: string
+        example: "2021-01-23"
+      tokenTransaction:
+        $ref: '#/definitions/tokenTransaction'
+  ticketActiveStatus:
+    description: True if ticket is active, otherwise false
+    type: boolean
+    example: true
+  ticketActivationStatus:
+    description: Activation status
+    type: object
+    required:
+      - active
+    properties:
+      active:
+        description: True if ticket is active, otherwise false.
+        type: boolean
+      relativeValidity:
+        description: Validity period in ISO 8601:2004 duration format (MTS8, chapter 2.4)
+        type: string
+        example: PT24H
+      latestActivation:
+        description: Date and time for latest activation, as
+          ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: '2020-08-28T14:20:39+00:00'
+      latestActivationExpire:
+        description: Date and time for expiration of latest activation, as
+          ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: '2020-08-29T03:00:00+00:00'
+      numberOfActivations:
+        description: |
+          Total number of times the product set can be activated
+        type: integer
+        format: int64
+        example: 1
+      remainingActivations:
+        description: |
+          Remaining number of times the ticket can be activated
+        type: integer
+        format: int64
+        example: 1
+  suspensionStatus:
+    description: Suspension status
+    type: object
+    required:
+      - suspended
+    properties:
+      suspended:
+        description: True if ticket is suspended from use, otherwise false.
+        type: boolean
+      suspensionExpire:
+        description: Date and time for expiration of the suspension status, as
+          ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: '2020-08-29T03:00:00+00:00'
+  manifestCall:
+    description: Manifest with parameter to be used for issuing tickets
+    type: object
+    required:
+      - manifest
+      - requestId
+    properties:
+      manifest:
+        description: Signed manifest
+        type: string
+        format: base64url
+        example: "v2F2QmExYXBZAmSDWJ6_Y2FsZ2..."
+      ticketHolder:
+        description: Traveller to register as ticket holder
+        $ref: '#/definitions/ticketHolder'
+      deviceId:
+        description: |
+          Identifier of the device to which the ticket will be bound. If set to null, 
+          the ticket will not be bound any device.
+        type: string
+        x-nullable: true
+        example: "nhiwXCelqdkeX"
+      deviceSignatureIssuer:
+        description: PID of device signature issuer
+        type: integer
+        format: int64
+        example: 16
+      signatureLifetime:
+        description: Requested maximum issuer signature lifetime (seconds)
+        type: integer
+        format: int64
+        example: 172800
+      tokenIssuer:
+        description: PID of token issuer
+        type: integer
+        format: int64
+        example: 16
+      tokenId:
+        type: string
+        example: "f7350c49-1860-4674-94dd-826a3d5ac4dc"
+      tokenPublicKey:
+        $ref: '#/definitions/jwkPublic'
+      recoverTicketId:
+        description: ID of ticket in recover state to be recovered in operation
+        type: string
+        example: "53c8971e-79bd-4429-9227-dd4f43d0f83b"
+      issueMtb:
+        description: Set to true to return MTB when tickets are issued
+        type: boolean
+        example: true
+      requestId:
+        description: |
+          Request identifier allocated by ticket requestor.
+          This property MUST be provided in order to detect retransmissions.
+          Even though the scope of this property is (pid,entity_id), it is
+          RECOMMENDED that it is generated as globally unique using UUIDv4.
+          As the ticket issuer may use the requestId as a billing/payment
+          reference for the ticket issued as a result of the request, the
+          requestor is advised to keep it for future reference.
+        type: string
+        example: "fc4a1663-e85f-45a3-9b7f-e09758dd2d6d"
+      startOfValidity:
+        description: |
+          Requested start of validity.
+          The relative validity starts at this point in time.
+          Time stamp as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-08-17T09:15:00Z"
+      bookingId:
+        description: Booking identifier from Booking API
+        type: string
+        example: "61478509-dbd4-4620-b730-b422dfba2d2f"
+  recoverStatus:
+    description: Recover status
+    type: object
+    required:
+      - recovered
+    properties:
+      recovered:
+        description: True if ticket is in recovered state
+        type: boolean
+        example: false
+      recoveredAmount:
+        description: Fare recovered
+        $ref: '#/definitions/fare'
+  recoverableStatus:
+    description: Tells if ticket is recoverable and amount recoverable
+    type: object
+    required:
+      - recoverable
+    properties:
+      recoverable:
+        description: Is ticket recoverable
+        type: boolean
+        example: true
+      recoverableAmount:
+        description: Recovereable fare
+        $ref: '#/definitions/fare'
+  refundStatus:
+    description: Refund status
+    type: object
+    required:
+      - refunded
+    properties:
+      refunded:
+        description: True if ticket is in refunded state
+        type: boolean
+        example: false
+      refundedAmount:
+        description: Fare refunded
+        $ref: '#/definitions/fare'
+  refundableStatus:
+    description: Tells if ticket is refundable and amount refundable
+    type: object
+    required:
+      - refundable
+    properties:
+      refundable:
+        description: Is ticket refundable
+        type: boolean
+        example: true
+      refundableAmount:
+        description: Refundable fare
+        $ref: '#/definitions/fare'
+  hinderedStatus:
+    description: Hindered status
+    type: object
+    required:
+      - hindered
+    properties:
+      hindered:
+        description: True if traveller was hindered to use the ticket services
+        type: boolean
+        example: false
+      hinderedCause:
+        description: Type of cause. Detail on why ticket was hindered.
+        $ref: '#/definitions/hinderedCause'
+      refundableAmount:
+        description: Refundable fare (optional)
+        $ref: '#/definitions/fare'
+  hinderedCause:
+    description: Type of cause
+    type: string
+    enum:
+      - travellerHindered
+      - operatorHindered
+      - forceMajeure
+    example: "travellerHindered"
+  revokeStatus:
+    description: Revoke status
+    type: object
+    required:
+      - revoked
+    properties:
+      revoked:
+        description: True if ticket is in revoked state
+        type: boolean
+      revokedAt:
+        description: Time stamp as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-12-06T08:34:00Z"
+  fare:
+    description: Fare information, amount, currency and VAT
+    type: object
+    required:
+      - amount
+      - currency
+      - vatAmount
+      - vatPercent
+    properties:
+      amount:
+        description: Fare cost excluding VAT
+        type: number
+        format: float
+        example: 20.00
+      currency:
+        description: Currency code (ISO 4217)
+        type: string
+        example: "SEK"
+      vatAmount:
+        description: VAT amount
+        type: number
+        format: float
+        example: 1.20
+      vatPercent:
+        description: VAT percent
+        type: number
+        format: float
+        example: 6.0
+  ticketHolder:
+    description: Ticket holders name and identifier
+    type: object
+    required:
+      - travellerId
+    properties:
+      travellerId:
+        type: string
+        description: Unique traveller identifier
+        example: "ABC123"
+      travellerName:
+        description: Display name of traveller
+        type: string
+        example: "Alex Smith"
+  ticket:
+    description: Ticket data and status
+    type: object
+    required:
+      - ticketId
+      - issuedAt
+      - ticketPayload
+    properties:
+      ticketId:
+        description: Unique identifier for ticket
+        type: string
+        example: "53c8971e-79bd-4429-9227-dd4f43d0f83b"
+      issuedAt:
+        description: Time stamp as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        format: date-time
+        type: string
+        example: "2021-08-17T09:15:00Z"
+      ticketPayload:
+        description: Ticket payload as base64url encoded JSON
+        type: string
+        format: base64url
+        example: "ewogICAgInRlc3QiOiAiSGVsbG9Xb3JsZCIKfQ..."
+      mtb:
+        description: Signed MTB
+        type: string
+        format: base64url
+        example: "v2F2QmExYXBZAmSDWJ6_Y2FsZ2..."
+      tokenId:
+        description: Token to which the ticket is bound
+        type: string
+        x-nullable: true
+      tokenIssuer:
+        description: PID of token issuer
+        type: integer
+        format: int64
+        x-nullable: true
+      ticketHolder:
+        description: Ticket holder
+        $ref: '#/definitions/ticketHolder'
+      activeStatus:
+        description: Ticket active status
+        $ref: '#/definitions/ticketActiveStatus'
+      activationStatus:
+        description: Ticket activation status
+        $ref: '#/definitions/ticketActivationStatus'
+      recoverStatus:
+        description: Ticket recover status
+        $ref: '#/definitions/recoverStatus'
+      refundStatus:
+        description: Ticket refund status
+        $ref: '#/definitions/refundStatus'
+      refundableStatus:
+        description: Ticket refundable status
+        $ref: '#/definitions/refundableStatus'
+      revokeStatus:
+        description: Ticket revoke status
+        $ref: '#/definitions/revokeStatus'
+      hinderedStatus:
+        description: Ticket hindered status
+        $ref: '#/definitions/hinderedStatus'
+      suspendedStatus:
+        description: Ticket suspension status
+        $ref: '#/definitions/suspensionStatus'
+  ticketUpdateRequest:
+    description: Ticket update
+    type: object
+    properties:
+      deviceId:
+        description: |
+          Identifier of the device to which the ticket will be bound. If set to null,
+          the ticket will not be bound any device.
+        type: string
+        x-nullable: true
+        example: "nhiwXCelqdkeX"
+      deviceSignatureIssuer:
+        description: PID of device signature issuer
+        type: integer
+        format: int64
+        example: 16
+      signatureLifetime:
+        description: Requested maximum issuer signature lifetime (seconds)
+        type: integer
+        format: int64
+        example: 172800
+      tokenIssuer:
+        description: PID of token issuer
+        type: integer
+        format: int64
+        x-nullable: true
+      tokenId:
+        type: string
+        x-nullable: true
+      tokenPublicKey:
+        $ref: '#/definitions/jwkPublic'
+        x-nullable: true
+  ticketBundle:
+    description: |
+      A group of tickets.
+      All tickets must have been previously issued using the same manifest.
+    type: object
+    required:
+      - ticketBundleId
+      - settlementId
+      - mtb
+    properties:
+      ticketBundleId:
+        description: Unique ticket bundle identifier
+        type: string
+        example: "e34a2ca6-7e17-4d73-ac9b-181a6246f31a"
+      ticketIds:
+        description: Array of identifiers to tickets in bundle
+        type: array
+        items:
+          type: string
+        example:
+          - "a36136f3-be91-4a7f-a452-1c9066391dea"
+          - "f4b99743-e4ff-4967-a5a2-5a1835996d0e"
+      settlementId:
+        description: Unique settlement identifier for tickets in bundle
+        type: string
+        example: "861f0214-9dbe-479b-826d-57483ad9286d"
+      manifestId:
+        description: Unique manifest identifier for issued tickets
+        type: string
+        example: "b1799186-d26c-44b8-853c-7d3579e86286"
+      mtb:
+        description: Signed MTB
+        type: string
+        format: base64url
+        example: "v2F2QmExYXBZAmSDWJ6_Y2FsZ2..."
+  ticketIssueResponse:
+    type: object
+    required:
+      - ticketIds
+      - settlementId
+    properties:
+      ticketIds:
+        description: Array of identifiers to issued tickets
+        type: array
+        items:
+          type: string
+        example:
+          - "a36136f3-be91-4a7f-a452-1c9066391dea"
+          - "f4b99743-e4ff-4967-a5a2-5a1835996d0e"
+      settlementId:
+        description: Unique settlement identifier for issued tickets
+        type: string
+        example: "73ed3699-0e93-4db8-b64a-2d9726413ced"
+      ticketBundle:
+        $ref: '#/definitions/ticketBundle'
+  mtbReference:
+    description: MTB reference
+    type: object
+    required:
+      - pid
+      - issuerSignature
+    properties:
+      pid:
+        description: Participant identifier
+        type: integer
+        format: int64
+        example: 16
+      issuerSignature:
+        description: MTB issuer signature
+        type: string
+        format: base64url
+        example: "MEQCIGSYn88hmpE8h0zvFfn+Pvx..."
+  deviceReference:
+    description: Device reference, unique reference for device that creates device signed tickets
+    type: object
+    required:
+      - pid
+      - did
+    properties:
+      pid:
+        description: Participant identifier
+        type: integer
+        format: int64
+        example: 16
+      did:
+        description: Device identifier
+        type: string
+        format: base64url
+      ua:
+        description: |
+          User agent id.
+          To get user agent information, use the user agent id to match an
+          entry in the response from the endpoint GET /device/userAgent. 
+          Or, use it in a request to the endpoint GET /device/userAgent/{ua}.
+          Both of these endpoints are part of the Device API implemented by
+          the participant identified by pid.
+        type: integer
+        example: 835
+  tokenTransaction:
+    type: object
+    required:
+      - tpk
+      - aiData
+      - aiRequest
+      - aiResponse
+    properties:
+      tpk:
+        $ref: '#/definitions/jwkPublic'
+      aiData:
+        $ref: '#/definitions/aiData'
+      aiRequest:
+        $ref: '#/definitions/aiRequest'
+      aiResponse:
+        $ref: '#/definitions/aiResponse'
+  jwkPublic:
+    type: object
+    description: Public JSON Web Key (RFC 7517)
+    required:
+      - kty
+      - kid
+    properties:
+      kty:
+        description: JWA key type
+        type: string
+        enum:
+          - RSA
+          - EC
+        example: "EC"
+      kid:
+        description: JWK key identifier
+        type: string
+        example: "k2"
+      crv:
+        description: Curve type (required for kty=EC)
+        type: string
+        example: "P-256"
+      x:
+        description: EC x coordinate (required for kty=EC)
+        type: string
+        format: byte
+        example: "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU"
+      y:
+        description: EC y coordinate (required for kty=EC)
+        type: string
+        format: byte
+        example: "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+      n:
+        description: RSA modulus parameter (required for kty=RSA)
+        type: string
+        format: byte
+        example: "pjdss8ZaDfEH6K6U7GeW2nxDqR4IP049fk1fK0lndimb..."
+      e:
+        description: RSA exponent parameter (required for kty=RSA)
+        type: string
+        format: byte
+        example: "AQAB"
+  aiData:
+    description: Data used to produce Authentication input for token authentication
+    type: object
+    required:
+      - time
+      - terminalId
+    properties:
+      pid:
+        description: Terminal Participant Identifier
+        type: integer
+        format: int64
+      terminalId:
+        description: Identifier of the terminal
+        type: string
+      aid:
+        description: Full AID (in lowercase hex) as read from the PICC
+        type: string
+      signatureCounter:
+        description: Signature counter as read from the PICC
+        type: integer
+        format: int64
+      time:
+        description: Current time as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: "2021-08-17T09:15:00Z"
+      loc:
+        description: Current geographical location of the terminal (WGS84 decimal tuple)
+        type: string
+        pattern: "^\\-?[0-9]*(\\.[0-9]+)?,\\-?[0-9]*(\\.[0-9]+)?$"
+        example: "59.329627,18.059201"
+  aiRequest:
+    description: Authentication request as sent to the PICC
+    type: string
+    format: base64url
+  aiResponse:
+    description: Authentication response as received from PICC
+    type: string
+    format: base64url
+  ticketReference:
+    type: object
+    required:
+      - pid
+      - ticketId
+    properties:
+      pid:
+        description: Participant identifier for ticket
+        type: integer
+        format: int64
+        example: 16
+      ticketId:
+        description: Unique identifier for ticket
+        type: string
+        example: "53c8971e-79bd-4429-9227-dd4f43d0f83b"
+parameters:
+  ticketId:
+    in: path
+    name: ticketId
+    required: true
+    type: string
+    description: Ticket identifier

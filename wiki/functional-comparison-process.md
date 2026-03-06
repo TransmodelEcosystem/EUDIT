@@ -13,9 +13,9 @@ The functional areas were derived by taking the union of all endpoints, operatio
 schema groups across the five standards. The raw material was:
 
 - OSDM 3.7.1 — 27 API tag groups, ~80 unique endpoint paths
-- TOMP-API 2.0.0 — 8 modules, ~50 unique endpoint paths
+- TOMP-API 2.0.0 — 8 modules, ~50 unique endpoint paths; plus TOMP-API-MP 2.0.0 (3 callback endpoints, TO→MP direction)
 - OMSA 0.1.0 — OGC Processes model, ~30 unique endpoint paths
-- BoB Booking 2.0.1 — 4 endpoints only
+- BoB (full suite) — 9 sub-APIs: Authentication 1.3.3, Booking 2.0.1, Product 3.4.0, Ticket 3.4.0, Token 1.5.0, Traveller 3.0.0, Device 2.1.1, Inspection 2.3.0, Validation 3.4.0, ParticipantMetadata 2.3.1 — ~60+ unique endpoint paths
 - FerryGateway 1.3.1 — 21 request/response message pairs (XML Schema)
 
 From the union of those, I identified recurring themes and grouped them into 25 named
@@ -57,7 +57,9 @@ analytical value at this stage.
 TOMP-API and OMSA both follow OGC API conventions, which mandate a `GET /api` (OpenAPI
 description), `GET /conformance` (conformance classes), and `GET /processes` (process list)
 endpoint. This is architecturally significant: it enables machine-readable capability
-negotiation. OSDM, BoB, and FerryGateway have none of this.
+negotiation. OSDM and FerryGateway have none of this. BoB's `GET /participantMetadata`
+provides a different but analogous machine-readable registry of participant capabilities,
+scored ⚠️.
 
 ---
 
@@ -209,7 +211,11 @@ Going through the 25 areas:
 23. **Authentication** → ❌. No `/oauth/token` endpoint in the spec. Authentication
     is assumed to be handled externally.
 
-24. **Disruption & real-time** → ❌. No disruption or situation feed.
+24. **Disruption & real-time** → ⚠️. `TOMP-API-MP v2.0.0` (the TO→MP callback API)
+    provides `POST /processes/notification/execution` for operational notifications from the
+    Transport Operator to the MaaS Provider. This is a narrow operational channel, not a
+    disruption/situation feed. Scored ⚠️ (up from ❌, since a notification mechanism now
+    exists). The core TOMP-API 2.0.0 spec itself has no disruption feed.
 
 25. **API discovery** → ✅. `/api`, `/conformance`, `/processes`, `/capabilities`
     (OGC API conventions).
@@ -285,31 +291,99 @@ Going through the 25 areas:
 
 ---
 
-### 2.4 BoB Booking 2.0.1
+### 2.4 BoB (full suite)
 
-BoB has only four endpoints. Most areas are ❌ by design.
+BoB has nine sub-APIs totalling ~60+ endpoints. Scoring covers all sub-APIs.
+
+1. **Network & geography** → ❌. No network topology in any BoB sub-API.
+
+2. **Timetable / schedule** → ❌. Explicitly out of scope across all sub-APIs.
 
 3. **Trip search** → ❌. Explicitly out of scope.
-4. **Availability** → ❌.
-5. **Offer search** → ❌.
-6. **Offer selection** → ❌.
-7. **Traveller management** → ⚠️. `travellerId` and `travellerPhone` appear on `bookingCall`
-   and `booking`, but there is no management API — just identifiers passed at booking time.
-8. **Booking creation** → ✅. `POST /booking`.
-9. **Booking retrieval** → ✅. `GET /booking`, `GET /booking/{bookingId}`.
-10. **Seat reservation** → ❌. The `ride` schema has `boardingPlace` / `alightingPlace` but
-    no seat selection.
-11. **Ancillary services** → ❌.
-12. **Fulfillment / travel documents** → ⚠️. The signed MTB manifest on `bookingCall.manifest`
-    and `statusChangeRequest.mtb` is the travel credential, but it is embedded in the booking
-    payload, not a separate fulfillment flow. Scored ⚠️.
-13–14. → ❌.
-15. **Cancellation** → ✅. `PATCH /booking/{bookingId}` with `statusChangeRequest.status=cancelled`.
-16. **Refund / exchange** → ❌. No refund or exchange endpoint.
-17–25. → ❌ across the board.
 
-23. **Authentication** → ⚠️. The MTB signing mechanism (using asymmetric keys) is BoB's
-    security model but it is not an API-level authentication endpoint. Scored ⚠️.
+4. **Availability** → ❌. No sailing or seat availability query in any sub-API.
+
+5. **Offer search / fare query** → ✅. `POST /product` (Product API 3.4.0) accepts
+   area, group, and route filters and returns product listings. This is a product/offer
+   search with commercial filtering. Full support.
+
+6. **Offer selection / on-hold** → ⚠️. `POST /manifest` and `GET /pds` (Product API 3.4.0)
+   represent a pre-distribution step where a ticket manifest is prepared before issuance.
+   This is analogous to an on-hold / reservation step but is not a classic offer-hold
+   pattern. Scored ⚠️.
+
+7. **Traveller management** → ✅. Traveller API 3.0.0 provides full CRUD:
+   `GET /traveller`, `POST /traveller`, `GET /traveller/{travellerId}`,
+   `PUT /traveller/{travellerId}`, `DELETE /traveller/{travellerId}`, plus wallet endpoints
+   and notification endpoints. Full support.
+
+8. **Booking creation** → ✅. `POST /booking` (Booking API 2.0.1).
+
+9. **Booking retrieval** → ✅. `GET /booking`, `GET /booking/{bookingId}` (Booking API 2.0.1).
+
+10. **Seat reservation** → ❌. No seat or spot selection in any BoB sub-API. The `ride`
+    schema has `boardingPlace` / `alightingPlace` but no seat-selection mechanism.
+
+11. **Ancillary services** → ❌. No ancillary or supplementary product concept in any
+    BoB sub-API.
+
+12. **Fulfillment / travel documents** → ✅. Ticket API 3.4.0 provides `POST /ticket`
+    (issue ticket), `GET /ticket/{ticketId}` (retrieve ticket), `PUT /ticket/{ticketId}/active`
+    (activate ticket). These represent a proper fulfillment flow separate from the booking.
+    Full support.
+
+13. **Physical asset management** → ❌. No lock/unlock or shared-mobility asset control
+    in any BoB sub-API.
+
+14. **Trip execution / leg operations** → ❌. No start/pause/end-leg operations.
+
+15. **Cancellation** → ✅. `PATCH /booking/{bookingId}` with `status=cancelled`
+    (Booking API 2.0.1). Additionally `PUT /ticket/{ticketId}/revoke` and
+    `PUT /ticket/{ticketId}/suspendedStatus` in Ticket API 3.4.0.
+
+16. **Refund / exchange / after-sales** → ✅. Ticket API 3.4.0 provides:
+    `GET /ticket/{ticketId}/refundableStatus`, `PUT /ticket/{ticketId}/refundableStatus`,
+    `GET /ticket/{ticketId}/refundStatus`, `PUT /ticket/{ticketId}/refundStatus`.
+    These are explicit refund lifecycle endpoints. Full support.
+
+17. **Pricing & fare structure** → ⚠️. Product API 3.4.0 provides fare category queries:
+    `GET /productcat/fare`, `GET /productcat/generic`, `GET /productcat/traveller`.
+    These return product properties and category metadata but there is no full fare structure
+    with price breakdown, zone validity, or fare construction logic. Scored ⚠️.
+
+18. **Customer account management** → ✅. Traveller API 3.0.0 provides full CRUD on
+    traveller accounts plus wallet management (`GET/POST /traveller/{id}/wallet`,
+    `/traveller/{id}/wallet/transaction`) and notification management
+    (`GET/PUT /traveller/{id}/notification`). Full support.
+
+19. **Invoicing & payment** → ⚠️. Wallet and transaction endpoints in Traveller API 3.0.0
+    (`/traveller/{id}/wallet`, `/traveller/{id}/wallet/transaction`) cover internal account
+    balance management but there is no invoice generation or external payment settlement
+    endpoint. Scored ⚠️.
+
+20. **Complaints & support** → ❌. No complaint or support ticket endpoint in any
+    BoB sub-API.
+
+21. **Travel guarantees & redress** → ❌. No guarantee or redress concept in any
+    BoB sub-API.
+
+22. **Promotions & discount codes** → ⚠️. `POST /product` (Product API 3.4.0) accepts
+    discount code filter parameters. This is not a dedicated discount endpoint but discount
+    codes are a first-class input parameter on the product search. Scored ⚠️.
+
+23. **Authentication / security** → ✅. Authentication API 1.3.3 provides
+    `GET /auth/{entityId}` — an explicit endpoint that issues a JWT using mutual TLS client
+    certificate authentication. This is the only in-spec, first-class auth endpoint in BoB.
+    Full support.
+
+24. **Disruption & real-time** → ❌. No disruption feed, situation feed, or real-time status
+    overlay in any BoB sub-API.
+
+25. **API discovery / capability** → ⚠️. ParticipantMetadata API 2.3.1 provides
+    `GET /participantMetadata` — a machine-readable registry of participant capabilities,
+    public keys, interface endpoints, and issuer constraints. This is analogous to OGC
+    capability discovery but uses a proprietary participant-registry model rather than
+    OGC conformance classes. Scored ⚠️.
 
 ---
 
@@ -392,10 +466,48 @@ Initial instinct was ❌ because OMSA has no seat or sailing availability query.
 inspection, `GET /collections/assets/items` returns real-time asset availability in GeoJSON.
 That is a genuine availability query, just limited to physical assets. ⚠️ is more accurate.
 
-**BoB area 12 (Fulfillment) — ⚠️ not ❌**
-The MTB manifest is technically a travel document. However, it is passed as a request
-payload, not returned as a fulfillment response. BoB has no `GET /fulfillment` endpoint.
-⚠️ captures "the concept exists but not as a proper fulfillment flow".
+**BoB area 6 (Offer selection / on-hold) — ⚠️ not ❌**
+`POST /manifest` and `GET /pds` in BoB Product API 3.4.0 constitute a pre-distribution step
+before ticket issuance. This is structurally analogous to an offer-hold or pre-booking
+reservation, but it is not an explicit "hold this offer for me" pattern. ⚠️ captures the
+partial fit.
+
+**BoB area 12 (Fulfillment) — ✅ not ⚠️ (revised)**
+In the original analysis covering only Booking API 2.0.1, the MTB manifest embedded in the
+booking payload was scored ⚠️. With the full suite, Ticket API 3.4.0 provides a proper
+fulfillment flow: `POST /ticket` (issue), `GET /ticket/{ticketId}` (retrieve), and
+`PUT /ticket/{ticketId}/active` (activate). This is a genuine separate fulfillment flow.
+Revised to ✅.
+
+**BoB area 16 (Refund) — ✅ not ❌ (revised)**
+The original analysis of Booking API 2.0.1 found no refund endpoint. Ticket API 3.4.0
+adds explicit refund lifecycle endpoints (`refundableStatus`, `refundStatus`). Revised to ✅.
+
+**BoB area 17 (Pricing) — ⚠️ not ❌ (revised)**
+`GET /productcat/fare` and related endpoints in Product API 3.4.0 return fare category
+metadata. This is not a full fare structure (no zone validity, no price construction),
+but it is a genuine pricing-related query. Revised from ❌ to ⚠️.
+
+**BoB area 18 (Customer account management) — ✅ not ❌ (revised)**
+Traveller API 3.0.0 provides full CRUD plus wallet management. This is genuine customer
+account management. Revised from ❌ to ✅.
+
+**BoB area 19 (Invoicing & payment) — ⚠️ not ❌ (revised)**
+Wallet and transaction endpoints in Traveller API 3.0.0 cover internal balance management.
+Not a full invoicing system, but payment-related data is present. Revised from ❌ to ⚠️.
+
+**BoB area 22 (Promotions) — ⚠️ not ❌ (revised)**
+`POST /product` accepts discount code filter parameters. Not a dedicated discount endpoint
+but discount codes are a first-class input. Revised from ❌ to ⚠️.
+
+**BoB area 23 (Authentication) — ✅ not ⚠️ (revised)**
+Authentication API 1.3.3 provides `GET /auth/{entityId}` — an explicit in-spec JWT
+issuance endpoint using mutual TLS. This is more than a security mechanism embedded in
+payloads (as the original ⚠️ for MTB signing implied). Revised from ⚠️ to ✅.
+
+**BoB area 25 (API discovery) — ⚠️ not ❌ (revised)**
+`GET /participantMetadata` in ParticipantMetadata API 2.3.1 is a machine-readable
+capability registry. Not OGC-conformant, but functionally analogous. Revised from ❌ to ⚠️.
 
 **FerryGateway area 13 (Physical asset management) — ⚠️ not ✅**
 Vehicle assignment on a ferry sailing is fundamentally different from shared-mobility asset
@@ -418,6 +530,12 @@ spec says this is OMSA-specific and the mapping notes it is "not Transmodel-alig
 The concept exists but is under-specified and not actionable via a process endpoint.
 ⚠️ captures "present but limited".
 
+**TOMP-API area 24 (Disruption & real-time) — ⚠️ not ❌ (revised)**
+`TOMP-API-MP v2.0.0` adds `POST /processes/notification/execution` — a callback from TO
+to MP for operational notifications. This is a narrow notification channel, not a
+disruption situation feed. However, the concept of real-time notifications does now exist
+in the TOMP-API ecosystem. Revised from ❌ to ⚠️.
+
 ---
 
 ## 4. Coverage score calculation
@@ -433,14 +551,30 @@ Counts per standard:
 | Standard | ✅ | ⚠️ | ❌ | Score |
 |----------|---|---|---|-------|
 | OSDM 3.7.1 | 16 | 5 | 4 | (16 + 2.5) / 25 = 74 % |
-| TOMP-API 2.0.0 | 18 | 4 | 3 | (18 + 2.0) / 25 = 80 % |
-| OMSA 0.1.0 | 10 | 5 | 10 | (10 + 2.5) / 25 = 50 % |
-| BoB 2.0.1 | 4 | 3 | 18 | (4 + 1.5) / 25 = 22 % |
-| FerryGateway 1.3.1 | 13 | 3 | 9 | (13 + 1.5) / 25 = 58 % |
+| TOMP-API 2.0.0 | 20 | 3 | 2 | (20 + 1.5) / 25 = 86 % |
+| OMSA 0.1.0 | 12 | 5 | 8 | (12 + 2.5) / 25 = 58 % |
+| BoB (full suite) | 9 | 5 | 11 | (9 + 2.5) / 25 = 46 % |
+| FerryGateway 1.3.1 | 16 | 2 | 7 | (16 + 1.0) / 25 = 68 % |
 
-> **Note:** The main document rounds these to nearest 2 % (90 %, 88 %, etc.). The exact
-> counts above are the ground truth. The rounding in the main document should be corrected
-> to align with these figures if precision matters.
+**BoB full-suite cell-by-cell summary:**
+- ✅ (9): areas 5, 7, 8, 9, 12, 15, 16, 18, 23
+- ⚠️ (5): areas 6, 17, 19, 22, 25
+- ❌ (11): areas 1, 2, 3, 4, 10, 11, 13, 14, 20, 21, 24
+
+**TOMP-API cell-by-cell summary:**
+- ✅ (20): areas 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25
+- ⚠️ (3): areas 1, 22, 24 (area 24 revised from ❌ to ⚠️ with TOMP-API-MP v2.0.0 notification endpoint)
+- ❌ (2): areas 2, 23
+
+**OMSA cell-by-cell summary:**
+- ✅ (12): areas 5, 6, 7, 8, 9, 11, 12, 15, 16, 17, 23, 25
+- ⚠️ (5): areas 3, 4, 10, 13, 21
+- ❌ (8): areas 1, 2, 14, 18, 19, 20, 22, 24
+
+**FerryGateway cell-by-cell summary:**
+- ✅ (16): areas 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 17, 19, 22
+- ⚠️ (2): areas 13, 16
+- ❌ (7): areas 14, 18, 20, 21, 23, 24, 25
 
 ---
 
@@ -455,3 +589,7 @@ Counts per standard:
   structural dimension.
 - **Protocol and transport comparison** (REST vs. OGC-Processes vs. XML-RPC) — relevant
   for the TS but deliberately excluded here to keep the focus on business functionality.
+- **BoB sub-API internal workflows** — the Validation and Inspection APIs (unique to BoB
+  among in-scope standards) are noted in the matrix but a full workflow analysis of
+  online vs. offline validation, blacklist/whitelist management, and fraud-check logic
+  is deferred to Phase 2.

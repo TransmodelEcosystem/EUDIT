@@ -1,0 +1,504 @@
+swagger: '2.0'
+info:
+  version: 1.5.0
+  title: BoB.Token.API
+  description: |
+    The token API is used to fetch information about issued tokens. Information
+    can be searched using a filter (e.g., pid and serial number) or directly
+    looked up using the token thumbprint as primary key. The token API provides
+    token revocation status, either per token or by fetching a complete token
+    revocation list. The API can also be used for registering hints about where
+    one can find tickets issued for the token as well as a registering a
+    default payment service provider for the token.
+basePath: /api/v1
+schemes:
+  - https
+paths:
+  '/token':
+    get:
+      summary: Get tokens matching query
+      description: |
+        Get tokenInformation on tokens matching the query. This method is used
+        for retrieving the token public key from serial number.
+      operationId: getMultipleTokenInformation
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: pid
+          in: query
+          description: Participant ID of token issuer
+          required: true
+          type: integer
+          format: int64
+        - name: serial
+          in: query
+          description: Token serial number
+          required: true
+          type: integer
+          format: int64
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Token information
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/tokenInformation'
+  '/token/{thumbprint}':
+    get:
+      summary: Get token information by thumbprint
+      description: |
+        Get tokenInformation on token matching the query. This method is used
+        for retrieving the token public key from the unique thumbprint of the
+        key.
+      operationId: getTokenInformation
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Token information
+          schema:
+            $ref: '#/definitions/tokenInformation'
+  '/token/{thumbprint}/revoked':
+    get:
+      summary: Get token revocation status by thumbprint
+      description: |
+        Get the revocation status of a single token by its thumbprint. Will
+        return a boolean value.
+      operationId: getRevocationStatus
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Token public key revocation status
+          schema:
+            $ref: '#/definitions/revocationStatus'
+  '/token/revocationlist':
+    get:
+      summary: Get token revocation list
+      description: |
+        Get the revocation list entries, either the full list or incremental
+        starting from a revocation list entryId.
+      operationId: getRevocationList
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: revocationListStartEntryId
+          in: query
+          description: Get all entries of revocation list after entry
+          required: false
+          type: integer
+          format: int64
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Token revocation list
+          schema:
+            $ref: '#/definitions/revocationList'
+  '/token/{thumbprint}/hint':
+    get:
+      summary: Get token hints by thumbprint
+      description: |
+        Get tokenHints on token matching the query. This method is used for
+        retrieving hints of tickets issued to the token.
+      operationId: getTokenHints
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Token hints
+          schema:
+            $ref: '#/definitions/tokenHints'
+    post:
+      summary: Provide token hints by thumbprint
+      description: |
+        Provide tokenHints on token matching the query. This method is used for
+        providing hints of tickets issued to the token.
+      operationId: postTokenHints
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: hint
+          in: body
+          description: Hint
+          required: true
+          schema:
+            $ref: '#/definitions/hint'
+      responses:
+        '201':
+          description: Created
+          headers:
+            location:
+              description: URL of hint
+              type: string
+        '401':
+          description: Unauthorised
+  '/token/{thumbprint}/hint/{hintId}':
+    get:
+      summary: Get token hint
+      description: |
+        Get token hint matching the query. This method is used for
+        retrieving a specific hint of tickets issued to the token.
+      operationId: getTokenHint
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: hintId
+          in: path
+          description: Hint identifier
+          required: true
+          type: string
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Token hint
+          schema:
+            $ref: '#/definitions/hint'
+    delete:
+      summary: Delete token hint
+      description: |
+        Delete token hint matching the query. This method is used for
+        deleting a specific hint of tickets issued to the token. Only the
+        participant that created the hint may delete it.
+      operationId: deleteTokenHint
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: hintId
+          in: path
+          description: Hint identifier
+          required: true
+          type: string
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+      responses:
+        204:
+          description: Successfully deleted hint
+        401:
+          description: Unauthorised
+  '/token/{thumbprint}/psp':
+    get:
+      summary: Get preferred payment service provider registered to token
+      description: |
+        Get preferred payment service provider registered to token. This method
+        is used for retrieving a payment service which the traveller has selected
+        as preferred, and which should be used for withdrawing funds as
+        appropriate.
+      operationId: getTokenPsp
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: false
+          type: string
+      responses:
+        '200':
+          description: Registered preferred payment service provider
+          schema:
+            $ref: '#/definitions/psp'
+        '204':
+          description: No preferred payment service provider found
+    put:
+      summary: Set preferred payment service provider registered to token
+      description: |
+        Set preferred payment service provider registered to token. This method
+        is used for setting the payment service which the traveller has selected
+        as preferred, and which should be used for withdrawing funds as
+        appropriate. There can be only one preferred PSP per token.
+      operationId: putTokenPsp
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+        - name: psp
+          in: body
+          description: Payment Service Provider
+          required: true
+          schema:
+            $ref: '#/definitions/psp'
+      responses:
+        204:
+          description: Successful operation
+        401:
+          description: Unauthorised
+    delete:
+      summary: |
+        Delete preferred payment service provider registered to token
+      description: |
+        Delete preferred payment service provider registered to token.
+      operationId: deleteTokenPsp
+      produces:
+        - application/json
+      tags:
+        - tokens
+      parameters:
+        - name: thumbprint
+          in: path
+          description: JWK SHA-256 thumbprint of public key (RFC 7638)
+          required: true
+          type: string
+          format: base64url
+        - name: X-BoB-AuthToken
+          in: header
+          description: JWT authentication token
+          required: true
+          type: string
+      responses:
+        204:
+          description: Successfully deleted psp
+        401:
+          description: Unauthorised
+definitions:
+  jwkPublic:
+    type: object
+    description: Public JSON Web Key (RFC 7517)
+    required:
+      - kty
+    properties:
+      kty:
+        description: JWA key type
+        type: string
+        enum:
+          - RSA
+          - EC
+        example: EC
+      kid:
+        description: JWK key identifier
+        type: string
+        example: k2
+      crv:
+        description: Curve type (required for kty=EC)
+        type: string
+        example: "P-256"
+      x:
+        description: EC x coordinate (required for kty=EC)
+        type: string
+        format: byte
+        example: "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU"
+      y:
+        description: EC y coordinate (required for kty=EC)
+        type: string
+        format: byte
+        example: "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+      n:
+        description: RSA modulus parameter (required for kty=RSA)
+        type: string
+        format: byte
+      e:
+        description: RSA exponent parameter (required for kty=RSA)
+        type: string
+        format: byte
+  serial:
+    description: Token serial number
+    type: integer
+    format: int64
+    example: 42
+  thumbprint:
+    description: JWK SHA-256 thumbprint of public key (RFC 7638)
+    type: string
+    format: base64url
+    example: "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs"
+  tokenInformation:
+    type: object
+    additionalProperties: true
+    required:
+      - serial
+      - publicKey
+    properties:
+      serial:
+        $ref: '#/definitions/serial'
+      revoked:
+        type: boolean
+        example: false
+      thumbprint:
+        $ref: '#/definitions/thumbprint'
+      publicKey:
+        $ref: '#/definitions/jwkPublic'
+  tokenHints:
+    description: Token hints are used to locate tickets (both valid and
+      expired) which have been tied to a ticket. The hint only contains the
+      participant identifier of the issuer of the ticket. To find out more
+      details on the ticket(s), the issuer must be queried using the Ticket API.
+    type: array
+    items:
+      $ref: '#/definitions/hintCompact'
+  revocationStatus:
+    type: object
+    properties:
+      revoked:
+        type: boolean
+  revocationList:
+    type: array
+    items:
+      $ref: '#/definitions/revocationEntry'
+  revocationEntry:
+    type: object
+    properties:
+      entryId:
+        description: Ever increasing revocation list entry identifier
+        type: integer
+        format: int64
+        example: 1
+      thumbprint:
+        $ref: '#/definitions/thumbprint'
+      expire:
+        description: |
+          Expire time stamp as ISO 8601:2004 profile extended format
+          (MTS8, chapter 2.3)
+        type: string
+        format: date-time
+        example: "1985-04-12T23:20:50.52Z"
+  hint:
+    type: object
+    required:
+      - pid
+      - expire
+    properties:
+      pid:
+        description: |
+          Participant identifier which has issued a ticket to the token
+        type: integer
+        format: int64
+        example: 1
+      expire:
+        description: |
+          Expire time stamp as ISO 8601:2004 profile extended format
+          (MTS8, chapter 2.3) to indicate when the entry should be
+          purged from the hint list
+        type: string
+        format: date-time
+        example: "1985-04-12T23:20:50.52Z"
+  hintCompact:
+    type: object
+    required:
+      - pid
+    properties:
+      pid:
+        description: |
+          Participant identifier which has issued a ticket to the token
+        type: integer
+        format: int64
+        example: 1
+  psp:
+    type: object
+    required:
+      - pid
+    properties:
+      pid:
+        description: |
+          Participant identifier which provides the payment service
+        type: integer
+        format: int64
+        example: 1

@@ -84,9 +84,12 @@ payment settlement across eight modules.
 * *After-sales* — redress options, cancellation, refund deposit, B2B payment confirmation
 * *Customer management* — full CRUD on customer accounts (`/collections/customers`)
 * *Travel information* — fares, user profiles, entitlements, card types, license types
+* *MP callback* (`TOMP-API-MP v2.0.0`) — TO→MP notifications (`POST /processes/notification/execution`),
+  confirmation requests, and payment requests
 
-**Notable gaps:** No standalone timetable endpoint, no disruption/situation feed, no
-dedicated authentication endpoint (OAuth assumed external).
+**Notable gaps:** No standalone timetable endpoint, no dedicated authentication endpoint
+(OAuth assumed external). Disruption/situation feed is absent in the TO→MP direction; the
+MP callback covers operational notifications only.
 
 ---
 
@@ -113,22 +116,46 @@ CRUD, no complaints, no invoicing, no disruption feed.
 
 ---
 
-### 2.4 BoB Booking 2.0.1
+### 2.4 BoB (full suite)
 
-BoB (Biljetter och Bokning) is deliberately narrow. It covers only the booking transaction
-layer on top of a pre-existing trip-planning and fare-selection ecosystem. The security
-mechanism is a signed MTB (Mobile Ticket Binary) manifest rather than OAuth.
+BoB (Biljetter och Bokning) is a suite of nine interoperability APIs covering authentication,
+product distribution, booking, ticket lifecycle, traveller management, validation, inspection,
+device management, and participant registry. The security model is based on JWT over mutual
+TLS with MTB (Mobile Ticket Binary) as the travel credential format; there is no OAuth.
+
+**Sub-APIs and versions:**
+
+| Sub-API | Version | Key capabilities |
+|---------|---------|-----------------|
+| Authentication | 1.3.3 | `GET /auth/{entityId}` — JWT via TLS client certificate |
+| Booking | 2.0.1 | `POST /booking`, `GET /booking`, `GET /booking/{bookingId}`, `PATCH /booking/{bookingId}` |
+| Product | 3.4.0 | `POST /product` (area/group/route filters, discount codes), fare categories, manifest pre-distribution (`POST /manifest`, `GET /pds`) |
+| Ticket | 3.4.0 | Full lifecycle: issue, activate, refundable-status, refund-status, revoke, suspend, event log, ticket bundles |
+| Token | 1.5.0 | Token retrieval, revocation list, PSP hints |
+| Traveller | 3.0.0 | Full CRUD `GET/POST/PUT/DELETE /traveller/{id}`, wallet, notifications, MTB activation |
+| Device | 2.1.1 | Device key provisioning, KDK, user-agent registry |
+| Inspection | 2.3.0 | Online and offline batch ticket inspection (`POST /inspection/{ticketId}`) |
+| Validation | 3.4.0 | `POST /validation/{ticketId}`, blacklist/whitelist, tickle-macros, fraud check |
+| ParticipantMetadata | 2.3.1 | `GET /participantMetadata` — participant registry with MTB/auth public keys, interface endpoints, issuer constraints |
 
 **Functional areas covered:**
 
-* Booking creation (`POST /booking` with signed MTB manifest)
-* Booking retrieval (`GET /booking`, `GET /booking/{bookingId}`)
-* Booking status change — confirm and cancel (`PATCH /booking/{bookingId}`)
-* Embedded travel credential via the MTB manifest
+* Offer/product search (`POST /product` with area, group, route, and discount-code filters)
+* Pre-distribution step (`POST /manifest`, `GET /pds`)
+* Full traveller management (CRUD, wallet, notifications)
+* Booking creation, retrieval, and status change
+* Ticket issuance, activation, revocation, suspension, and event log
+* Refundable-status and refund-status queries and updates
+* Fare category queries (`GET /productcat/fare`, `GET /productcat/generic`, `GET /productcat/traveller`)
+* Wallet and transaction management (`/traveller/{id}/wallet/transaction`)
+* Discount code support (`POST /product` filter parameters)
+* Explicit JWT/TLS authentication endpoint (`GET /auth/{entityId}`)
+* Validation and inspection (unique in this standard set — no other in-scope standard has dedicated ticket-validation endpoints)
+* Participant registry and cross-operator trust model (`GET /participantMetadata`, administering-body model)
 
-**Notable gaps:** Trip planning, offer search, pricing, seat reservation, fulfillment,
-ancillaries, refund, exchange, and customer management are all out of scope by design.
-BoB is a complementary interoperability layer, not a full booking system.
+**Notable gaps:** No trip planning, no timetable, no sailing/availability query, no seat
+reservation, no ancillary services, no complaints/support workflow, no travel guarantees,
+no disruption feed, no OGC capability discovery.
 
 ---
 
@@ -168,33 +195,33 @@ the InterMOD specification has been published.
 
 ## 3. Comparison Matrix
 
-| # | Functional Area | OSDM 3.7.1 | TOMP-API 2.0.0 | OMSA 0.1.0 | BoB 2.0.1 | FerryGateway 1.3.1 | InterMOD |
-|---|----------------|-----------|---------------|-----------|----------|-------------------|---------|
+| # | Functional Area | OSDM 3.7.1 | TOMP-API 2.0.0 | OMSA 0.1.0 | BoB (full suite) | FerryGateway 1.3.1 | InterMOD |
+|---|----------------|-----------|---------------|-----------|-----------------|-------------------|---------|
 | 1 | **Network & geography** | ✅ `/places`, `/zones`, `StopPlace` | ⚠️ `place` schema only | ❌ | ❌ | ✅ `GetRoutes`, ports | ❓ |
 | 2 | **Timetable / schedule** | ⚠️ `DatedJourney`, `OperatingDays` (trip context only) | ❌ | ❌ | ❌ | ✅ `GetTimeTables` | ❓ |
 | 3 | **Trip / journey search** | ✅ `TripSearchCriteria`, `POST /trips` | ✅ `search-offers` (TRIP REQUEST) | ⚠️ `travelSpecification` O/D/time only | ❌ | ✅ `GetSailings`, connections | ❓ |
 | 4 | **Availability query** | ✅ `PlaceAvailability`, `/availabilities/*` | ✅ `GET /collections/assets` | ⚠️ asset availability via collections | ❌ | ✅ sailing capacity | ❓ |
-| 5 | **Offer search / fare query** | ✅ `POST /offers`, `OfferCollectionRequest` | ✅ `GET /collections/offers` | ✅ `search-offers/execute` | ❌ | ✅ `GetPrice`, fare details | ❓ |
-| 6 | **Offer selection / on-hold** | ✅ `OnHoldOffer`, `/on-hold-offer` | ✅ `select-offers`, `remove-offer` | ✅ `select-offers/execute` | ❌ | ✅ `ReservationRequest` | ❓ |
-| 7 | **Traveller / passenger management** | ✅ `Passenger`, `PassengerCategory`, `/passengers` | ✅ `traveller`, `update-traveller` | ✅ `add/update/remove-traveller` | ⚠️ `travellerId` on booking only | ✅ `GetPassengerAndVehicleTypes`, contact | ❓ |
+| 5 | **Offer search / fare query** | ✅ `POST /offers`, `OfferCollectionRequest` | ✅ `GET /collections/offers` | ✅ `search-offers/execute` | ✅ `POST /product`, area/group/route filters | ✅ `GetPrice`, fare details | ❓ |
+| 6 | **Offer selection / on-hold** | ✅ `OnHoldOffer`, `/on-hold-offer` | ✅ `select-offers`, `remove-offer` | ✅ `select-offers/execute` | ⚠️ `POST /manifest`, `GET /pds` pre-distribution step | ✅ `ReservationRequest` | ❓ |
+| 7 | **Traveller / passenger management** | ✅ `Passenger`, `PassengerCategory`, `/passengers` | ✅ `traveller`, `update-traveller` | ✅ `add/update/remove-traveller` | ✅ full CRUD `/traveller/{id}`, wallet, notifications | ✅ `GetPassengerAndVehicleTypes`, contact | ❓ |
 | 8 | **Booking creation** | ✅ `POST /bookings`, `BookingRequest` | ✅ `purchase-offers`, `purchase-package` | ✅ `purchase-package/execute` | ✅ `POST /booking` | ✅ `ConfirmReservation` | ❓ |
 | 9 | **Booking retrieval** | ✅ `GET /bookings/{id}`, `/bookings-search` | ✅ `GET /collections/packages` | ✅ package collections | ✅ `GET /booking/{id}` | ✅ `RecallBooking` | ❓ |
 | 10 | **Seat / spot / berth reservation** | ✅ `ReservationOfferPart`, `PlaceSelection`, `/coach-layouts` | ✅ `assign-asset` (SPOT RESERVATION) | ⚠️ `spotReservationParameter` in requirements | ❌ | ✅ cabins, berths, deck | ❓ |
 | 11 | **Ancillary services** | ✅ `AncillaryOfferPart`, `/ancillaries`, supplementary | ✅ `GET /collections/ancillaries`, `assign-ancillary` | ✅ `GET /collections/ancillaries`, `assign-ancillary` | ❌ | ✅ `GetServices`, meals, pets, shore | ❓ |
-| 12 | **Fulfillment / travel documents** | ✅ `Fulfillment`, `FulfillmentDocument`, `/fulfillments` | ✅ `GET /collections/travel-documents` | ✅ `GET /collections/travel-documents` | ⚠️ MTB manifest embedded in booking | ✅ `QrCode`, boarding pass, PDF | ❓ |
+| 12 | **Fulfillment / travel documents** | ✅ `Fulfillment`, `FulfillmentDocument`, `/fulfillments` | ✅ `GET /collections/travel-documents` | ✅ `GET /collections/travel-documents` | ✅ `POST /ticket`, `GET /ticket/{id}`, `PUT /ticket/{id}/active` | ✅ `QrCode`, boarding pass, PDF | ❓ |
 | 13 | **Physical asset management** | ❌ | ✅ `{assetOperation}-asset` lock/unlock/open-trunk | ⚠️ `assign-asset` only, no operational control | ❌ | ⚠️ vehicle assignment on ferry | ❓ |
 | 14 | **Trip execution / leg operations** | ❌ | ✅ `{legOperation}-leg` start/pause/resume/end | ❌ | ❌ | ❌ | ❓ |
 | 15 | **Cancellation** | ✅ `/release-offers`, refund endpoints | ✅ `cancel-package`, `rollback-purchase` | ✅ `cancel-package/execute` | ✅ `PATCH /booking` status=cancelled | ✅ `CancelBooking`, `GetCancelCharge` | ❓ |
-| 16 | **Refund / exchange / after-sales** | ✅ `RefundOffer`, `ExchangeOperation`, `/reimbursements` | ✅ `redress-options`, `claim/confirm-redress`, `refund-deposit` | ✅ `claim/confirm-refund-option/execute` | ❌ | ⚠️ cancellation charges only | ❓ |
-| 17 | **Pricing & fare structure** | ✅ `Fare`, `FareStructure`, `PriceGroup`, `/products` | ✅ `fareStructure`, `GET /collections/fares` | ✅ `amountOfMoney`, `financialDetail` | ❌ | ✅ `GetPrice`, cost categories | ❓ |
-| 18 | **Customer account management** | ⚠️ `Purchaser` schema, `/travel-accounts` | ✅ CRUD `/collections/customers` | ❌ | ❌ | ❌ | ❓ |
-| 19 | **Invoicing & payment** | ⚠️ `paymentMethods` on `Booking` | ✅ `GET /collections/payments`, `confirm-payment` | ❌ | ❌ | ✅ `GetInvoices`, payment status | ❓ |
+| 16 | **Refund / exchange / after-sales** | ✅ `RefundOffer`, `ExchangeOperation`, `/reimbursements` | ✅ `redress-options`, `claim/confirm-redress`, `refund-deposit` | ✅ `claim/confirm-refund-option/execute` | ✅ `POST /ticket/{id}/refundableStatus`, `POST /ticket/{id}/refundStatus` | ⚠️ cancellation charges only | ❓ |
+| 17 | **Pricing & fare structure** | ✅ `Fare`, `FareStructure`, `PriceGroup`, `/products` | ✅ `fareStructure`, `GET /collections/fares` | ✅ `amountOfMoney`, `financialDetail` | ⚠️ `GET /productcat/fare` fare categories, product properties | ✅ `GetPrice`, cost categories | ❓ |
+| 18 | **Customer account management** | ⚠️ `Purchaser` schema, `/travel-accounts` | ✅ CRUD `/collections/customers` | ❌ | ✅ Traveller API full CRUD + wallet + notifications | ❌ | ❓ |
+| 19 | **Invoicing & payment** | ⚠️ `paymentMethods` on `Booking` | ✅ `GET /collections/payments`, `confirm-payment` | ❌ | ⚠️ wallet + `/traveller/{id}/wallet/transaction` | ✅ `GetInvoices`, payment status | ❓ |
 | 20 | **Complaints & support** | ✅ `Complaint`, `CustomerComplaint`, `/reimbursements` | ✅ `support-tickets`, `request-support` | ❌ | ❌ | ❌ | ❓ |
 | 21 | **Travel guarantees & redress** | ❌ | ✅ `guarantee`, `redressOption`, `claim/confirm-redress` | ⚠️ `guarantees` field (not Transmodel-aligned) | ❌ | ❌ | ❓ |
-| 22 | **Promotions & discount codes** | ✅ `promotionCodes`, `corporateCodes`, `/reduction-cards` | ⚠️ `SALE DISCOUNT RIGHT` via fare element | ❌ | ❌ | ✅ `GetOfferCodes` | ❓ |
-| 23 | **Authentication / security** | ⚠️ external OAuth assumed | ❌ | ✅ `POST /oauth/token` (3 grant types) | ⚠️ MTB signing (no OAuth endpoint) | ❌ | ❓ |
-| 24 | **Disruption & real-time info** | ⚠️ `tripStatus`, `situationFullRefs` | ❌ | ❌ | ❌ | ❌ | ❓ |
-| 25 | **API discovery / capability** | ❌ | ✅ `/api`, `/conformance`, `/processes` | ✅ `/api`, `/conformance`, `/processes` | ❌ | ❌ | ❓ |
+| 22 | **Promotions & discount codes** | ✅ `promotionCodes`, `corporateCodes`, `/reduction-cards` | ⚠️ `SALE DISCOUNT RIGHT` via fare element | ❌ | ⚠️ discount codes in `POST /product` filter | ✅ `GetOfferCodes` | ❓ |
+| 23 | **Authentication / security** | ⚠️ external OAuth assumed | ❌ | ✅ `POST /oauth/token` (3 grant types) | ✅ `GET /auth/{entityId}` explicit JWT/TLS auth endpoint | ❌ | ❓ |
+| 24 | **Disruption & real-time info** | ⚠️ `tripStatus`, `situationFullRefs` | ⚠️ `POST /processes/notification/execution` on MP callback (TOMP-API-MP) | ❌ | ❌ | ❌ | ❓ |
+| 25 | **API discovery / capability** | ❌ | ✅ `/api`, `/conformance`, `/processes` | ✅ `/api`, `/conformance`, `/processes` | ⚠️ `GET /participantMetadata` participant registry | ❌ | ❓ |
 
 ---
 
@@ -207,7 +234,7 @@ highest-priority candidates for a unified EUDIT interface:
 
 | # | Functional area | Notes |
 |---|----------------|-------|
-| 7 | Traveller / passenger management | All five represent a traveller entity; BoB is minimal |
+| 7 | Traveller / passenger management | All five represent a traveller entity; BoB has full Traveller API |
 | 8 | Booking creation | The universal core act — best starting point for harmonisation |
 | 9 | Booking retrieval | All five support retrieval of an existing booking |
 | 15 | Cancellation | All five support at least booking cancellation |
@@ -216,16 +243,16 @@ highest-priority candidates for a unified EUDIT interface:
 
 ### 4.2 Broad coverage — strong harmonisation candidates
 
-Supported by four of the five standards (BoB absent in most cases due to its narrow scope):
+Supported by four or more of the five standards:
 
 | # | Functional area | Missing from |
 |---|----------------|-------------|
-| 5 | Offer search / fare query | BoB |
-| 6 | Offer selection / on-hold | BoB |
-| 7 | Traveller / passenger management | (BoB: partial) |
+| 5 | Offer search / fare query | (none missing — all five now covered) |
+| 6 | Offer selection / on-hold | BoB ⚠️ (pre-distribution step only) |
+| 12 | Fulfillment / travel documents | (none missing — all five now covered) |
+| 17 | Pricing & fare structure | BoB ⚠️ (fare categories only) |
+| 18 | Customer account management | OMSA, FerryGateway |
 | 11 | Ancillary services | BoB |
-| 12 | Fulfillment / travel documents | (BoB: partial — MTB only) |
-| 17 | Pricing & fare structure | BoB |
 
 These six areas, together with the four universal areas above, form the **core functional
 surface** that a EUDIT unified interface should address first.
@@ -242,10 +269,10 @@ or architectural choices:
 | 2 | Timetable / schedule | FerryGateway ✅, OSDM ⚠️ | Scheduled transport only |
 | 13 | Physical asset management | TOMP-API ✅, OMSA ⚠️, FerryGateway ⚠️ | Shared mobility and ferry vehicles |
 | 14 | Trip execution / leg operations | TOMP-API only | Shared mobility specific |
-| 19 | Invoicing & payment | TOMP-API ✅, FerryGateway ✅ | B2B settlement and ferry-specific billing |
+| 19 | Invoicing & payment | TOMP-API ✅, FerryGateway ✅, BoB ⚠️ | B2B settlement and ferry-specific billing |
 | 20 | Complaints & support | OSDM ✅, TOMP-API ✅ | Passenger rights and CRM |
 | 21 | Travel guarantees & redress | TOMP-API ✅, OMSA ⚠️ | MaaS service-level agreements |
-| 25 | API discovery / capability | TOMP-API ✅, OMSA ✅ | OGC-based standards only |
+| 25 | API discovery / capability | TOMP-API ✅, OMSA ✅, BoB ⚠️ | OGC-based standards + BoB participant registry |
 
 ---
 
@@ -253,20 +280,42 @@ or architectural choices:
 
 | # | Functional area | Best available | Gap |
 |---|----------------|---------------|-----|
-| 24 | Disruption & real-time info | OSDM (`tripStatus`, `situationFullRefs`) | No standard provides a proper disruption or situation feed |
-| 23 | Authentication / security | OMSA (`POST /oauth/token`) | OSDM and TOMP-API assume external OAuth; BoB uses MTB signing; FerryGateway uses TPE agent context |
+| 24 | Disruption & real-time info | OSDM (`tripStatus`, `situationFullRefs`); TOMP-API-MP (`POST /processes/notification/execution`) | No standard provides a proper disruption or situation feed; TOMP-API-MP covers operational notifications only |
+| 23 | Authentication / security | OMSA (`POST /oauth/token`); BoB (`GET /auth/{entityId}` JWT/TLS) | OSDM and TOMP-API assume external OAuth; FerryGateway uses TPE agent context — no unified auth model |
 | 2 | Timetable / schedule | FerryGateway (full), OSDM (contextual) | TOMP-API, OMSA, and BoB have no timetable concept |
-| 18 | Customer account management | TOMP-API (full CRUD) | The other four standards treat the customer either minimally or not at all |
+| 18 | Customer account management | TOMP-API (full CRUD), BoB (Traveller API) | OMSA and FerryGateway treat the customer minimally or not at all |
 
 ---
 
 ### 4.5 The role of BoB in the ecosystem
 
-BoB is a *booking transaction layer*, not a full-stack booking API. It assumes trip
-planning, offer selection, and pricing have already been performed by other systems.
-Its MTB security model is Nordic-specific. In EUDIT, BoB should be positioned as a
-**complementary ticketing interoperability protocol** (notably for operator-to-operator
-credential exchange) rather than a candidate for feature parity with OSDM or TOMP-API.
+BoB has evolved from a narrow booking transaction layer into a **comprehensive ticketing
+interoperability suite**. Its nine sub-APIs collectively cover product distribution,
+full ticket lifecycle management, traveller account management, device provisioning,
+and cross-operator trust infrastructure.
+
+**What makes BoB architecturally distinct:**
+
+* **Security model** — BoB is the only standard in scope with an explicit authentication
+  endpoint (`GET /auth/{entityId}`) using JWT over mutual TLS with client certificates.
+  The MTB (Mobile Ticket Binary) format is a BoB-native signed travel credential that
+  other standards do not have an equivalent for.
+* **Validation and Inspection APIs** — BoB is the only in-scope standard with dedicated
+  ticket validation (`POST /validation/{ticketId}`, blacklist/whitelist, fraud check) and
+  inspection endpoints (`POST /inspection/{ticketId}`). These represent a gap in all other
+  standards.
+* **Participant Metadata and Administering Body model** — `GET /participantMetadata`
+  provides a machine-readable participant registry with public keys, interface endpoints,
+  and issuer signature constraints. This cross-operator trust registry has no equivalent
+  in OSDM, TOMP-API, OMSA, or FerryGateway.
+* **What BoB still does not cover** — trip planning, timetable, availability query, seat
+  reservation, ancillary services, complaints/support, travel guarantees, disruption feed,
+  and OGC capability discovery. BoB remains a *ticketing* protocol, not a full journey
+  planning or MaaS platform.
+
+In EUDIT, BoB should be positioned as the reference model for **ticket lifecycle management,
+cross-operator credential exchange, and participant trust infrastructure**, complementing
+the journey-planning strengths of OSDM and the MaaS operational capabilities of TOMP-API.
 
 ---
 
@@ -277,9 +326,9 @@ The table below gives a quick overview of overall standard depth.
 | Standard | ✅ Full | ⚠️ Partial | ❌ None | Coverage score |
 |----------|--------|----------|--------|---------------|
 | OSDM 3.7.1 | 16 | 5 | 4 | 74 % |
-| TOMP-API 2.0.0 | 18 | 4 | 3 | 80 % |
-| OMSA 0.1.0 | 10 | 5 | 10 | 50 % |
-| BoB 2.0.1 | 4 | 3 | 18 | 22 % |
-| FerryGateway 1.3.1 | 13 | 3 | 9 | 58 % |
+| TOMP-API 2.0.0 | 20 | 3 | 2 | 86 % |
+| OMSA 0.1.0 | 12 | 5 | 8 | 58 % |
+| BoB (full suite) | 9 | 5 | 11 | 46 % |
+| FerryGateway 1.3.1 | 16 | 2 | 7 | 68 % |
 
 *Coverage score = (✅ × 1 + ⚠️ × 0.5) / 25 × 100.*

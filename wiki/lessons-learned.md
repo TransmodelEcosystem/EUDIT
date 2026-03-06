@@ -33,7 +33,9 @@ OSDM is the most feature-complete standard in the set, covering approximately 74
 
 ## TOMP-API
 
-TOMP-API has the broadest functional coverage in the set at approximately 80%, driven by its MaaS (Mobility-as-a-Service) scope spanning shared bikes, scooters, cars, taxis, and public transport legs in a single API. Its leg execution lifecycle and financial deposit patterns are unique and valuable. Its fare and product model is comparatively thin.
+TOMP-API has the broadest functional coverage in the set at approximately 82%, driven by its MaaS (Mobility-as-a-Service) scope spanning shared bikes, scooters, cars, taxis, and public transport legs in a single API. Its leg execution lifecycle and financial deposit patterns are unique and valuable. Its fare and product model is comparatively thin.
+
+TOMP-API is actually two APIs: the standard `TOMP-API 2.0.0` (MP → TO direction) and the companion `TOMP-API-MP 2.0.0` (TO → MP direction). The MP spec adds three push endpoints: `POST /processes/notification/execution` (TO pushes status notifications to MP), `POST /processes/request-confirmation/execution` (TO requests explicit confirmation from MP), and `POST /processes/request-payment/execution` (TO instructs MP to collect payment server-side, the "pick up the bill" pattern).
 
 ### What to adopt
 
@@ -44,6 +46,8 @@ TOMP-API has the broadest functional coverage in the set at approximately 80%, d
 * **Full CUSTOMER ACCOUNT CRUD.** TOMP-API provides create, read, update, delete, and preference-management for traveller accounts. This maps to Transmodel TRANSPORT CUSTOMER and CUSTOMER ACCOUNT. The TS should adopt this as the baseline account management interface.
 * **`financialDetail` payment categories.** The `paymentCategory` enum (`DAMAGE`, `LOSS`, `FINE`, `SURGE`, `REFUND`, `DEPOSIT`) captures post-trip financial events that Transmodel does not yet model. These should be adopted as TS extensions with explicit `[no Transmodel equivalent]` notes.
 * **Operator and planning metadata.** `GET /operator/information`, `GET /operator/available-assets`, and `GET /planning/offers` provide discoverable service metadata that maps to Transmodel OPERATOR, VEHICLE TYPE, and SERVICE JOURNEY. The TS should standardise this discovery pattern across all modes.
+* **TO → MP reverse-direction push (`TOMP-API-MP`).** The companion MP spec introduces a formally-specified reverse channel: the Transport Operator pushes notifications, requests confirmation, and triggers server-side payment collection to the Mobility Provider. This bidirectional model (MP calls TO for planning/booking; TO calls MP for execution events and payment) is the most complete bilateral API contract in the source set. The TS should adopt the bidirectional pattern for any integration where both parties may initiate communication.
+* **"Pick up the bill" server-side payment.** `POST /processes/request-payment/execution` allows the TO to instruct the MP to collect payment without requiring the traveller to re-authorise a card transaction. This maps to FARE CONTRACT payment delegation and is essential for post-trip charging scenarios (e.g. open-ended rentals, penalty fares, damage charges). The TS should adopt this as the standard mechanism for operator-initiated payment requests.
 
 ### What to avoid
 
@@ -102,22 +106,30 @@ FerryGateway covers approximately 58% of the EUDIT functional scope, operating e
 
 ## BoB
 
-BoB (Booking of Bookings) is the most minimal standard in the set, covering approximately 22% of the EUDIT functional scope across only four endpoints. Its value lies not in breadth but in its ticket integrity and B2B distribution architecture. The MTB (Mobile Ticket Binary) signing model is the strongest approach to non-repudiation and validation in the entire source set.
+BoB (Booking of Bookings) is a full suite of nine sub-APIs covering approximately 46% of the EUDIT functional scope. Earlier assessment placed coverage at 22% based only on the `BoB booking.yaml` sub-API (4 endpoints); the corrected figure reflects the complete suite: Authentication, Device, Inspection, ParticipantMetadata, Product, Ticket, Token, Traveller, and Validation. BoB's value lies in its ticket-integrity and B2B-distribution architecture. The MTB (Mobile Ticket Binary) signing model is the strongest approach to non-repudiation and offline validation in the entire source set. The AB (Access Bus) central-registry model for participant federation is unique in the set and highly relevant to multi-operator EUDIT deployments.
 
 ### What to adopt
 
 * **MTB (Mobile Ticket Binary) signing model.** MTB provides a signed, offline-verifiable binary ticket format with a clear chain of custody between issuing system, distributor, and validator. The TS should reference MTB (or an equivalent signed token standard) as the mandatory fulfillment format for any use case requiring offline validation.
+* **JWT + TLS client-certificate authentication.** `GET /auth/{entityId}` (Authentication API) issues a JWT scoped to a specific AB entity using mutual TLS. This is the most explicit and verifiable machine-to-machine auth pattern in the source set. The TS should adopt this alongside OMSA's `POST /oauth/token` grant model, with the JWT+mTLS variant mandated for B2B system-to-system flows.
+* **Participant registry (AB model).** `GET /participantMetadata` (ParticipantMetadata API) provides a central registry of public keys, service endpoints, and issuer constraints for every AB participant. This enables zero-configuration trust establishment between operators and distributors. The TS should adopt a participant registry endpoint as a mandatory infrastructure service for multi-operator deployments.
+* **Validator device key management.** The Device API (`/device/*`) manages cryptographic key derivation keys (KDK) for validator hardware, enabling key rotation without physical device updates. The TS should adopt this pattern for any deployment involving physical validator hardware.
+* **Full ticket lifecycle with Ticket API.** The Ticket API provides issue, activate, suspend, reactivate, refund, revoke, and event-history endpoints for individual tickets and ticket bundles. This is the most complete TRAVEL DOCUMENT lifecycle in the source set. The TS should adopt the Ticket API lifecycle as the canonical TRAVEL DOCUMENT state model.
+* **Full CUSTOMER ACCOUNT via Traveller API.** The Traveller API (`/traveller/*`) provides CRUD for traveller profiles, a wallet, push-notification preferences, and MTB activation. This maps to Transmodel TRANSPORT CUSTOMER + CUSTOMER ACCOUNT + FARE CONTRACT and should be adopted as the TS's baseline traveller-account interface for B2B distribution scenarios.
+* **Structured product search with area / group / route filters.** `POST /product` (Product API) accepts structured filter criteria (transport mode, geographic area, route, fare category) and returns product metadata. This maps to FARE PRODUCT / SALES OFFER PACKAGE discovery and should be adopted as the canonical product-search pattern for operators exposing their product catalogue to distributors.
+* **Online and offline validation with blacklist/whitelist.** The Validation API (`/validation/*`) supports both real-time online validation and offline TICKLE-macro-based validation, plus blacklist/whitelist management and a fraud-check endpoint. This is the only standard in the set with a formally-specified offline validation path. The TS must define an offline validation profile and should adopt BoB's TICKLE macro model as the reference implementation.
+* **Inspection API for post-travel audit.** The Inspection API (`/inspection/*`) provides a structured workflow for human inspectors to verify tickets and report results, distinct from the automated gate validation flow. The TS should adopt the inspector / gate role split from BoB's validation model.
 * **Booking status lifecycle.** BoB's status progression (`pending` → `confirmed` → `completed` / `miss` / `cancelled`) maps cleanly to Transmodel CUSTOMER PURCHASE STATUS. The TS should adopt this five-state lifecycle as the canonical booking status model.
 * **Explicit B2B distributor ↔ operator separation.** BoB architecturally separates the distributor role (sells to traveller) from the operator role (delivers the journey). This maps to Transmodel SALES CHANNEL / DISTRIBUTION CHANNEL and OPERATOR. The TS should mandate this separation in its role model.
-* **Ticket validation endpoints (inspector + gate).** BoB's companion MTB sub-specification defines validation flows for both human inspectors and automated gates. The TS needs a validation model and should adopt BoB's two-actor validation pattern.
-* **Short, role-scoped API surface.** BoB's four-endpoint design demonstrates that a distribution/validation interface does not need to replicate the full booking API. The TS should design role-scoped API profiles (distributor profile, operator profile, validator profile) in addition to the full conformance class.
+* **Role-scoped API profiles.** BoB's nine sub-APIs are naturally partitioned by role: product search (Product), traveller management (Traveller), ticket lifecycle (Ticket), device/key management (Device + Token), and validation (Validation + Inspection). The TS should design conformance classes as role-scoped API profiles (distributor, operator, validator, infrastructure) rather than requiring every implementor to support the full surface.
 
 ### What to avoid
 
 * **`miss` status without Transmodel equivalent.** The `miss` status (traveller no-show) has no direct CUSTOMER PURCHASE STATUS mapping in Transmodel. Before including it in the TS, an explicit mapping or extension must be defined.
-* **Four-endpoint surface as a standalone API.** BoB's minimal scope is insufficient for end-to-end interoperability. It must be combined with richer booking and fare APIs from OSDM or TOMP-API; it cannot stand alone in the TS.
 * **MTB format complexity as the only option.** MTB's binary signing model may be too complex for lightweight MaaS or multimodal token scenarios. The TS should provide a simpler signed-JSON token alternative for contexts where full MTB is disproportionate.
-* **No trip planning, fare catalogue, or after-sales.** Like OMSA, BoB covers only a slice of the end-to-end journey. The TS must not extend BoB's scope assumptions when defining conformance classes.
+* **Sub-API fragmentation as a deployment model.** BoB's nine separate YAML files with independent versioning (`v1.3.3`, `v2.3.0`, `v3.4.0`, etc.) create version-skew risk in multi-operator deployments. The TS must normalise BoB's sub-APIs into a single versioned conformance profile to prevent interoperability breakage at minor version boundaries.
+* **No trip planning or after-sales.** BoB covers product search, booking, ticket lifecycle, and validation — but not trip planning, fare calculation, or structured after-sales. The TS must supplement BoB's distribution model with OSDM's fare and after-sales patterns; BoB cannot stand alone as the TS's booking layer.
+* **KDK/device-key complexity for software-only validators.** The Device API's key derivation model is designed for dedicated validator hardware. Software-only validators (e.g. inspector smartphone apps) do not require KDK rotation. The TS should distinguish hardware-validator and software-validator conformance profiles and not mandate KDK management for the latter.
 
 ---
 
@@ -133,20 +145,29 @@ The table below summarises the recommended TS decision for each cross-cutting co
 
 | Concern | Recommended approach | Primary source |
 |---|---|---|
-| Authentication | Mandatory `POST /oauth/token` with `client_credentials`, `password`, `refresh_token` grant types | OMSA |
+| Authentication (B2C) | Mandatory `POST /oauth/token` with `client_credentials`, `password`, `refresh_token` grant types | OMSA |
+| Authentication (B2B) | JWT issued via `GET /auth/{entityId}` with mutual TLS client certificate | BoB |
+| Participant registry | Central `GET /participantMetadata` registry of public keys, endpoints, issuer constraints | BoB |
 | Offer discovery | `POST /offers` returning SALES OFFER PACKAGE array with embedded availability | OSDM |
+| Product search (distribution) | `POST /product` with area / group / route / fare-category filter criteria | BoB |
 | Pre-booking hold | `OnHoldOffer` with time-boxed lock and optional fee | OSDM |
 | Purchase confirmation | Two-phase execute → confirm with `rollbackExpiryTime` | TOMP-API |
 | After-sales query | Mandatory offer step before any refund, exchange, or release | OSDM |
 | Exchange | First-class EXCHANGE operation distinct from cancel + rebook | OSDM |
 | Cancellation charge query | `GetCancelCharge`-style query before `CancelBooking` (generalised to all destructive after-sales) | FerryGateway |
 | Ticket fulfillment | MTB signed binary for offline validation; signed-JSON token as lightweight alternative | BoB |
+| Ticket lifecycle | Issue, activate, suspend, reactivate, refund, revoke, event-history via Ticket API | BoB |
 | Booking status | Five-state lifecycle: `pending` → `confirmed` → `completed` / `miss` / `cancelled` | BoB |
+| Offline validation | TICKLE macro-based offline path with blacklist/whitelist; hardware KDK rotation via Device API | BoB |
+| Online validation | `POST /validation` real-time check with fraud detection | BoB |
 | Leg execution (MaaS) | `{legOperation}-leg` lifecycle: start / pause / resume / end / extend / postpone | TOMP-API |
 | Financial deposits | Deposit-request / deposit-release pattern for open-ended rentals | TOMP-API |
+| Operator-initiated payment | `POST /processes/request-payment/execution` server-side payment delegation (TOMP-MP) | TOMP-API |
+| Operator → MP push | Bidirectional API contract: MP→TO for planning/booking; TO→MP for execution events + payment | TOMP-API |
 | Push notifications | Webhook registration via `POST /subscriber`; OSDM webhook spec as supplementary reference | OMSA + OSDM |
 | Capability discovery | `GET /processes` + `GET /conformance` machine-readable capability advertisement | OMSA |
 | Invoicing | `GetInvoices`-style endpoint for all modes requiring fiscal documents | FerryGateway |
 | Accommodation booking | Cabin/berth as first-class entity with occupancy and accessibility constraints | FerryGateway |
 | Transmodel annotation | `x-semantics` (or equivalent) on every TS schema field | OSDM |
 | B2B distribution | Explicit distributor ↔ operator role separation with scoped API profiles | BoB |
+| Traveller account | Full CRUD + wallet + notification preferences via Traveller API | BoB |

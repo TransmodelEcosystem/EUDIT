@@ -1,0 +1,1098 @@
+swagger: '2.0'
+info:
+  version: 2.3.1
+  title: BoB.participantMetadata.API
+  description: |
+    The Participant Metadata API provides an interface for participants to manage metadata coordinated by an Administering Body (AB). An Administering Body is responsible for hosting the central register for participant public keys, interface endpoints, issuer signature constraints and domain names. The purpose of this API is to enable interoperability between participants by giving them access to each other's metadata. It is the participant's responsibility that the metadata in this register is correct and up-to-date. Every organisation that wants to issue MTBs must be a registered participant. This API does not support adding new participants or removing already existing participants, it only supports managing metadata for existing participants.
+
+    More information about coordination and key management can be found in <a href="https://bitbucket.org/samtrafiken/bob-mts-4-coordination-and-key-management/src/master/mts4.pdf" target="_blank">MTS4</a>.
+    Information about the current implementation hosted by Samtrafiken can be found in the <a href="https://bob.samtrafiken.se" target="_blank">BoB documentation</a>, section <a href="https://samtrafiken.atlassian.net/wiki/spaces/BOB/pages/115614537/Participant+Metadata" target="_blank">Participant Metadata</a>.
+basePath: /api/v2
+schemes:
+  - https
+tags:
+  - name: participantMetadataFile
+    description: |
+      Get all metadata for all registered participants.
+  - name: participantMetadata
+    description: |
+      Get all metadata for a certain participant.
+  - name: domainName
+    description: |
+      A single domain name can be associated with each participant. The domain name is submitted to the metadata register in the participant registration process. It is used for dynamic key fetching via DNS (<a href="https://bitbucket.org/samtrafiken/bob-mts-1-mobile-ticket-format/src/master/mts1.pdf" target="_blank">MTS1</a> section 2.4).
+  - name: mtbPublicKey
+    description: |
+      An MTB public key is used for validating the issuer signature attached to an MTB. MTB keys are immutable. More information about MTB key management and algorithms can be found in <a href="https://bitbucket.org/samtrafiken/bob-mts-4-coordination-and-key-management/src/master/mts4.pdf" target="_blank">MTS4</a>, <a href="https://bitbucket.org/samtrafiken/bob-mts-1-mobile-ticket-format/src/master/mts1.pdf" target="_blank">MTS1</a> section 2.4 and in the <a href="https://samtrafiken.atlassian.net/wiki/spaces/BOB/pages/116125179/5.+Key+Management" target="_blank">BoB Manual&#58; Key Management &rarr; 5.3. Ticketing keys</a>.
+  - name: authtokenPublicKey
+    description: |
+      A authtoken public key is used for validating a JSON Web Token (JWT), as defined in <a href="https://tools.ietf.org/html/rfc7519" target="_blank">RFC 7519</a>, included in the request from a BoB Client. Authtoken keys are immutable. Information about authtoken keys, authentication and authorization within BoB can be found in <a href="https://samtrafiken.atlassian.net/wiki/spaces/BOB/pages/493617445/6.+API+Authentication+and+Authorization" target="_blank">Chapter 6&#58; API Authentication and Authorization</a> of the BoB Manual.
+  - name: interfaceEndpoint
+    description: |
+      A participant API implementation is made accessible to other participants through interface endpoints. A general description of each type of endpoint can be found in the <a href="https://samtrafiken.atlassian.net/wiki/spaces/BOB/pages/110985249/How+does+it+work" target="_blank">BoB documentation&#58; How does it work &rarr; BoB-API and API endpoints</a>.
+  - name: issuerSignatureConstraint
+    description: |
+      An issuer signature constraint lets a participant grant other participants (sales channels) permission to sign tickets issued by the participant. The purpose of issuer signature constraint is to control which participants that are allowed to sign tickets issued by other participants.
+  - name: participantInfo
+    description: Manage participant info for a participant
+paths:
+  /participantMetadata:
+    get:
+      tags:
+        - participantMetadataFile
+      summary: Get latest participant metadata file
+      description: |
+        Get the latest participant metadata file, signed using JSON Web Signature (JWS) as defined in <a href="https://tools.ietf.org/html/rfc7515" target="_blank">RFC 7515</a>. Metadata validity is specified in the JWS header.
+      operationId: getParticipantMetadataFile
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: JWS JSON serialization (<a href="https://tools.ietf.org/html/rfc7515" target="_blank">RFC 7515</a>) of participant metadata. Payload is a Base64 for URL encoded string containing data of type participantMetadataFile.
+          schema:
+            $ref: '#/definitions/jws'
+        '409':
+          description: Server response unavailable due to numerous concurrent updates
+  /participantMetadata/{pid}:
+    get:
+      tags:
+        - participantMetadata
+      summary: Get participant metadata by participant identifier
+      operationId: getParticipantMetadata
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/participantMetadata'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+  /participantMetadata/{pid}/domainName:
+    get:
+      tags:
+        - domainName
+      summary: Get participant domain name by participant identifier
+      operationId: getDomainName
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            description: Fully qualified domain name (FQDN)
+            type: string
+            example: sj.se
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    put:
+      tags:
+        - domainName
+      summary: Update participant domain name
+      operationId: updateDomainName
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: domainName
+          in: body
+          description: Fully qualified domain name (FQDN)
+          required: true
+          schema:
+            type: string
+            example: sj.se
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    delete:
+      tags:
+        - domainName
+      summary: Delete participant domain name
+      operationId: deleteDomainName
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+  /participantMetadata/{pid}/mtbPublicKey:
+    get:
+      tags:
+        - mtbPublicKey
+      summary: Get MTB public keys by participant identifier
+      description: Get the public component of all current MTB signing keys for a certain participant.
+      operationId: getMtbPublicKeys
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/mtbJwkPublic'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    post:
+      tags:
+        - mtbPublicKey
+      summary: Add MTB public key to participant object
+      operationId: addMtbPublicKey
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: jwk
+          in: body
+          description: JWK object
+          required: true
+          schema:
+            $ref: '#/definitions/mtbJwkPublic'
+      security:
+        - Pop: []
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: URL of created key object
+              type: string
+        '401':
+          description: unauthorised
+        '403':
+          description: kid re-used, which is not allowed
+        '404':
+          description: pid not found
+  /participantMetadata/{pid}/mtbPublicKey/{kid}:
+    get:
+      tags:
+        - mtbPublicKey
+      summary: Get MTB public key by key identifier
+      description: Get the public component of an MTB signing key.
+      operationId: getMtbPublicKey
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: kid
+          in: path
+          description: Key identifier
+          required: true
+          type: string
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/mtbJwkPublic'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/kid not found
+    put:
+      tags:
+        - mtbPublicKey
+      summary: Update MTB public key by key identifier. WARNING - This endpoint is not part of normal use. It should only be used in rare cases when the key is erroneous and the key with same kid needs to be replaced.
+      description: If you updated your keys, please follow these <a href="https://samtrafiken.atlassian.net/wiki/spaces/BOB/pages/3313500172/If+you+updated+your+keys" target="_blank">instructions</a>.
+      operationId: updateMtbPublicKey
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: kid
+          in: path
+          description: Key Identifier
+          required: true
+          type: string
+        - name: jwk
+          in: body
+          description: JWK object
+          required: true
+          schema:
+            $ref: '#/definitions/mtbJwkPublic'
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            Location:
+              description: URL of created key object
+              type: string
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/kid not found
+    delete:
+      tags:
+        - mtbPublicKey
+      summary: Delete MTB public key by key identifier
+      operationId: deleteMtbPublicKey
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: kid
+          in: path
+          description: Key identifier
+          required: true
+          type: string
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/kid not found
+  /participantMetadata/{pid}/authtokenPublicKey:
+    get:
+      tags:
+        - authtokenPublicKey
+      summary: Get authtoken public keys by participant identifier
+      operationId: getAuthtokenPublicKeys
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/authtokenJwkPublic'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    post:
+      tags:
+        - authtokenPublicKey
+      summary: Add authtoken public key to participants object
+      operationId: addAuthtokenPublicKey
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: jwk
+          in: body
+          description: JWK object
+          required: true
+          schema:
+            $ref: '#/definitions/authtokenJwkPublic'
+      security:
+        - Pop: []
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: URL of created key object
+              type: string
+        '401':
+          description: unauthorised
+        '403':
+          description: kid re-used, which is not allowed
+        '404':
+          description: pid not found
+  /participantMetadata/{pid}/authtokenPublicKey/{kid}:
+    get:
+      tags:
+        - authtokenPublicKey
+      summary: Get authtoken public key by key identifier
+      operationId: getAuthtokenPublicKey
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: kid
+          in: path
+          description: Key Identifier
+          required: true
+          type: string
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/authtokenJwkPublic'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/kid not found
+    put:
+      tags:
+        - authtokenPublicKey
+      summary: Update authtoken public key by key identifier. WARNING - This endpoint is not part of normal use. It should only be used in rare cases when the key is erroneous and the key with same kid needs to be replaced.
+      operationId: updateAuthtokenPublicKey
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: kid
+          in: path
+          description: Key Identifier
+          required: true
+          type: string
+        - name: jwk
+          in: body
+          description: JWK object
+          required: true
+          schema:
+            $ref: '#/definitions/authtokenJwkPublic'
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            Location:
+              description: URL of created key object
+              type: string
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/kid not found
+    delete:
+      tags:
+        - authtokenPublicKey
+      summary: Delete authtoken public key by key identifier
+      operationId: deleteAuthtokenPublicKey
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: kid
+          in: path
+          description: Key Identifier
+          required: true
+          type: string
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/kid not found
+  /participantMetadata/{pid}/interfaceEndpoint:
+    get:
+      tags:
+        - interfaceEndpoint
+      summary: Get interface endpoints by participant identifier
+      operationId: getInterfaceEndpoints
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/endpoint'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    post:
+      tags:
+        - interfaceEndpoint
+      summary: Add interface endpoint to participants object
+      operationId: addInterfaceEndpoint
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: interfaceEndpoint
+          in: body
+          description: interfaceEndpoint object
+          required: true
+          schema:
+            $ref: '#/definitions/endpointCall'
+      security:
+        - Pop: []
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: "URL of created endpoint"
+              type: string
+          schema:
+            $ref: '#/definitions/endpoint'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+        '422':
+          description: unprocessable entity
+          schema:
+            description: Description of why the request entity could not be processed
+            type: string
+  /participantMetadata/{pid}/interfaceEndpoint/{endpointId}:
+    get:
+      tags:
+        - interfaceEndpoint
+      summary: Get interface endpoint by endpoint identifier
+      operationId: getInterfaceEndpoint
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: endpointId
+          in: path
+          description: Endpoint identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/endpoint'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/endpointId not found
+    put:
+      tags:
+        - interfaceEndpoint
+      summary: Update interface endpoint by endpoint identifier
+      operationId: updateInterfaceEndpoint
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: endpointId
+          in: path
+          description: Endpoint identifier
+          required: true
+          type: integer
+          format: int64
+        - name: interfaceEndpoint
+          in: body
+          description: interfaceEndpoint object
+          required: true
+          schema:
+            $ref: '#/definitions/endpoint'
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/endpointId not found
+    delete:
+      tags:
+        - interfaceEndpoint
+      summary: Delete interface endpoint by endpoint identifier
+      operationId: deleteInterfaceEndpoint
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: endpointId
+          in: path
+          description: Endpoint identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/endpointId not found
+  /participantMetadata/{pid}/issuerSignatureConstraint:
+    get:
+      tags:
+        - issuerSignatureConstraint
+      summary: Get issuer signature constraints published by participant identifier
+      operationId: getIssuerSignatureConstraints
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/issuerSignatureConstraint'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    post:
+      tags:
+        - issuerSignatureConstraint
+      summary: Add issuer signature constraint to participant object
+      operationId: addIssuerSignatureConstraint
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: issuerSignatureConstraint
+          in: body
+          description: issuerSignatureConstraint object
+          required: true
+          schema:
+            $ref: '#/definitions/issuerSignatureConstraint'
+      security:
+        - Pop: []
+      responses:
+        '201':
+          description: successful operation
+          headers:
+            Location:
+              description: URL of created issuerSignatureConstraint object
+              type: string
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+  /participantMetadata/{pid}/issuerSignatureConstraint/{acceptablePid}:
+    get:
+      tags:
+        - issuerSignatureConstraint
+      summary: Get issuer signature constraint published by participant identifier for the acceptable pid
+      operationId: getIssuerSignatureConstraint
+      produces:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: acceptablePid
+          in: path
+          description: Acceptable participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/issuerSignatureConstraint'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/acceptablePid not found
+    put:
+      tags:
+        - issuerSignatureConstraint
+      summary: Update issuer signature constraint published by participant identifier for the acceptable pid
+      operationId: updateIssuerSignatureConstraint
+      consumes:
+        - application/json
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: acceptablePid
+          in: path
+          description: Acceptable participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: issuerSignatureConstraint
+          in: body
+          description: issuerSignatureConstraint object
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/issuerSignatureConstraint'
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid/acceptablePid not found
+    delete:
+      tags:
+        - issuerSignatureConstraint
+      summary: Delete issuer signature constraint published by participant identifier for the acceptable pid
+      operationId: deleteIssuerSignatureConstraint
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: acceptablePid
+          in: path
+          description: Acceptable participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+  /participantMetadata/{pid}/participantInfo:
+    get:
+      tags:
+        - participantInfo
+      summary: Get a participants participant info by participant identifier
+      operationId: getParticipantInfo
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: []
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/participantInfo'
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    put:
+      tags:
+        - participantInfo
+      summary: Add or replace ones own participant info
+      operationId: addParticipantInfo
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+        - name: participantInfo
+          in: body
+          description: One participant info
+          required: true
+          schema:
+            $ref: '#/definitions/participantInfo'
+      security:
+        - Pop: []
+      responses:
+        '201':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid not found
+    delete:
+      tags:
+        - participantInfo
+      summary: Delete a participants participant info by participant identifier
+      operationId: deleteParticipantInfo
+      parameters:
+        - name: pid
+          in: path
+          description: Participant identifier
+          required: true
+          type: integer
+          format: int64
+      security:
+        - Pop: [ ]
+      responses:
+        '204':
+          description: successful operation
+        '401':
+          description: unauthorised
+        '404':
+          description: pid or participants participant info not found
+securityDefinitions:
+  Pop:
+    description: "OAuth 2.0 Proof-of-possession (pop) Token"
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  authtokenJwkPublic:
+    type: object
+    description: Public JSON Web Key (JWK) as defined in <a href="https://tools.ietf.org/html/rfc7517" target="_blank">RFC 7517</a>. Two algorithms are supported&#58; the primary algorithm is EC (kty=EC) and the fallback algorithm is RSA (kty=RSA).
+    required:
+      - kty
+      - kid
+    properties:
+      kty:
+        type: string
+        description: JWA key type
+        example: "EC"
+      kid:
+        type: string
+        description: JWK key identifier
+        example: "34:20190101_bob_mtb"
+      crv:
+        type: string
+        description: Curve type (required for kty=EC)
+        example: "P-256"
+      x:
+        type: string
+        description: EC x coordinate (required for kty=EC)
+        example: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4"
+      y:
+        type: string
+        description: EC y coordinate (required for kty=EC)
+        example: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+      n:
+        type: string
+        description: RSA modulus parameter (required for kty=RSA)
+        example: "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbW..."
+      e:
+        type: string
+        description: RSA exponent parameter (required for kty=RSA)
+        example: AQAB
+  mtbJwkPublic:
+    type: object
+    description: Public JSON Web Key (JWK) as defined in <a href="https://tools.ietf.org/html/rfc7517" target="_blank">RFC 7517</a>. Two algorithms are supported&#58; the primary algorithm is EC (kty=EC) and the fallback algorithm is RSA (kty=RSA).
+    required:
+      - kty
+      - kid
+    properties:
+      kty:
+        type: string
+        description: JWA key type
+        example: "EC"
+      kid:
+        type: string
+        description: JWK key identifier
+        example: "34:20190101_bob_mtb"
+      crv:
+        type: string
+        description: Curve type (required for kty=EC)
+        example: "P-256"
+      x:
+        type: string
+        description: EC x coordinate (required for kty=EC)
+        example: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4"
+      y:
+        type: string
+        description: EC y coordinate (required for kty=EC)
+        example: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+      n:
+        type: string
+        description: RSA modulus parameter (required for kty=RSA)
+        example: "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbW..."
+      e:
+        type: string
+        description: RSA exponent parameter (required for kty=RSA)
+        example: AQAB
+      bob_sc:
+        type: string
+        description: Signature constraint restricting signature verification to either ID MTB or Ticket MTB
+        enum:
+          - id
+          - ticket
+  issuerSignatureConstraint:
+    type: object
+    required:
+      - pid
+    properties:
+      pid:
+        description: PID of acceptable issuer
+        type: integer
+        format: int64
+        example: 20
+      signatureLifetime:
+        description: Maximum signature life-time allowed for this PID as ISO 8601:2004 duration format (<a href="https://bitbucket.org/samtrafiken/bob-mts-8-date-and-time-formats/src/master/mts8.pdf" target="_blank">MTS8</a>, chapter 2.4)
+        type: string
+        example: "P3W"
+  endpoint:
+    allOf:
+      - required:
+          - endpointId
+      - properties:
+          endpointId:
+            type: integer
+            format: int64
+            example: 1
+      - $ref: '#/definitions/endpointCall'
+  endpointCall:
+    type: object
+    required:
+      - version
+      - type
+      - uri
+    properties:
+      version:
+        type: integer
+        format: int32
+        description: A positive integer
+        example: 1
+      type:
+        type: string
+        enum:
+          - account
+          - authentication
+          - booking
+          - device
+          - inspection
+          - product
+          - resource
+          - ticket
+          - token
+          - traveller
+          - validation
+        example: ticket
+      uri:
+        type: string
+        example: https://bob.linkon.se/sj/api/v1
+      tlsa:
+        description: TLSA (<a href="https://tools.ietf.org/html/rfc6698" target="_blank">RFC 6698</a>) parameters for endpoint. More information about TLSA can be found in the <a href="https://samtrafiken.atlassian.net/wiki/spaces/BOB/pages/879067159/Network+Infrastructure+and+Gateways" target="_blank">BoB Manual&#58; Implementer considerations &rarr; Network Infrastructure and Gateways</a>.
+        type: object
+        properties:
+          usage:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 255
+          selector:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 255
+          type:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 255
+          data:
+            type: string
+            pattern: "^(([0-9A-Fa-f]){2})+$"
+  participantMetadata:
+    type: object
+    required:
+      - pid
+      - organisationName
+    properties:
+      pid:
+        description: Participant identifier
+        type: integer
+        format: int64
+        example: 20
+      organisationName:
+        description: Organisation name
+        type: string
+        example: SJ
+      domainName:
+        description: Fully qualified domain name (FQDN)
+        type: string
+        example: sj.se
+      mtbPublicKeys:
+        description: Public components of current MTB signing keys
+        type: array
+        items:
+          $ref: '#/definitions/mtbJwkPublic'
+      authtokenPublicKeys:
+        description: Public components of current auth token signing keys
+        type: array
+        items:
+          $ref: '#/definitions/authtokenJwkPublic'
+      interfaceEndpoints:
+        description: Location of available endpoints
+        type: array
+        items:
+          $ref: '#/definitions/endpoint'
+      issuerSignatureConstraints:
+        description: Acceptable issuers of MTBs
+        type: array
+        items:
+          $ref: '#/definitions/issuerSignatureConstraint'
+      participantInfo:
+        $ref: '#/definitions/participantInfo'
+  participantMetadataFile:
+    type: array
+    items:
+      $ref: '#/definitions/participantMetadata'
+  jws:
+    description: JSON Web Signature (JWS) Serialization as defined in <a href="https://tools.ietf.org/html/rfc7515" target="_blank">RFC 7515</a>, details in section <a href="https://tools.ietf.org/html/rfc7515#section-7.2.1" target="_blank">7.2.1</a>.
+    type: object
+    required:
+      - payload
+      - signature
+    properties:
+      payload:
+        type: string
+      signatures:
+        type: array
+        items:
+          type: object
+          required:
+            - signature
+          properties:
+            protected:
+              type: string
+            header:
+              type: string
+            signature:
+              type: string
+  participantInfo:
+    description: Holds participant info. Specified in https://bitbucket.org/samtrafiken/bob-schema-participant-info/src/master/participant-info.json
+    type: object

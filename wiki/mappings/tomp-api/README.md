@@ -635,3 +635,75 @@ x-semantics equivalent:
 | serviceJourneyReference | — | SERVICE JOURNEY id | exact |
 | ancillaryReference | — | ANCILLARY PRODUCT id | exact |
 | typeOfTravelDocument | — | TYPE OF TRAVEL DOCUMENT | exact |
+
+---
+
+## TOMP-API-MP v2.0.0 (MaaS Provider Callbacks)
+
+Source spec: `wiki/specifications/TOMP-API-MP 2.0.0.yaml`
+
+TOMP-API-MP defines the reverse direction of the TOMP-API interface: endpoints implemented by the **MaaS Provider (MP)** that the **Transport Operator (TO)** calls. The spec introduces two new schemas (`notificationInput`, `confirmationInput`) and reuses `financialDetail` from the main TOMP-API after-sales module for the payment request. Mappings below cover the three endpoints and their request schemas.
+
+---
+
+### 3.1 MP Callback Endpoints
+
+| Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
+|---------|-----------|----------------------|-------------------------|-------|
+| postNotification | POST /processes/notification/execution | SITUATION ELEMENT, SERVICE JOURNEY | — | partial: lifecycle/status notifications map to SITUATION ELEMENTs; leg-state transitions reference SERVICE JOURNEY |
+| postConfirmation | POST /processes/request-confirmation/execution | CUSTOMER PURCHASE PACKAGE STATUS | — | partial: confirmation request corresponds to a pending status transition on the CUSTOMER PURCHASE PACKAGE |
+| paymentRequest | POST /processes/request-payment/execution | FARE CONTRACT, FARE PRICE | — | partial: payment settlement request references the financial obligation captured in FARE CONTRACT; amount carried as FARE PRICE |
+
+---
+
+### 3.2 notificationInput
+
+| Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
+|---------|-----------|----------------------|-------------------------|-------|
+| notificationInput | notificationType | SITUATION ELEMENT | severity / reportType | partial: USER_ACTION / WARNING / INFORMATION / ETA map to SITUATION ELEMENT reportType; asset/leg lifecycle values (STARTED, PAUSED, ENDED, etc.) correspond to execution state, not a Transmodel operation |
+| notificationInput | notificationType=PREPARING / PREPARED / STARTED / PAUSED / RESUMED / ENDED | — | — | none: leg execution lifecycle states have no Transmodel operation equivalent (see legStatus in section 2.3) |
+| notificationInput | notificationType=LOCKED / UNLOCKED | — | — | none: physical asset lock state; no Transmodel equivalent |
+| notificationInput | notificationType=ETA | SERVICE JOURNEY | arrivalTime | partial: ETA at pickup maps to planned/expected arrivalTime on SERVICE JOURNEY |
+| notificationInput | notificationType=PRICE_FINAL | FARE CONTRACT | — | partial: signals that the final fare is settled, corresponding to FARE CONTRACT entering a settled state |
+| notificationInput | notificationType=SUCCESS / FAILURE / ACCEPTED / NOT_ACCEPTED | — | — | none: async process outcome signalling; no Transmodel equivalent |
+| notificationInput | notificationType=USER_NO_SHOW / VEHICLE_ARRIVED / VEHICLE_NO_SHOW | SITUATION ELEMENT | — | partial: operational events modelled as SITUATION ELEMENTs |
+| notificationInput | source | — | — | none: acting-party attribution (TO / DRIVER / OTHER); no Transmodel equivalent |
+| notificationInput | destination | — | — | none: notification routing target (MP / TRAVELLER / CUSTOMER); no Transmodel equivalent |
+| notificationInput | context.asset | VEHICLE, PARKING BAY, CYCLE STORAGE EQUIPMENT | id | partial: identifies the physical asset involved |
+| notificationInput | context.leg | LEG | id | exact: identifies the leg the notification relates to |
+| notificationInput | context.product | FARE PRODUCT | id | exact |
+| notificationInput | context.package | CUSTOMER PURCHASE PACKAGE | id | exact |
+| notificationInput | assetInfo.location | SCHEDULED STOP POINT, TOPOGRAPHIC PLACE | — | partial: current asset location |
+| notificationInput | assetInfo.assetState | — | — | none: IN_USE / PAUSED asset state; no Transmodel equivalent |
+| notificationInput | assetInfo.distance | — | distanceTravelled | partial |
+| notificationInput | assetInfo.duration | — | — | none: elapsed usage time |
+| notificationInput | assetInfo.currentCharge | — | — | none: battery charge percentage; no Transmodel equivalent |
+| notificationInput | links | — | — | none: HATEOAS links for follow-on operations |
+| notificationInput | message | SITUATION ELEMENT | description | partial: free-text message to user |
+
+---
+
+### 3.3 confirmationInput
+
+| Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
+|---------|-----------|----------------------|-------------------------|-------|
+| confirmationInput | confirmationType | CUSTOMER PURCHASE PACKAGE STATUS | — | partial: pending status transition requiring MP approval |
+| confirmationInput | confirmationType=REPLACE_ASSET | TRAVEL PACKAGE SPOT RESERVATION REQUEST | — | partial: request to swap the assigned asset maps to a new SPOT RESERVATION |
+| confirmationInput | confirmationType=START_LEG | — | — | none: operator-to-MP leg-start approval has no Transmodel equivalent |
+| confirmationInput | context.asset | VEHICLE, PARKING BAY, CYCLE STORAGE EQUIPMENT | id | partial |
+| confirmationInput | context.leg | LEG | id | exact |
+| confirmationInput | context.product | FARE PRODUCT | id | exact |
+| confirmationInput | context.package | CUSTOMER PURCHASE PACKAGE | id | exact |
+
+---
+
+### 3.4 paymentRequest (financialDetail reuse)
+
+The `paymentRequest` body reuses the `financialDetail` schema from the main TOMP-API after-sales module. Refer to section 2.34 for the full mapping. Key mappings in the callback context are:
+
+| Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
+|---------|-----------|----------------------|-------------------------|-------|
+| paymentRequest | inputs (financialDetail) | FARE CONTRACT, FARE PRICE | — | partial: the complete financial detail for a session that has already started; FARE CONTRACT holds the obligation; FARE PRICE holds the amount |
+| paymentRequest | paymentCategory=FARE | FARE PRICE | — | partial |
+| paymentRequest | paymentCategory=DEPOSIT | — | — | none: deposit settlement has no Transmodel equivalent |
+| paymentRequest | paymentCategory=DAMAGE / FINE | — | — | none: operational cost categories not in Transmodel |

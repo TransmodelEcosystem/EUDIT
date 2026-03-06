@@ -172,6 +172,8 @@ Needed to redirect the payment to a reseller, once a parking session (or chargin
 **Endpoint(s):** `GET /collections/payments/items` (with `onBehalveOf` header to identify the reseller), `POST /processes/confirm-payment/execution`
 **Unique to TOMP-API:** Yes — mid-session payment-responsibility transfer to a reseller/MaaS Provider has no equivalent in OSDM, BoB, FerryGateway, or OMSA.
 
+*The TO-side of this flow is implemented via `POST /processes/request-payment/execution` in TOMP-API-MP — see the [MaaS Provider Callbacks](#maas-provider-callbacks-tomp-api-mp-v200) section.*
+
 ---
 
 ### Purchase a product (like daycard)
@@ -547,3 +549,40 @@ To prevent publishing the complete fare tables. You can anonymously search based
 
 **Endpoint(s):** `GET /collections/fares/items`
 **Unique to TOMP-API:** No — OSDM supports FARE PRODUCT / FARE TABLE queries; TOMP-API's anonymous single-fare lookup (without publishing complete tables) is a lighter-weight variant of the same capability.
+
+---
+
+## MaaS Provider Callbacks (TOMP-API-MP v2.0.0)
+
+TOMP-API-MP v2.0.0 defines a companion set of endpoints implemented by the **MaaS Provider (MP)** that the **Transport Operator (TO)** calls. This is the reverse direction of the standard TOMP-API interface: whereas TOMP-API describes what the MP calls on the TO, TOMP-API-MP describes what the TO calls back on the MP. Together the two specifications form the complete bidirectional TOMP-API interface.
+
+The three endpoints cover the three classes of TO-initiated communication: unsolicited notifications, requests for MP confirmation of a pending step, and requests for MP payment of a session that has already started.
+
+---
+
+### receive notification from transport operator
+
+The TO pushes an unsolicited notification to the MP. Notification types span the full leg and asset lifecycle: status transitions (`PREPARING`, `STARTED`, `PAUSED`, `RESUMED`, `ENDED`), asset events (`LOCKED`, `UNLOCKED`, `VEHICLE_ARRIVED`), user-facing alerts (`ETA`, `WARNING`, `INFORMATION`, `USER_NO_SHOW`), financial events (`PRICE_FINAL`), and async process outcomes (`SUCCESS`, `FAILURE`, `ACCEPTED`, `NOT_ACCEPTED`).
+
+**Endpoint(s):** `POST /processes/notification/execution`
+**Unique to TOMP-API:** Yes — no other in-scope standard defines a standardised callback endpoint on which the operator pushes real-time execution notifications to the reseller.
+
+---
+
+### receive confirmation request from transport operator
+
+The TO requests that the MP actively confirm a pending step before the TO proceeds. Currently defined confirmation types are `REPLACE_ASSET` (the TO wants to swap the asset assigned to a leg) and `START_LEG` (the TO is ready to start the leg and needs MP approval). The MP responds with HTTP 204 to grant confirmation or an error body to refuse.
+
+**Endpoint(s):** `POST /processes/request-confirmation/execution`
+**Unique to TOMP-API:** Yes — no other in-scope standard defines a standardised mechanism by which the operator can solicit explicit approval from the reseller before executing a step.
+
+---
+
+### receive payment request from transport operator
+
+The TO requests that the MP settle a payment for a session that has already started — for example, a parking or EV-charging session initiated via the "pick up the bill" flow. The request body carries a `financialDetail` payload (the same schema used in `GET /collections/payments/items`) describing the amount and payment category. The MP responds with HTTP 204 to acknowledge receipt, or an error body to decline.
+
+This is the server-side implementation of the "pick up the bill" use case: once the TO has identified the MP as the responsible payer (via `onBehalveOf` in the standard TOMP-API), it uses this endpoint to formally request settlement.
+
+**Endpoint(s):** `POST /processes/request-payment/execution`
+**Unique to TOMP-API:** Yes — pay-later settlement initiated by the TO towards the MP (for a session that has already started) is specific to TOMP-API's shared-mobility model and has no equivalent in OSDM, BoB, FerryGateway, or OMSA.
