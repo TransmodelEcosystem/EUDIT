@@ -362,6 +362,13 @@ paths:
           description: Unauthorised
 definitions:
   jwkPublic:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a public JSON Web Key (RFC 7517) is cryptographic key material used for signature verification and token binding. Transmodel does not model cryptographic public keys."
     type: object
     description: Public JSON Web Key (RFC 7517)
     required:
@@ -369,6 +376,13 @@ definitions:
     properties:
       kty:
         description: JWA key type
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: cryptographic key type metadata is outside the Transmodel information model."
         type: string
         enum:
           - RSA
@@ -376,41 +390,104 @@ definitions:
         example: EC
       kid:
         description: JWK key identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: key identifiers are cryptographic infrastructure with no Transmodel counterpart."
         type: string
         example: k2
       crv:
         description: Curve type (required for kty=EC)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: elliptic curve type is cryptographic key material metadata with no Transmodel counterpart."
         type: string
         example: "P-256"
       x:
         description: EC x coordinate (required for kty=EC)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: EC key coordinate is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
         example: "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU"
       y:
         description: EC y coordinate (required for kty=EC)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: EC key coordinate is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
         example: "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
       n:
         description: RSA modulus parameter (required for kty=RSA)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: RSA key parameter is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
       e:
         description: RSA exponent parameter (required for kty=RSA)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: RSA key parameter is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
   serial:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: the token serial number is a hardware-level identifier for a secure element (e.g. NFC token). Transmodel does not model hardware serial numbers for cryptographic tokens."
     description: Token serial number
     type: integer
     format: int64
     example: 42
   thumbprint:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a JWK SHA-256 thumbprint (RFC 7638) is a cryptographic fingerprint of a public key used for key identification and revocation. Transmodel does not model cryptographic key thumbprints."
     description: JWK SHA-256 thumbprint of public key (RFC 7638)
     type: string
     format: base64url
     example: "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs"
   tokenInformation:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "MEDIUM ACCESS DEVICE (SD Medium Application MODEL)"
+        definition: "A device used by a TRANSPORT CUSTOMER to access a service (e.g. a smart card or mobile phone)."
+        conditions:
+          - "Partial match to MEDIUM ACCESS DEVICE: tokenInformation describes a registered token device — its serial number, public key, revocation status, and key thumbprint. This corresponds to the registration record of a MEDIUM ACCESS DEVICE in Transmodel, which also carries identity and access credentials."
     type: object
     additionalProperties: true
     required:
@@ -421,12 +498,26 @@ definitions:
         $ref: '#/definitions/serial'
       revoked:
         type: boolean
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION (ST Sales Transaction MODEL)"
+            definition: "A condition that determines the validity of a SALES OFFER PACKAGE or CUSTOMER PURCHASE PACKAGE."
+            conditions:
+              - "Partial match to VALIDITY CONDITION invalidation: the revoked flag corresponds to the negation of a VALIDITY CONDITION — the token is no longer valid for use, analogous to a validity condition being invalidated."
         example: false
       thumbprint:
         $ref: '#/definitions/thumbprint'
       publicKey:
         $ref: '#/definitions/jwkPublic'
   tokenHints:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: tokenHints is a list of compact participant identifiers used by validators to locate tickets tied to a token. This is a BoB-specific lookup optimisation with no counterpart in the Transmodel information model."
     description: Token hints are used to locate tickets (both valid and
       expired) which have been tied to a ticket. The hint only contains the
       participant identifier of the issuer of the ticket. To find out more
@@ -435,19 +526,47 @@ definitions:
     items:
       $ref: '#/definitions/hintCompact'
   revocationStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: revocationStatus reports whether a specific token has been revoked. Transmodel does not model token revocation as a discrete concept; the closest analogy is a VALIDITY CONDITION being invalidated, but that is not a direct structural equivalent."
     type: object
     properties:
       revoked:
         type: boolean
   revocationList:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a revocation list is a security infrastructure construct (analogous to a CRL in PKI) used by validators to check token validity offline. Transmodel does not model revocation lists."
     type: array
     items:
       $ref: '#/definitions/revocationEntry'
   revocationEntry:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a revocation list entry records the thumbprint and expiry of a revoked token. This is security infrastructure with no Transmodel counterpart."
     type: object
     properties:
       entryId:
         description: Ever increasing revocation list entry identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a monotonically increasing revocation entry identifier is a security list management mechanism with no Transmodel counterpart."
         type: integer
         format: int64
         example: 1
@@ -457,10 +576,24 @@ definitions:
         description: |
           Expire time stamp as ISO 8601:2004 profile extended format
           (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION.ToDate (ST Sales Transaction MODEL)"
+            definition: "The end of a validity period."
+            conditions:
+              - "Partial match to VALIDITY CONDITION.ToDate: the expire timestamp marks when the revocation entry should be purged, analogous to the end date of a validity condition."
         type: string
         format: date-time
         example: "1985-04-12T23:20:50.52Z"
   hint:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a hint records the participant identifier that issued a ticket to a token, plus an expiry for cache management. This is a BoB-specific routing optimisation with no Transmodel counterpart."
     type: object
     required:
       - pid
@@ -469,6 +602,13 @@ definitions:
       pid:
         description: |
           Participant identifier which has issued a ticket to the token
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the BoB participant identifier (pid) identifies the operator/participant that issued the ticket, structurally analogous to an OPERATOR identifier in Transmodel."
         type: integer
         format: int64
         example: 1
@@ -477,10 +617,24 @@ definitions:
           Expire time stamp as ISO 8601:2004 profile extended format
           (MTS8, chapter 2.3) to indicate when the entry should be
           purged from the hint list
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION.ToDate (ST Sales Transaction MODEL)"
+            definition: "The end of a validity period."
+            conditions:
+              - "Partial match to VALIDITY CONDITION.ToDate: the expire timestamp indicates when this hint entry should be purged, analogous to the end of a validity period."
         type: string
         format: date-time
         example: "1985-04-12T23:20:50.52Z"
   hintCompact:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: hintCompact is a minimal version of hint, carrying only the participant identifier. It is a BoB-specific lookup optimisation with no Transmodel counterpart."
     type: object
     required:
       - pid
@@ -488,10 +642,24 @@ definitions:
       pid:
         description: |
           Participant identifier which has issued a ticket to the token
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the participant identifier identifies the issuing operator, structurally analogous to an OPERATOR identifier in Transmodel."
         type: integer
         format: int64
         example: 1
   psp:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a payment service provider (PSP) registration in BoB is a financial services participant record with no direct counterpart in the Transmodel information model, which does not model PSP registration."
     type: object
     required:
       - pid
@@ -499,6 +667,13 @@ definitions:
       pid:
         description: |
           Participant identifier which provides the payment service
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the PSP participant identifier identifies the payment-service provider organisation, structurally analogous to an OPERATOR identifier in Transmodel."
         type: integer
         format: int64
         example: 1

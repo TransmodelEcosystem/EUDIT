@@ -106,6 +106,16 @@ components:
 
   schemas:
     notificationInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+            - "SALES TRANSACTION (ST Sales Transaction MODEL)"
+          definition: "A particular journey on a particular date. / A sale of a SALES OFFER PACKAGE."
+          conditions:
+            - "Partial match to DATED VEHICLE JOURNEY lifecycle events: the notificationType enum values PREPARING/PREPARED/STARTED/PAUSED/RESUMED/ENDED correspond to execution-state transitions of a DATED VEHICLE JOURNEY (or leg thereof)."
+            - "Partial match to SALES TRANSACTION: PRICE_FINAL indicates the finalisation of the fare for the leg, analogous to the completion of a SALES TRANSACTION."
+            - "No direct equivalent for LOCKED/UNLOCKED (vehicle access-control states), USER_ACTION/USER_NO_SHOW/VEHICLE_ARRIVED/VEHICLE_NO_SHOW/ETA/USER_OUT_OF_LIMITS/WARNING/INFORMATION/OTHER/PROGRESS/SUPPORT/ACCEPTED/NOT_ACCEPTED/SUCCESS/FAILURE: these are MaaS operational-messaging concepts with no direct Transmodel counterpart."
       type: object
       required:
         - notificationType
@@ -120,10 +130,24 @@ components:
             _OTHER_ unknown source<br>
             <br>
             <b>IMPORTANT</b> The messages send should be in the requested language of the purchase!
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "No direct Transmodel equivalent"
+              definition: "No direct Transmodel equivalent."
+              conditions:
+                - "No direct equivalent: the source field identifies which actor (Transport Operator, Driver, or other) initiated the notification. Transmodel does not model API-level notification source roles."
           enum: [TO, DRIVER, OTHER]
         destination:
           type: string
           description: the destination of the notification
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "No direct Transmodel equivalent"
+              definition: "No direct Transmodel equivalent."
+              conditions:
+                - "No direct equivalent: the destination field identifies the intended recipient of the notification (MaaS Platform, Traveller, or Customer). Transmodel does not model notification routing destinations."
           enum: [MP, TRAVELLER, CUSTOMER]
         notificationType:
           type: string
@@ -162,6 +186,16 @@ components:
 
             * _ACCEPTED_ <br>
             * _NOT_ACCEPTED_ In case of an a-sync purchase, the TO can respond to the MP wether the purchase has been accepted or not<br>
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+                - "SALES TRANSACTION (ST Sales Transaction MODEL)"
+              definition: "A particular journey on a particular date. / A sale of a SALES OFFER PACKAGE."
+              conditions:
+                - "Partial match to DATED VEHICLE JOURNEY lifecycle: PREPARING/PREPARED/STARTED/PAUSED/RESUMED/ENDED correspond to execution-state transitions of a DATED VEHICLE JOURNEY leg."
+                - "Partial match to SALES TRANSACTION: PRICE_FINAL signals finalisation of the fare, analogous to completing a SALES TRANSACTION."
+                - "No direct equivalent for LOCKED/UNLOCKED (asset access states), USER_ACTION/USER_NO_SHOW/VEHICLE_ARRIVED/VEHICLE_NO_SHOW/ETA/USER_OUT_OF_LIMITS/WARNING/INFORMATION/OTHER/PROGRESS/SUPPORT/SUCCESS/FAILURE/ACCEPTED/NOT_ACCEPTED."
           enum:
             [
               USER_ACTION,
@@ -198,6 +232,14 @@ components:
             
         context:
           type: object
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+                - "SALES OFFER PACKAGE (ST Sales Transaction MODEL)"
+              definition: "A particular journey on a particular date. / A packaged combination of FARE PRODUCTS."
+              conditions:
+                - "Partial match: the context object groups references to the asset (vehicle), leg (journey segment), product, and package relevant to the notification. This corresponds to the contextual identifiers of a DATED VEHICLE JOURNEY and its associated SALES OFFER PACKAGE."
           properties:
             asset:
               $ref: "./TOMP-API 2.0.0.yaml#/components/schemas/assetReference"    
@@ -210,12 +252,28 @@ components:
 
         assetInfo:
           type: object
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "VEHICLE (RC Resource Capacity MODEL)"
+                - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+              definition: "A vehicle used for the purpose of carrying passengers. / A particular journey on a particular date."
+              conditions:
+                - "Partial match to VEHICLE: assetInfo describes the current state of the transport asset (vehicle), including its location, active/paused state, distance travelled, and charge level."
+                - "Partial match to DATED VEHICLE JOURNEY: the distance and duration fields correspond to execution metrics of a DATED VEHICLE JOURNEY."
           properties:
             location:
               $ref: "./TOMP-API 2.0.0.yaml#/components/schemas/placeReference"
             assetState:
               type: string
               description: in case the fare is dependent on being in use or being paused, this field must be used. Default IN_USE
+              x-semantics:
+                Transmodel:
+                  concepts:
+                    - "No direct Transmodel equivalent"
+                  definition: "No direct Transmodel equivalent."
+                  conditions:
+                    - "No direct equivalent: IN_USE/PAUSED are operational states of a shared-mobility asset during a leg. Transmodel does not model asset usage states at this granularity."
               enum: [IN_USE, PAUSED]
               default: IN_USE
             distance:
@@ -239,17 +297,42 @@ components:
           type: string
 
     confirmationInput:
+      x-semantics:
+        Transmodel:
+          concepts:
+            - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+            - "VEHICLE (RC Resource Capacity MODEL)"
+          definition: "A particular journey on a particular date. / A vehicle used for the purpose of carrying passengers."
+          conditions:
+            - "Partial match to DATED VEHICLE JOURNEY: START_LEG requests the start of a leg, corresponding to the initiation of a DATED VEHICLE JOURNEY execution."
+            - "No direct equivalent for REPLACE_ASSET: substituting one vehicle asset for another during a leg has no direct counterpart in the Transmodel information model."
       type: object
       required:
         - confirmationType
       properties:
         confirmationType:
           type: string
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+              definition: "A particular journey on a particular date."
+              conditions:
+                - "Partial match to DATED VEHICLE JOURNEY start event: START_LEG corresponds to initiating the execution of a journey leg, analogous to the start of a DATED VEHICLE JOURNEY."
+                - "No direct equivalent for REPLACE_ASSET: Transmodel does not model mid-leg vehicle substitution as a typed confirmation operation."
           enum:
             [ REPLACE_ASSET, START_LEG ]
             
         context:
           type: object
+          x-semantics:
+            Transmodel:
+              concepts:
+                - "DATED VEHICLE JOURNEY (DJ Dated Journey MODEL)"
+                - "SALES OFFER PACKAGE (ST Sales Transaction MODEL)"
+              definition: "A particular journey on a particular date. / A packaged combination of FARE PRODUCTS."
+              conditions:
+                - "Partial match: the context object groups references to the asset, leg, product, and package relevant to the confirmation request. Same structural role as the context in notificationInput."
           properties:
             asset:
               $ref: "./TOMP-API 2.0.0.yaml#/components/schemas/assetReference"    

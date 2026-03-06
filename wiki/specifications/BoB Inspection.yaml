@@ -106,10 +106,24 @@ paths:
           description: Unauthorised
 definitions:
   inspectionReport:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION LOG (ST Sales Transaction MODEL)"
+        definition: "A log of SALES TRANSACTIONs."
+        conditions:
+          - "Partial match to SALES TRANSACTION LOG: an inspection report is an ordered collection of ticket validation/inspection events recorded by an inspector device, analogous to a log of transaction events in Transmodel."
     type: array
     items:
       $ref: '#/definitions/ticketEvent'
   geoPosition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "LOCATION (CG Generic Location MODEL)"
+        definition: "A point or area in space."
+        conditions:
+          - "Exact match to LOCATION (CG): a WGS84 decimal latitude/longitude/altitude tuple is the standard representation of a geographic LOCATION in Transmodel."
     description: Geographical position (WGS84 decimal)
     type: object
     required:
@@ -118,20 +132,48 @@ definitions:
     properties:
       lat:
         description: Latitude
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION.Latitude (CG Generic Location MODEL)"
+            definition: "The latitude coordinate of a LOCATION."
+            conditions:
+              - "Exact match to LOCATION.Latitude: the WGS84 decimal latitude directly corresponds to this Transmodel attribute."
         type: number
         format: double
         example: 59.329627
       long:
         description: Longitude
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION.Longitude (CG Generic Location MODEL)"
+            definition: "The longitude coordinate of a LOCATION."
+            conditions:
+              - "Exact match to LOCATION.Longitude: the WGS84 decimal longitude directly corresponds to this Transmodel attribute."
         type: number
         format: double
         example: 18.059201
       alt:
         description: Altitude
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION.Altitude (CG Generic Location MODEL)"
+            definition: "The altitude coordinate of a LOCATION."
+            conditions:
+              - "Exact match to LOCATION.Altitude: the altitude value directly corresponds to this Transmodel attribute."
         type: number
         format: double
         example: 10.2
   mtbReference:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRAVEL DOCUMENT.IdentityToken (ST Sales Transaction MODEL)"
+        definition: "A token that identifies a TRAVEL DOCUMENT."
+        conditions:
+          - "Partial match to TRAVEL DOCUMENT.IdentityToken: mtbReference identifies a Mobile Ticketing Barcode (MTB) by issuer participant identifier and issuer signature, analogous to the identity token that uniquely identifies a TRAVEL DOCUMENT in Transmodel."
     description: MTB reference
     type: object
     required:
@@ -140,15 +182,36 @@ definitions:
     properties:
       pid:
         description: Participant identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the participant identifier identifies the operator that issued the MTB, structurally analogous to an OPERATOR identifier in Transmodel."
         type: integer
         format: int64
         example: 1
       issuerSignature:
         description: MTB issuer signature
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a cryptographic issuer signature on a travel document is security infrastructure. Transmodel records the existence of TRAVEL DOCUMENTs but does not model their cryptographic signatures."
         type: string
         format: base64url
         example: "MEQCIGSYn88hmpE8h0zvFfn+Pvx..."
   deviceReference:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "MEDIUM ACCESS DEVICE (SD Medium Application MODEL)"
+        definition: "A device used by a TRANSPORT CUSTOMER to access a service."
+        conditions:
+          - "Partial match to MEDIUM ACCESS DEVICE: deviceReference identifies the device that created a device-signed ticket, by participant identifier and device identifier (did). This corresponds to the registration record of a MEDIUM ACCESS DEVICE in Transmodel."
     description: Device reference, unique reference for device that creates device signed tickets
     type: object
     required:
@@ -157,11 +220,25 @@ definitions:
     properties:
       pid:
         description: Participant identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the participant identifier identifies the operator responsible for the device, structurally analogous to an OPERATOR identifier in Transmodel."
         type: integer
         format: int64
         example: 1
       did:
         description: Device identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "MEDIUM ACCESS DEVICE.Id (SD Medium Application MODEL)"
+            definition: "Identifier of a MEDIUM ACCESS DEVICE."
+            conditions:
+              - "Partial match to MEDIUM ACCESS DEVICE.Id: the base64url-encoded device identifier uniquely identifies the device, analogous to the identifier of a MEDIUM ACCESS DEVICE."
         type: string
         format: base64url
         example: "U2FtdHJhZmlrZW4="
@@ -173,9 +250,23 @@ definitions:
           Or, use it in a request to the endpoint GET /device/userAgent/{ua}.
           Both of these endpoints are part of the Device API implemented by
           the participant identified by pid.
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the user agent identifier references the client software profile. Transmodel does not model application-level client metadata."
         type: integer
         example: 835
   ticketEventResult:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (ST Sales Transaction MODEL)"
+        definition: "A sale of a SALES OFFER PACKAGE."
+        conditions:
+          - "Partial match to SALES TRANSACTION result record: ticketEventResult encapsulates the outcome of a ticket inspection/validation event — status code, passenger message, inspector message, and associated metadata. This corresponds to the result state of a Transmodel SALES TRANSACTION or validation record."
     description: |
       The result of a ticket inspection or validation operation registration
     type: object
@@ -184,16 +275,37 @@ definitions:
         description: |
           Message to be presented to passenger when registering an inspection
           or validation event
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a passenger-facing result message is a presentation-layer concern not modelled in the Transmodel information model."
         type: string
         example: "Valid"
       ticketEventInspectMessage:
         description: |
           Message to be presented to inspector when registering an inspection event
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: an inspector-facing result message is a presentation-layer concern not modelled in the Transmodel information model."
         type: string
         example: "Valid ticket"
       ticketEventStatus:
         description: |
           Status code for inspection or validation event
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE → CUSTOMER PURCHASE STATUS (ST Customer Purchase Package MODEL)"
+            definition: "A classification of possible statuses of CUSTOMER PURCHASE PACKAGE."
+            conditions:
+              - "Partial match to CUSTOMER PURCHASE STATUS: the integer result code (0 = success, 1–9 = specific failure types) represents the validation outcome, analogous to the status of a CUSTOMER PURCHASE PACKAGE after a validation event."
         type: integer
         format: int32
         example: 0
@@ -204,6 +316,15 @@ definitions:
       ticketActivationStatus:
         $ref: '#/definitions/ticketActivationStatus'
   ticketActivationStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USAGE VALIDITY PERIOD (ST Sales Transaction MODEL)"
+          - "VALIDITY CONDITION (ST Sales Transaction MODEL)"
+        definition: "A period during which a FARE PRODUCT is valid for use. / A condition determining validity."
+        conditions:
+          - "Partial match to USAGE VALIDITY PERIOD: ticketActivationStatus describes whether a ticket is currently active and the bounds of its activation window (relativeValidity, latestActivation, latestActivationExpire), directly corresponding to the attributes of a USAGE VALIDITY PERIOD."
+          - "Partial match to VALIDITY CONDITION: the active boolean and activation counters (numberOfActivations, remainingActivations) represent validity constraints analogous to VALIDITY CONDITION parameters in Transmodel."
     description: Activation status
     type: object
     required:
@@ -211,50 +332,120 @@ definitions:
     properties:
       active:
         description: True if ticket is active, otherwise false.
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION (ST Sales Transaction MODEL)"
+            definition: "A condition determining validity."
+            conditions:
+              - "Partial match to VALIDITY CONDITION: the active boolean represents whether the current validity condition is satisfied."
         type: boolean
       relativeValidity:
         description: Validity period in ISO 8601 duration format (MTS8, chapter 2.4)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "USAGE VALIDITY PERIOD.StandardDuration (ST Sales Transaction MODEL)"
+            definition: "The standard duration of a USAGE VALIDITY PERIOD."
+            conditions:
+              - "Exact match to USAGE VALIDITY PERIOD.StandardDuration: the ISO 8601 duration string directly corresponds to the standard duration of a USAGE VALIDITY PERIOD."
         type: string
         example: PT24H
       latestActivation:
         description: Date and time for latest activation as ISO 8601:2004 profile
           extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "USAGE VALIDITY PERIOD.StartDate (ST Sales Transaction MODEL)"
+            definition: "The start date of a USAGE VALIDITY PERIOD."
+            conditions:
+              - "Partial match to USAGE VALIDITY PERIOD.StartDate: latestActivation records the timestamp of the most recent activation, corresponding to the start of the current USAGE VALIDITY PERIOD."
         type: string
         format: date-time
         example: '2020-08-28T14:20:39+00:00'
       latestActivationExpire:
         description: Date and time for expiration of latest activation as ISO 8601:2004 profile
           extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "USAGE VALIDITY PERIOD.EndDate (ST Sales Transaction MODEL)"
+            definition: "The end date of a USAGE VALIDITY PERIOD."
+            conditions:
+              - "Partial match to USAGE VALIDITY PERIOD.EndDate: the latest activation expiry timestamp corresponds to the end of the current USAGE VALIDITY PERIOD."
         type: string
         format: date-time
         example: '2020-08-29T03:00:00+00:00'
       numberOfActivations:
         description: |
           Total number of times the product set can be activated
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "USAGE VALIDITY PERIOD.MaximumNumberOfUsages (ST Sales Transaction MODEL)"
+            definition: "The maximum number of usages permitted for a USAGE VALIDITY PERIOD."
+            conditions:
+              - "Exact match to USAGE VALIDITY PERIOD.MaximumNumberOfUsages: the total allowed activation count directly corresponds to this Transmodel attribute."
         type: integer
         format: int64
         example: 1
       remainingActivations:
         description: |
           Remaining number of times the product set can be activated
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: Transmodel records MaximumNumberOfUsages but does not explicitly track remaining activations as a derived counter. This is a BoB-specific convenience field."
         type: integer
         format: int64
         example: 1
   ticketMetadata:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRAVEL DOCUMENT (ST Sales Transaction MODEL)"
+        definition: "A document providing evidence of a right to travel."
+        conditions:
+          - "Partial match to TRAVEL DOCUMENT: ticketMetadata carries supplementary information about a ticket — validity start, traveller photo URL, and associated event IDs — corresponding to the metadata of a TRAVEL DOCUMENT in Transmodel."
     description: Metadata associated with a ticket
     type: object
     properties:
       relativeValidityStart:
         description: Start of ticket validity period as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "USAGE VALIDITY PERIOD.StartDate (ST Sales Transaction MODEL)"
+            definition: "The start date of a USAGE VALIDITY PERIOD."
+            conditions:
+              - "Partial match to USAGE VALIDITY PERIOD.StartDate: the relative validity start timestamp marks when the ticket's usage validity period begins."
         format: date-time
         type: string
         example: "2021-08-17T09:15:00Z"
       travellerPhotoURL:
         description: URL to photo of traveller
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TRANSPORT CUSTOMER.Photo (ST Fare Contract MODEL)"
+            definition: "A photo of the TRANSPORT CUSTOMER."
+            conditions:
+              - "Partial match to TRANSPORT CUSTOMER.Photo: the URL points to the traveller's photo, analogous to the photo attribute of a TRANSPORT CUSTOMER used for identity verification."
         type: string
         example: "https://example.com/my-photo.jpg"
       ticketEventIds:
         description: List of all event identifiers associated with this ticket
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a list of validation event identifiers linked to a ticket is a BoB audit-trail construct with no direct Transmodel counterpart."
         type: array
         items:
           type: string
@@ -262,6 +453,15 @@ definitions:
           - "ce81fb07-5e91-4fcd-bdf5-4cf07c24d16f"
           - "a775bdcf-95ac-4e05-9af4-4a627e10ebbb"
   ticketEvent:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (ST Sales Transaction MODEL)"
+          - "CUSTOMER PURCHASE PACKAGE (ST Customer Purchase Package MODEL)"
+        definition: "A sale of a SALES OFFER PACKAGE. / A purchase of a SALES OFFER PACKAGE by a TRANSPORT CUSTOMER."
+        conditions:
+          - "Partial match to SALES TRANSACTION: ticketEvent records the occurrence and outcome of a single ticket inspection or validation event, analogous to a SALES TRANSACTION event record."
+          - "Partial match to CUSTOMER PURCHASE PACKAGE validation record: the event references the ticket (CUSTOMER PURCHASE PACKAGE), records the result, and links to spatial/temporal/service context."
     description: Ticket event data from inspection or validator device
     type: object
     required:
@@ -271,15 +471,36 @@ definitions:
     properties:
       time:
         description: Time stamp as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SALES TRANSACTION.Date (ST Sales Transaction MODEL)"
+            definition: "The date and time of a SALES TRANSACTION."
+            conditions:
+              - "Partial match to SALES TRANSACTION.Date: the event timestamp records when the inspection/validation occurred, analogous to the date/time of a transaction."
         format: date-time
         type: string
         example: "2021-08-17T09:15:00Z"
       ticketId:
         description: Unique identifier for ticket
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE.Id (ST Customer Purchase Package MODEL)"
+            definition: "Identifier of a CUSTOMER PURCHASE PACKAGE."
+            conditions:
+              - "Partial match to CUSTOMER PURCHASE PACKAGE.Id: the ticket identifier uniquely identifies the ticket being inspected, analogous to the identifier of a CUSTOMER PURCHASE PACKAGE."
         type: string
         example: "5f83125b-8c38-442d-ab8c-ac7f56541462"
       eventId:
         description: Event identifier (allocated at event creation)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SALES TRANSACTION.Id (ST Sales Transaction MODEL)"
+            definition: "Identifier of a SALES TRANSACTION."
+            conditions:
+              - "Partial match to SALES TRANSACTION.Id: the server-allocated event identifier uniquely identifies this inspection event, analogous to a transaction identifier."
         type: string
         example: "19cc3963-692b-4369-8eea-529fba1c138a"
       localEventId:
@@ -288,10 +509,24 @@ definitions:
           This property MUST be provided in order to detect retransmissions.
           Even though the scope of this property is (pid,entity_id), it is
           RECOMMENDED that it is generated as globally unique using UUIDv4.
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a device-allocated local event identifier for deduplication/retransmission detection is a BoB-specific operational construct with no Transmodel counterpart."
         type: string
         example: fc4a1663-e85f-45a3-9b7f-e09758dd2d6d
       eventType:
         description: Type of event, inspection or validation
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the distinction between 'inspection' (manual check by inspector) and 'validation' (automated gate/validator check) is a BoB-specific operational classification. Transmodel does not distinguish these as separate event types in the sales transaction model."
         type: string
         enum:
           - inspection
@@ -310,6 +545,14 @@ definitions:
           7 = failed blacklist check
           8 = failed passback check
           9 = failed fraud check
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER PURCHASE PACKAGE → CUSTOMER PURCHASE STATUS (ST Customer Purchase Package MODEL)"
+            definition: "A classification of possible statuses of CUSTOMER PURCHASE PACKAGE."
+            conditions:
+              - "Partial match to CUSTOMER PURCHASE STATUS: the integer result code (0 = success, 1–9 = typed failure reasons) represents the validation outcome, analogous to a CUSTOMER PURCHASE STATUS value."
+              - "Codes 2 (spatial) and 3 (temporal) directly map to failed VALIDITY CONDITION checks in Transmodel."
         type: integer
         enum:
           - 0
@@ -325,6 +568,13 @@ definitions:
         example: 5
       eventReason:
         description: Reason for failure/success
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a free-text reason for an inspection/validation outcome is a presentation-layer field with no direct Transmodel counterpart."
         type: string
         example: "Issuer signature validation failed"
       mtbReference:
@@ -342,6 +592,13 @@ definitions:
           This value indicates the general type of vehicle or infrastructure used. Valid
           values are defined in the transport-mode.json schema, available at:
           https://bitbucket.org/samtrafiken/bob-schema-generic-categories/src/master/transport-mode.json
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VEHICLE MODE (TP Transport Pattern MODEL)"
+            definition: "A classification of transport mode."
+            conditions:
+              - "Exact match to VEHICLE MODE: the high-level transport mode (bus, rail, tram, water) directly corresponds to Transmodel VEHICLE MODE values."
         type: string
         example: "bus"
       subModeOfTransport:
@@ -351,10 +608,25 @@ definitions:
           'regionalBus', or 'demandAndResponseBus'. The complete list of allowed submode values
           for each mode is defined in the transport-mode.json schema:
           https://bitbucket.org/samtrafiken/bob-schema-generic-categories/src/master/transport-mode.json
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "BUS SUBMODE (TP Transport Pattern MODEL)"
+              - "RAIL SUBMODE (TP Transport Pattern MODEL)"
+            definition: "A subclassification of transport mode."
+            conditions:
+              - "Partial match to transport submodes (BUS SUBMODE, RAIL SUBMODE, etc.): the specific subcategory of transport mode corresponds to Transmodel submode specialisations, but the exact submode class depends on the modeOfTransport value."
         type: string
         example: "localBus"
       zone:
         description: Zone information
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "TARIFF ZONE (ST Sales Transaction MODEL)"
+            definition: "A ZONE used to define a zonal fare structure."
+            conditions:
+              - "Partial match to TARIFF ZONE: the zone object identifies the fare zone where the inspection/validation event occurred, by participant identifier and zone identifier, analogous to a TARIFF ZONE in Transmodel."
         type: object
         required:
           - pid
@@ -371,6 +643,13 @@ definitions:
             example: "zone1"
       service:
         description: Service information
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SERVICE JOURNEY (TI Timetable Information MODEL)"
+            definition: "A passenger carrying VEHICLE JOURNEY for one specified DAY TYPE."
+            conditions:
+              - "Partial match to SERVICE JOURNEY: the service object identifies the service/trip/block where the event occurred, by participant identifier, service identifier, trip identifier, and block identifier. This corresponds to identifying the SERVICE JOURNEY in Transmodel."
         type: object
         required:
           - pid
@@ -395,6 +674,13 @@ definitions:
             example: "A"
       stopArea:
         description: Stop area information
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "STOP PLACE (TP Transport Pattern MODEL)"
+            definition: "A place comprising one or more locations where vehicles may stop."
+            conditions:
+              - "Partial match to STOP PLACE: the stopArea object identifies the stop area (current and next) where the inspection/validation event occurred, analogous to a STOP PLACE in Transmodel."
         type: object
         required:
           - pid
@@ -414,6 +700,13 @@ definitions:
             type: string
             example: "2"
       validator:
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the validator object describes the physical validation device (identifier, vehicle mounting location, door sublocation). Transmodel does not model individual validator devices or their installation positions."
         type: object
         properties:
           validatorId:
@@ -429,6 +722,13 @@ definitions:
             type: string
             example: "A1"
       inspector:
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the inspector object identifies the human inspector who originated the event. Transmodel does not model individual inspectors as entities in the ticket validation information model."
         type: object
         properties:
           inspectorId:
@@ -437,12 +737,26 @@ definitions:
             example: "d494e5c8-12d9-4265-a78c-6bfe881280a1"
       operatingDayDate:
         description: Date of the operating day
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATING DAY (TI Timetable Information MODEL)"
+            definition: "A day of public transport operation."
+            conditions:
+              - "Exact match to OPERATING DAY: the operating day date identifies the public transport service day on which the event occurred, directly corresponding to an OPERATING DAY in Transmodel."
         format: date
         type: string
         example: "2021-01-23"
       tokenTransaction:
         $ref: '#/definitions/tokenTransaction'
   tokenTransaction:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: tokenTransaction encapsulates the NFC/PICC authentication exchange (token public key, authentication data, request, and response) that occurs during a contactless token validation. This is cryptographic security infrastructure with no counterpart in the Transmodel information model."
     type: object
     required:
       - tpk
@@ -459,6 +773,13 @@ definitions:
       aiResponse:
         $ref: '#/definitions/aiResponse'
   jwkPublic:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a public JSON Web Key (RFC 7517) is cryptographic key material used for signature verification and token binding in the BoB security framework. Transmodel does not model cryptographic public keys."
     type: object
     description: Public JSON Web Key (RFC 7517)
     required:
@@ -467,6 +788,13 @@ definitions:
     properties:
       kty:
         description: JWA key type
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: cryptographic key type metadata is outside the Transmodel information model."
         type: string
         enum:
           - RSA
@@ -474,33 +802,82 @@ definitions:
         example: "EC"
       kid:
         description: JWK key identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: key identifiers are cryptographic infrastructure with no Transmodel counterpart."
         type: string
         example: "k2"
       crv:
         description: Curve type (required for kty=EC)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: elliptic curve type is cryptographic key material metadata with no Transmodel counterpart."
         type: string
         example: "P-256"
       x:
         description: EC x coordinate (required for kty=EC)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: EC key coordinate is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
         example: "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU"
       y:
         description: EC y coordinate (required for kty=EC)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: EC key coordinate is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
         example: "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
       n:
         description: RSA modulus parameter (required for kty=RSA)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: RSA key parameter is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
         example: "pjdss8ZaDfEH6K6U7GeW2nxDqR4IP049fk1fK0lndimb..."
       e:
         description: RSA exponent parameter (required for kty=RSA)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: RSA key parameter is raw cryptographic material with no Transmodel counterpart."
         type: string
         format: byte
         example: "AQAB"
   aiData:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: aiData contains the NFC/PICC authentication input data (terminal identifier, AID, signature counter, timestamp, location) used to construct the authentication challenge for a contactless token. This is cryptographic security infrastructure with no Transmodel counterpart."
     description: Data used to produce Authentication input for token authentication
     type: object
     required:
@@ -509,34 +886,90 @@ definitions:
     properties:
       pid:
         description: Terminal Participant Identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the terminal participant identifier identifies the operator responsible for the terminal, structurally analogous to an OPERATOR identifier in Transmodel."
         type: integer
         format: int64
         example: 1
       terminalId:
         description: Identifier of the terminal
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a terminal identifier for NFC authentication is security infrastructure with no Transmodel counterpart."
         type: string
       aid:
         description: Full AID (in lowercase hex) as read from the PICC
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: an NFC Application Identifier (AID) is a smart card application identifier with no Transmodel counterpart."
         type: string
       signatureCounter:
         description: Signature counter as read from the PICC
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a contactless token signature counter is a replay-protection mechanism specific to NFC security protocols with no Transmodel counterpart."
         type: integer
         format: int64
       time:
         description: Current time as ISO 8601:2004 profile extended format (MTS8, chapter 2.3)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SALES TRANSACTION.Date (ST Sales Transaction MODEL)"
+            definition: "The date and time of a SALES TRANSACTION."
+            conditions:
+              - "Partial match to SALES TRANSACTION.Date: the terminal's current timestamp at authentication time is analogous to the event timestamp of a transaction record."
         type: string
         format: date-time
         example: "2021-08-17T09:15:00Z"
       loc:
         description: Current geographical location of the terminal (WGS84 decimal tuple)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "LOCATION (CG Generic Location MODEL)"
+            definition: "A point or area in space."
+            conditions:
+              - "Partial match to LOCATION: the WGS84 decimal coordinate tuple of the terminal corresponds to a geographic LOCATION in Transmodel."
         type: string
         pattern: "^\\-?[0-9]*(\\.[0-9]+)?,\\-?[0-9]*(\\.[0-9]+)?$"
         example: "59.329627,18.059201"
   aiRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: aiRequest is the base64url-encoded authentication challenge sent to the NFC token (PICC). This is cryptographic security infrastructure with no Transmodel counterpart."
     description: Authentication request as sent to the PICC
     type: string
     format: base64url
   aiResponse:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: aiResponse is the base64url-encoded authentication response received from the NFC token (PICC). This is cryptographic security infrastructure with no Transmodel counterpart."
     description: Authentication response as received from PICC
     type: string
     format: base64url

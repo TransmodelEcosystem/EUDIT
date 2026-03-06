@@ -472,26 +472,61 @@ paths:
               type: string
 definitions:
   genericCategories:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A list of generic category descriptors, each defining a named dimension (e.g. transport mode, fare class) with its possible values."
+        conditions:
+          - "No direct Transmodel equivalent as a collection. Individual genericCategory entries partially align with TYPE OF TRAVEL DOCUMENT or FARE CLASS attributes in Transmodel (SD), but the generic/extensible category mechanism is BoB-specific."
     description: List of generic categories
     type: array
     items:
       $ref: '#/definitions/genericCategory'
   productCategories:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A list of product category descriptors describing when a ticket is valid (e.g. single trip, day pass, 30-day pass)."
+        conditions:
+          - "No direct Transmodel equivalent as a collection. Individual productCategory entries partially align with TYPE OF FARE PRODUCT or TARIFF category attributes in Transmodel (SD). The validity-time dimension aligns with USAGE VALIDITY PERIOD (SD)."
     description: List of product categories
     type: array
     items:
       $ref: '#/definitions/productCategory'
   fareCategories:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A list of fare category descriptors describing how a traveller is transported in a way that affects fare (e.g. 1st class, 2nd class, night)."
+        conditions:
+          - "No direct Transmodel equivalent as a collection. Individual fareCategory entries align with CLASS OF USE / FARE CLASS in Transmodel (SD). Deprecated in BoB; replaced by genericCategories."
     description: List of fare categories
     type: array
     items:
       $ref: '#/definitions/fareCategory'
   travellerCategories:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USER PROFILE (Sales Distribution MODEL)"
+        definition: "A list of traveller category descriptors describing traveller types that affect fare (e.g. adult, youth, family)."
+        conditions:
+          - "Exact match. Corresponds to a list of USER PROFILE entities in Transmodel (SD), each defining a category of passenger with associated fare eligibility criteria."
     description: List of traveller categories
     type: array
     items:
       $ref: '#/definitions/travellerCategory'
   genericCategory:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TYPE OF TRAVEL DOCUMENT (Sales Distribution MODEL)"
+        definition: "A named classification dimension for products with a controlled set of values (e.g. transportMode=bus, fareClass=firstClass)."
+        conditions:
+          - "Partial match. The genericCategory mechanism is a flexible labelling system; individual instances may align with TYPE OF TRAVEL DOCUMENT, FARE CLASS, or other typed classification concepts in Transmodel (SD), but the generic/extensible design has no direct counterpart."
     description: |
       Generic category information, contains the name and possible values of
       the generic category
@@ -540,6 +575,13 @@ definitions:
               type: string
               example: "Bus"
   productCategory:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TARIFF (Sales Distribution MODEL)"
+        definition: "A product category identifier and description expressing when a ticket is valid and thereby affects the fare (e.g. single trip, day pass, 30-day pass)."
+        conditions:
+          - "Partial match. productCategory aligns with a TARIFF classification or TYPE OF FARE PRODUCT in Transmodel (SD). The validity-time dimension also relates to USAGE VALIDITY PERIOD (SD)."
     description: |
       Product category information, contains the productCategoryId and a short
       description of the category. Product categories are normally information
@@ -559,6 +601,13 @@ definitions:
         type: string
         example: "24 hours"
   fareCategory:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CLASS OF USE (Sales Distribution MODEL)"
+        definition: "A fare category identifier and description expressing how the traveller is transported in a way that affects the fare (e.g. 1st class, 2nd class, express, night)."
+        conditions:
+          - "Partial match. fareCategory aligns with CLASS OF USE or FARE CLASS in Transmodel (SD). Deprecated in BoB in favour of genericCategories."
     description: |
       Fare category information, contains the fareCategoryId and a short
       description of the category. Fare categories are normally information
@@ -578,6 +627,13 @@ definitions:
         type: string
         example: "Night fare"
   travellerCategory:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USER PROFILE (Sales Distribution MODEL)"
+        definition: "A traveller category identifier, description, and eligibility conditions defining a type of passenger that affects the fare (e.g. adult, youth, family)."
+        conditions:
+          - "Exact match. travellerCategory directly corresponds to USER PROFILE in Transmodel (SD). The conditions list aligns with USER PROFILE PARAMETER / AGE RANGE constraints."
     description: |
       Traveller categories information, contains the travellerCategoryId and a
       short description of the category. Traveller categories are normally
@@ -602,6 +658,13 @@ definitions:
         items:
           $ref: '#/definitions/condition'
   condition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USER PROFILE PARAMETER (Sales Distribution MODEL)"
+        definition: "A set of restrictions on a traveller, including age range, required proof documents, and a descriptive text, used to determine eligibility for a traveller category."
+        conditions:
+          - "Partial match. condition aligns with USER PROFILE PARAMETER in Transmodel (SD), particularly AGE RANGE. The proofsRequired field has no direct Transmodel counterpart."
     description: Condition contains one or more restrictions on a traveller
     type: object
     properties:
@@ -636,11 +699,25 @@ definitions:
         type: string
         example: "Student 18 - 50 years of age. Student card and ID required."
   productSetAlternatives:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "A list of alternative product sets, each representing a possible combination of products that can fulfil a journey request."
+        conditions:
+          - "Partial match. productSetAlternatives aligns with alternative SALES OFFER PACKAGE groupings in Transmodel (SD). Each alternative corresponds to a different purchasable product bundle."
     description: Alternative product sets available to complete a journey
     type: array
     items:
       $ref: '#/definitions/products'
   productManifestRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A request to generate a signed product manifest for a set of selected products, optionally with discount codes and tickets to recover."
+        conditions:
+          - "Partial match. productManifestRequest initiates the creation of a signed CUSTOMER PURCHASE PACKAGE (or FARE CONTRACT precursor) in Transmodel (SD). The recoverTickets field and discountCodes have no direct Transmodel counterpart."
     description: Request for manifest products
     type: object
     required:
@@ -663,6 +740,13 @@ definitions:
       discountCodes:
         $ref: '#/definitions/discountCodes'
   productSelection:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "A product identifier paired with an optional list of property assignments, representing a customer's selection of a specific product with chosen options."
+        conditions:
+          - "Partial match. productSelection aligns with a SALES OFFER PACKAGE selection or CUSTOMER PURCHASE PACKAGE ELEMENT in Transmodel (SD). productProperties correspond to SALES OFFER PACKAGE ELEMENT options."
     description: Product selection, product identifier with optional properties
     type: object
     required:
@@ -678,6 +762,13 @@ definitions:
         items:
           $ref: '#/definitions/productProperty'
   productSetManifest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "A signed manifest for a set of products, including pricing, expiry, booking requirements, and the list of included product identifiers; serves as the authorisation payload for ticket issuance."
+        conditions:
+          - "Partial match. productSetManifest is closest to a signed SALES OFFER PACKAGE or FARE CONTRACT precursor in Transmodel (SD). The manifest (signed base64url payload) and manifestExpire fields are BoB-specific cryptographic artefacts with no direct Transmodel counterpart."
     description: Manifest of set of products and manifest meta data
     type: object
     required:
@@ -737,11 +828,26 @@ definitions:
         example:
           - "52c87030-0dd5-4d0e-bed4-96661000cfe6"
   products:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "A list of product descriptors available for purchase or included in a manifest."
+        conditions:
+          - "Partial match. products corresponds to a collection of SALES OFFER PACKAGE or FARE PRODUCT entities in Transmodel (SD)."
     description: List of product identifiers
     type: array
     items:
       $ref: '#/definitions/product'
   product:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE PRODUCT (Sales Distribution MODEL)"
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "A purchasable travel product with identifier, title, description, pricing (fares), validity constraints (temporal and spatial), traveller categories, and optional property declarations."
+        conditions:
+          - "Exact match. product maps directly to FARE PRODUCT / SALES OFFER PACKAGE in Transmodel (SD). fares correspond to FARE PRICE; temporalValidity to USAGE VALIDITY PERIOD; spatialValidity to GEOGRAPHICAL VALIDITY; travellersPerCategory to GROUP OF PASSENGERS / USER PROFILE."
     description: Product description and properties
     type: object
     required:
@@ -826,7 +932,55 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/productCondition'
+  travellersPerCategory:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "GROUP OF PASSENGERS (Sales Distribution MODEL)"
+        definition: "An array of traveller-per-category entries, each specifying a traveller category, class of service, number of travellers, optional traveller identifiers, and optional seating reservations."
+        conditions:
+          - "Partial match. travellersPerCategory aligns with GROUP OF PASSENGERS in Transmodel (SD). The cat/cls/tra fields correspond to USER PROFILE, CLASS OF USE, and passenger count. sts (seating reservations) partially aligns with SEAT ALLOCATION."
+    description: Information about all travellers
+    type: array
+    items:
+      type: object
+      required:
+        - tra
+      properties:
+        cat:
+          description: Traveller category
+          type: string
+          example: a
+        cls:
+          description: Class of service
+          type: string
+          example: "First class"
+        tra:
+          description: Number of travellers
+          type: number
+          example: 2
+        trs:
+          description: Traveller Identifiers
+          type: array
+          items:
+            type: string
+          example:
+            - "Alex Smith"
+        sts:
+          description: Seating reservations
+          type: array
+          items:
+            type: string
+          example:
+            - "2B"
   fare:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE PRICE (Sales Distribution MODEL)"
+        definition: "A fare component specifying the amount (excluding VAT), currency, VAT amount, VAT percentage, and an optional label."
+        conditions:
+          - "Partial match. fare corresponds to FARE PRICE in Transmodel (SD). The VAT fields (vatAmount, vatPercent) are fiscal/accounting attributes not modelled in Transmodel."
     description: Fare information, amount, currency and VAT
     type: object
     required:
@@ -859,6 +1013,13 @@ definitions:
         format: float
         example: 6.0
   productFilter:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE PRODUCT (Sales Distribution MODEL)"
+        definition: "A multi-criteria filter for querying products, combining spatial (route/group/area), temporal, generic category, traveller, discount, and product property criteria."
+        conditions:
+          - "Partial match. productFilter is a query/search structure used to retrieve matching FARE PRODUCT / SALES OFFER PACKAGE entities in Transmodel (SD). No single Transmodel concept models search criteria; the individual filter fields map to attributes of FARE PRODUCT, USER PROFILE, GEOGRAPHICAL VALIDITY, and USAGE VALIDITY PERIOD."
     description: Product filter. See operation postProductFilter for usage.
     type: object
     properties:
@@ -971,6 +1132,13 @@ definitions:
         default: false
         example: true
   circle:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ZONE (Transport Network MODEL)"
+        definition: "A geographical circle defined by a center coordinate (WGS84) and a radius in meters, used to express spatial validity or filter areas."
+        conditions:
+          - "Partial match. circle corresponds to a circular ZONE or TOPOGRAPHIC PLACE boundary in Transmodel (Transport Network or Common Geometry). Transmodel uses abstract ZONE definitions; the geometric circle representation is an implementation detail."
     description: Geographical circle
     type: object
     required:
@@ -986,16 +1154,37 @@ definitions:
         format: double
         example: 112.5
   polygon:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ZONE (Transport Network MODEL)"
+        definition: "A geographical polygon defined as an ordered list of WGS84 coordinates, used to express spatial validity or filter areas."
+        conditions:
+          - "Partial match. polygon corresponds to a polygonal ZONE or TOPOGRAPHIC PLACE boundary geometry in Transmodel (Transport Network or Common Geometry MODEL)."
     description: Geographical polygon
     type: array
     items:
       $ref: '#/definitions/geoPosition'
   polyline:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ROUTE LINK (Transport Network MODEL)"
+        definition: "A geographical polygonal path (line) defined as an ordered list of WGS84 coordinates, used to express route-based spatial validity."
+        conditions:
+          - "Partial match. polyline corresponds to a path geometry in Transmodel; ROUTE LINK or SERVICE PATTERN (Transport Network MODEL) carry similar sequential coordinate sequences."
     description: Geographical polygonal path (line)
     type: array
     items:
       $ref: '#/definitions/geoPosition'
   genericCategoryValues:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A list of allowed values for a generic category dimension, used as a filter criterion (logical OR between values)."
+        conditions:
+          - "No direct Transmodel equivalent. This is a BoB-specific filter value list for the generic category mechanism."
     description: |
       Values of the generic category. Logical OR is used when
       filtering on multiple values.
@@ -1003,6 +1192,13 @@ definitions:
     items:
       type: string
   geoPosition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "LOCATION (Common Geometry MODEL)"
+        definition: "A WGS84 decimal coordinate pair (latitude/longitude) representing a geographical position."
+        conditions:
+          - "Exact match. geoPosition corresponds to LOCATION in Transmodel (Common Geometry MODEL), representing a point in WGS84 coordinate space."
     description: Geopos (WGS84 decimal)
     type: object
     required:
@@ -1020,6 +1216,13 @@ definitions:
         format: double
         example: 18.059201
   productProperty:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE ELEMENT (Sales Distribution MODEL)"
+        definition: "A name-value pair assigning a specific product property (e.g. bike=large) to a product selection."
+        conditions:
+          - "Partial match. productProperty aligns with a SALES OFFER PACKAGE ELEMENT option or SUPPLEMENTARY PRODUCT attribute in Transmodel (SD). The generic name-value structure has no direct Transmodel equivalent."
     description: Product property assignments
     type: object
     required:
@@ -1035,6 +1238,13 @@ definitions:
         type: string
         example: "large"
   productPropertyFilter:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE ELEMENT (Sales Distribution MODEL)"
+        definition: "A name (and optional value) pair used to filter products by a product property criterion."
+        conditions:
+          - "Partial match. productPropertyFilter is the filter form of productProperty; aligns with SALES OFFER PACKAGE ELEMENT search criteria in Transmodel (SD)."
     description: Product property name and value for filtering
     type: object
     required:
@@ -1049,6 +1259,13 @@ definitions:
         type: string
         example: "large"
   productPropertyDeclaration:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE ELEMENT (Sales Distribution MODEL)"
+        definition: "A declaration of an available product property, including its name, group, possible values with optional surcharges, default value, mandatory flag, description, and type."
+        conditions:
+          - "Partial match. productPropertyDeclaration aligns with a SALES OFFER PACKAGE ELEMENT declaration in Transmodel (SD). Surcharges map to FARE PRICE; the group and mandatory fields are BoB-specific extensions."
     description: |
       Product property declaration.
     type: object
@@ -1114,47 +1331,27 @@ definitions:
         items:
           $ref: '#/definitions/fare'
   discountCodes:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ENTITLEMENT PRODUCT (Sales Distribution MODEL)"
+        definition: "A list of discount code strings that can be applied to reduce the fare of a product purchase."
+        conditions:
+          - "Partial match. discountCodes aligns with ENTITLEMENT PRODUCT or DISCOUNT RIGHT in Transmodel (SD), representing a code-based eligibility for a fare reduction."
     description: List of discount codes
     type: array
     items:
       description: Discount code
       type: string
       example: "SUMMER2021"
-  travellersPerCategory:
-    description: Information about all travellers
-    type: array
-    items:
-      type: object
-      required:
-        - tra
-      properties:
-        cat:
-          description: Traveller category
-          type: string
-          example: a
-        cls:
-          description: Class of service
-          type: string
-          example: "First class"
-        tra:
-          description: Number of travellers
-          type: number
-          example: 2
-        trs:
-          description: Traveller Identifiers
-          type: array
-          items:
-            type: string
-          example:
-            - "Alex Smith"
-        sts:
-          description: Seating reservations
-          type: array
-          items:
-            type: string
-          example:
-            - "2B"
   adjacency:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A border-crossing descriptor identifying the participant at a territorial boundary (by PID), the geographical position, and an optional extended validity period for cross-border tickets."
+        conditions:
+          - "No direct Transmodel equivalent. adjacency is a BoB-specific interoperability concept. The coordinate field aligns with LOCATION (CG); the extendedValidityPeriod weakly aligns with USAGE VALIDITY PERIOD (SD)."
     description: Border crossing position to another participant
     type: object
     required:
@@ -1177,6 +1374,14 @@ definitions:
         type: string
         example: PT2H
   temporalValidity:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USAGE VALIDITY PERIOD (Sales Distribution MODEL)"
+          - "VALIDITY CONDITION (Common MODEL)"
+        definition: "A collection of temporal constraints defining when a product is valid, including absolute validity interval, relative validity duration, activation count, and activation start rules."
+        conditions:
+          - "Exact match. temporalValidity maps directly to USAGE VALIDITY PERIOD in Transmodel (SD). absoluteValidity aligns with a fixed VALIDITY CONDITION; relativeValidity with a duration-based USAGE VALIDITY PERIOD; numberOfActivations with an activation-count constraint."
     type: object
     description: Collection of temporal elements to define product validity
     properties:
@@ -1205,6 +1410,13 @@ definitions:
         format: int64
         example: 1
   spatialValidity:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "GEOGRAPHICAL VALIDITY (Sales Distribution MODEL)"
+        definition: "A collection of spatial constraints defining the geographic scope within which a product is valid, expressed as routes, areas, polylines, or zone groups."
+        conditions:
+          - "Exact match. spatialValidity maps directly to GEOGRAPHICAL VALIDITY in Transmodel (SD). routes align with ROUTING VALIDITY / SERVICE PATTERN; areas align with FARE ZONE / TOPOGRAPHIC PLACE; groups align with TARIFF ZONE GROUP."
     type: object
     description: Collection of spatial elements to define product validity
     properties:
@@ -1225,6 +1437,13 @@ definitions:
         items:
           $ref: '#/definitions/group'
   route:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SERVICE PATTERN (Transport Network MODEL)"
+        definition: "An ordered list of stops, zone groups, or coordinates defining a route for spatial validity or product filtering."
+        conditions:
+          - "Partial match. route aligns with ROUTING VALIDITY or SERVICE PATTERN in Transmodel (Transport Network MODEL). Stop identifiers align with SCHEDULED STOP POINT; zone groupIds align with TARIFF ZONE."
     description: ordered list of stopIds, groupIds or coordinates to define a route
     type: array
     items:
@@ -1249,6 +1468,13 @@ definitions:
               type: string
               example: "1"
   group:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TARIFF ZONE GROUP (Sales Distribution MODEL)"
+        definition: "A collection of group identifiers of the same type (e.g. zones) combined with logical AND semantics, used to express multi-zone validity."
+        conditions:
+          - "Exact match. group corresponds to TARIFF ZONE GROUP in Transmodel (SD). groupType=zone and groupIds map directly to a set of TARIFF ZONEs forming a group."
     type: object
     description: Collection of groupIds with a certain groupType (logical AND)
     required:
@@ -1267,6 +1493,13 @@ definitions:
           - "1"
           - "2"
   area:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TOPOGRAPHIC PLACE (Transport Network MODEL)"
+        definition: "A geographical area expressed as a union of circles, polygons, and/or polylines, used to define spatial validity."
+        conditions:
+          - "Partial match. area aligns with TOPOGRAPHIC PLACE boundary or FARE ZONE geometry in Transmodel (Transport Network MODEL). The union of geometric shapes has no direct Transmodel counterpart."
     type: object
     description: Geographical areas (union)
     properties:
@@ -1283,6 +1516,13 @@ definitions:
         items:
           $ref: '#/definitions/polyline'
   productCondition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "VALIDITY CONDITION (Common MODEL)"
+        definition: "A product condition with a category (e.g. temporal, spatial) and a human-readable text, expressing a usage restriction or entitlement condition."
+        conditions:
+          - "Partial match. productCondition aligns with VALIDITY CONDITION in Transmodel (Common MODEL). The category/text structure is a BoB-specific presentation layer; the referenced external schema (bob-schema-product-conditions) governs the controlled vocabulary."
     description: |
       A product condition. For recommended categories, see JSON schema
       in https://bitbucket.org/samtrafiken/bob-schema-product-conditions.
@@ -1298,11 +1538,25 @@ definitions:
         type: string
         example: "Valid on weekdays at hours 09-15 and 18-04"
   pdsInfos:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "PREASSIGNED FARE PRODUCT (Sales Distribution MODEL)"
+        definition: "A list of PDS (Product Distribution System) information entries, each providing a product lookup reference with title and description."
+        conditions:
+          - "Partial match. pdsInfos is a list of PREASSIGNED FARE PRODUCT references or FARE PRODUCT lookup entries in Transmodel (SD). The pds field is a legacy identifier used in external product distribution systems."
     description: List of pds information
     type: array
     items:
       $ref: '#/definitions/pdsInfo'
   pdsInfo:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "PREASSIGNED FARE PRODUCT (Sales Distribution MODEL)"
+        definition: "A PDS information entry providing a product distribution system identifier (pds), product title, description, and product category identifier."
+        conditions:
+          - "Partial match. pdsInfo aligns with a PREASSIGNED FARE PRODUCT or FARE PRODUCT reference entry in Transmodel (SD). The pds field is a legacy external-system identifier with no direct Transmodel counterpart."
     description: Pds information
     type: object
     required:

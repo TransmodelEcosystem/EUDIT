@@ -97,15 +97,36 @@ paths:
             $ref: '#/definitions/userAgent'
 definitions:
   deviceKeyRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "MEDIUM ACCESS DEVICE (SD Medium Application MODEL)"
+        definition: "A device used by a TRANSPORT CUSTOMER to access a service (e.g. a smart card or mobile phone)."
+        conditions:
+          - "Partial match to MEDIUM ACCESS DEVICE: the deviceKeyRequest initiates the provisioning of a symmetric key to a specific device, identified by its device identifier (did). This registration/key-provisioning step parallels the enrolment of a MEDIUM ACCESS DEVICE in Transmodel."
     type: object
     required:
       - did
     properties:
       did:
         description: Device Identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "MEDIUM ACCESS DEVICE.Id (SD Medium Application MODEL)"
+            definition: "Identifier of a MEDIUM ACCESS DEVICE."
+            conditions:
+              - "Partial match to MEDIUM ACCESS DEVICE.Id: the base64url-encoded device identifier uniquely identifies the device requesting a key, analogous to the identifier of a MEDIUM ACCESS DEVICE."
         type: string
         format: base64url
   deviceKeyResponse:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "MEDIUM ACCESS DEVICE (SD Medium Application MODEL)"
+        definition: "A device used by a TRANSPORT CUSTOMER to access a service."
+        conditions:
+          - "Partial match to MEDIUM ACCESS DEVICE: the response delivers the cryptographic key material bound to a specific device, analogous to the credential or key material associated with a MEDIUM ACCESS DEVICE in Transmodel."
     type: object
     required:
       - kid
@@ -116,32 +137,88 @@ definitions:
     properties:
       kid:
         description: Master Key Identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: a cryptographic master key identifier is security infrastructure with no counterpart in the Transmodel information model."
         type: string
       did:
         description: Device Identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "MEDIUM ACCESS DEVICE.Id (SD Medium Application MODEL)"
+            definition: "Identifier of a MEDIUM ACCESS DEVICE."
+            conditions:
+              - "Partial match to MEDIUM ACCESS DEVICE.Id: the device identifier in the response echoes the requesting device's identifier, as with MEDIUM ACCESS DEVICE.Id."
         type: string
         format: base64url
       kty:
         description: JWA key type (always 'oct')
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: JWA key type is a cryptographic metadata field outside the Transmodel domain."
         type: string
       k:
         description: Symmetric key
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the symmetric key value itself is cryptographic material with no Transmodel counterpart."
         type: string
         format: base64url
       iat:
         description: Issued at timestamp
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION.FromDate (ST Sales Transaction MODEL)"
+            definition: "The start of a validity period."
+            conditions:
+              - "Partial match to VALIDITY CONDITION.FromDate: the issued-at timestamp marks the creation time of the key, analogous to the start of a validity period."
         type: integer
         format: int64
       exp:
         description: Expire timestamp
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION.ToDate (ST Sales Transaction MODEL)"
+            definition: "The end of a validity period."
+            conditions:
+              - "Partial match to VALIDITY CONDITION.ToDate: the expiry timestamp marks when the key ceases to be valid, analogous to the end of a VALIDITY CONDITION."
         type: integer
         format: int64
       ua:
         description: |
           User agent id to put into the ua field of the
           Device Signature Protected Header of the MTB
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the user agent identifier is a BoB-specific reference to the client software profile; Transmodel does not model application-level client metadata."
         type: integer
   jwkSet:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a JWK Set is a collection of cryptographic public/symmetric keys (RFC 7517) used for key derivation in the BoB device security scheme. Transmodel does not model cryptographic key sets."
     type: object
     description: JWK Set
     required:
@@ -152,6 +229,13 @@ definitions:
         items:
           $ref: '#/definitions/jwkSymmetric'
   jwkSymmetric:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a symmetric JSON Web Key (RFC 7517) is cryptographic key material. Transmodel does not model key derivation keys or symmetric cryptographic primitives."
     description: Symmetric JSON Web Key
     type: object
     required:
@@ -161,20 +245,55 @@ definitions:
     properties:
       kty:
         description: JWA key type
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: cryptographic key type metadata is outside the Transmodel information model."
         type: string
       kid:
         description: JWK key identifier
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: JWK key identifiers are cryptographic infrastructure with no Transmodel counterpart."
         type: string
       k:
         description: Symmetric key
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: raw symmetric key material is outside the Transmodel information model."
         type: string
         format: base64url
       kdf:
         description: Key derivation function (default mts2)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: key derivation function identifiers are cryptographic security infrastructure with no Transmodel counterpart."
         type: string
         enum:
           - mts2
   userAgent:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: a user agent object describes the software client (app version, platform, device model) that generated a request. This is application-layer metadata with no counterpart in the Transmodel information model."
     description: |
       A user agent object, a dictionary of keys and values.
     type: object
@@ -191,6 +310,13 @@ definitions:
       Sec-CH-UA-Platform: "iOS"
       Sec-CH-UA-Platform-Version: "15.6.1"
   userAgents:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent."
+        conditions:
+          - "No direct equivalent: userAgents is a registry of client-software profiles indexed by numeric user agent id. This is application-layer infrastructure with no counterpart in the Transmodel information model."
     description: Dictionary with user agent ids (ua) as property keys and user agent objects as property values
     type: object
     additionalProperties:

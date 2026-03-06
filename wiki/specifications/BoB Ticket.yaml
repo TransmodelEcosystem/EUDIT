@@ -745,6 +745,13 @@ paths:
           description: Ticket bundle not found
 definitions:
   ticketEventResult:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "The result of registering a ticket inspection or validation event, containing status code, passenger/inspector messages, ticket metadata, and the event record."
+        conditions:
+          - "No direct Transmodel equivalent. ticketEventResult is a BoB-specific response artefact. The ticketMetadata field partially aligns with CUSTOMER PURCHASE PACKAGE attributes (SD); ticketEvent partially aligns with a SALES TRANSACTION event record."
     description: The result of a ticket inspection or validation operation registration
     type: object
     required:
@@ -772,6 +779,13 @@ definitions:
       ticketEvent:
         $ref: '#/definitions/ticketEvent'
   ticketBundleRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A request to create a ticket bundle from a list of ticket identifiers, optionally binding them to a device and token."
+        conditions:
+          - "Partial match. ticketBundleRequest initiates the grouping of CUSTOMER PURCHASE PACKAGE instances (tickets) into a bundle. Device binding (deviceId/deviceSignatureIssuer) and token binding are BoB-specific security fields with no Transmodel counterpart."
     description: List of ticket identifiers of tickets to be included in ticket bundle
     type: object
     required:
@@ -813,6 +827,13 @@ definitions:
       tokenPublicKey:
         $ref: '#/definitions/jwkPublic'
   ticketBundleUpdateRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A request to update the device and/or token binding of an existing ticket bundle."
+        conditions:
+          - "Partial match. ticketBundleUpdateRequest updates security binding attributes of a CUSTOMER PURCHASE PACKAGE group in Transmodel (SD). The device/token fields are BoB-specific with no Transmodel counterpart."
     description: Update ticket bundle
     type: object
     properties:
@@ -845,6 +866,13 @@ definitions:
         $ref: '#/definitions/jwkPublic'
         x-nullable: true
   ticketMetadata:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "Metadata associated with a ticket, including the relative validity start time, a traveller photo URL, and a list of associated event identifiers."
+        conditions:
+          - "Partial match. ticketMetadata supplements CUSTOMER PURCHASE PACKAGE in Transmodel (SD). relativeValidityStart aligns with USAGE VALIDITY PERIOD start; travellerPhotoURL and ticketEventIds are BoB-specific operational fields with no Transmodel counterpart."
     description: Metadata associated with a ticket
     type: object
     properties:
@@ -866,6 +894,13 @@ definitions:
           - "ce81fb07-5e91-4fcd-bdf5-4cf07c24d16f"
           - "a775bdcf-95ac-4e05-9af4-4a627e10ebbb"
   geoPosition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "LOCATION (Common Geometry MODEL)"
+        definition: "A WGS84 decimal coordinate triplet (latitude, longitude, optional altitude) representing a geographical position."
+        conditions:
+          - "Exact match. geoPosition corresponds to LOCATION in Transmodel (Common Geometry MODEL), representing a point in WGS84 coordinate space. The optional altitude field is an extension beyond the basic 2D Transmodel LOCATION."
     description: Geographical position (WGS84 decimal)
     type: object
     required:
@@ -888,6 +923,13 @@ definitions:
         format: double
         example: 10.2
   ticketEvent:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "A record of a ticket inspection or validation event, capturing timestamp, ticket identifier, event type, result code, zone/service/stop context, and device/inspector references."
+        conditions:
+          - "Partial match. ticketEvent aligns with a SALES TRANSACTION event record or a FARE CONTRACT status update in Transmodel (SD). Zone/service/stopArea fields partially align with TARIFF ZONE, SERVICE JOURNEY, and SCHEDULED STOP POINT (Transport Network MODEL)."
     description: Ticket event data from inspection or validator device
     type: object
     required:
@@ -1068,11 +1110,49 @@ definitions:
         example: "2021-01-23"
       tokenTransaction:
         $ref: '#/definitions/tokenTransaction'
+  mtbReference:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRAVEL DOCUMENT (Sales Distribution MODEL)"
+        definition: "A reference to a Mobile Ticketing Barcode (MTB) issuer, comprising the issuer participant identifier and the issuer's cryptographic signature."
+        conditions:
+          - "Partial match. mtbReference identifies the issuer of a TRAVEL DOCUMENT in Transmodel (SD). The issuerSignature is a BoB-specific cryptographic field with no Transmodel counterpart."
+    description: MTB reference
+    type: object
+    required:
+      - pid
+      - issuerSignature
+    properties:
+      pid:
+        description: Participant identifier
+        type: integer
+        format: int64
+        example: 16
+      issuerSignature:
+        description: MTB issuer signature
+        type: string
+        format: base64url
+        example: "MEQCIGSYn88hmpE8h0zvFfn+Pvx..."
   ticketActiveStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A boolean flag indicating whether a ticket is currently in active state."
+        conditions:
+          - "Partial match. ticketActiveStatus corresponds to an active-state attribute of CUSTOMER PURCHASE PACKAGE in Transmodel (SD). Transmodel does not model a standalone boolean active-status type."
     description: True if ticket is active, otherwise false
     type: boolean
     example: true
   ticketActivationStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USAGE VALIDITY PERIOD (Sales Distribution MODEL)"
+        definition: "The activation status of a ticket, including current active flag, remaining validity duration, latest activation timestamp and expiry, total and remaining activation counts."
+        conditions:
+          - "Partial match. ticketActivationStatus aligns with USAGE VALIDITY PERIOD state in Transmodel (SD). relativeValidity and latestActivationExpire map to validity period parameters; remainingActivations maps to an activation-count constraint."
     description: Activation status
     type: object
     required:
@@ -1110,6 +1190,13 @@ definitions:
         format: int64
         example: 1
   suspensionStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "VALIDITY CONDITION (Common MODEL)"
+        definition: "The suspension status of a ticket, indicating whether it is currently suspended from use and when the suspension expires."
+        conditions:
+          - "Partial match. suspensionStatus aligns with a VALIDITY CONDITION expressing a suspended state in Transmodel (Common MODEL). Transmodel models validity constraints but does not have a named SUSPENSION STATUS concept."
     description: Suspension status
     type: object
     required:
@@ -1125,6 +1212,13 @@ definitions:
         format: date-time
         example: '2020-08-29T03:00:00+00:00'
   manifestCall:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "A ticket issuance request carrying a signed manifest, an optional ticket holder, device/token binding parameters, a request identifier for idempotency, and an optional booking reference."
+        conditions:
+          - "Partial match. manifestCall initiates a SALES TRANSACTION (SD) resulting in CUSTOMER PURCHASE PACKAGE issuance. The manifest (signed payload) and requestId are BoB-specific; bookingId partially aligns with a CUSTOMER RESERVATION reference."
     description: Manifest with parameter to be used for issuing tickets
     type: object
     required:
@@ -1198,6 +1292,13 @@ definitions:
         type: string
         example: "61478509-dbd4-4620-b730-b422dfba2d2f"
   recoverStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "The recover status of a ticket, indicating whether it has been recovered (reclaimed after expiry) and the amount recovered."
+        conditions:
+          - "No direct Transmodel equivalent. The recover concept is BoB-specific (reclaiming a ticket after it has expired or been lost). recoveredAmount weakly aligns with a FARE PRICE in Transmodel (SD)."
     description: Recover status
     type: object
     required:
@@ -1211,6 +1312,13 @@ definitions:
         description: Fare recovered
         $ref: '#/definitions/fare'
   recoverableStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "Indicates whether a ticket is eligible for recovery and the amount that can be recovered."
+        conditions:
+          - "No direct Transmodel equivalent. The recover eligibility concept is BoB-specific. recoverableAmount weakly aligns with a FARE PRICE in Transmodel (SD)."
     description: Tells if ticket is recoverable and amount recoverable
     type: object
     required:
@@ -1224,6 +1332,13 @@ definitions:
         description: Recovereable fare
         $ref: '#/definitions/fare'
   refundStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "REFUNDING (Sales Distribution MODEL)"
+        definition: "The refund status of a ticket, indicating whether it has been refunded and the amount refunded."
+        conditions:
+          - "Partial match. refundStatus aligns with REFUNDING in Transmodel (SD). The refunded boolean and refundedAmount map to a completed REFUNDING transaction with its FARE PRICE."
     description: Refund status
     type: object
     required:
@@ -1237,6 +1352,13 @@ definitions:
         description: Fare refunded
         $ref: '#/definitions/fare'
   refundableStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "REFUNDING (Sales Distribution MODEL)"
+        definition: "Indicates whether a ticket is eligible for a refund and the amount that can be refunded."
+        conditions:
+          - "Partial match. refundableStatus aligns with REFUNDING eligibility in Transmodel (SD). refundableAmount maps to the refundable FARE PRICE."
     description: Tells if ticket is refundable and amount refundable
     type: object
     required:
@@ -1250,6 +1372,13 @@ definitions:
         description: Refundable fare
         $ref: '#/definitions/fare'
   hinderedStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SERVICE EXCEPTION (Service Exception MODEL)"
+        definition: "The hindered status of a ticket, indicating whether the traveller was prevented from using the ticket service, the cause, and a possible refundable amount."
+        conditions:
+          - "Partial match. hinderedStatus aligns with a SERVICE EXCEPTION or DISRUPTION in Transmodel (SE). hinderedCause maps to a disruption cause category; refundableAmount maps to FARE PRICE compensation."
     description: Hindered status
     type: object
     required:
@@ -1266,6 +1395,13 @@ definitions:
         description: Refundable fare (optional)
         $ref: '#/definitions/fare'
   hinderedCause:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SERVICE EXCEPTION (Service Exception MODEL)"
+        definition: "The cause of a hindrance, categorised as traveller-caused, operator-caused, or force majeure."
+        conditions:
+          - "Partial match. hinderedCause aligns with a disruption/exception cause in Transmodel SERVICE EXCEPTION (SE). The specific enum values (travellerHindered, operatorHindered, forceMajeure) have no direct named counterpart in Transmodel."
     description: Type of cause
     type: string
     enum:
@@ -1274,6 +1410,13 @@ definitions:
       - forceMajeure
     example: "travellerHindered"
   revokeStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "The revoke status of a ticket, indicating whether it has been administratively revoked and the timestamp of revocation."
+        conditions:
+          - "No direct Transmodel equivalent. Revocation is a BoB-specific administrative action invalidating a ticket; Transmodel does not model a ticket revocation lifecycle state."
     description: Revoke status
     type: object
     required:
@@ -1288,6 +1431,13 @@ definitions:
         type: string
         example: "2021-12-06T08:34:00Z"
   fare:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE PRICE (Sales Distribution MODEL)"
+        definition: "A fare component specifying the amount (excluding VAT), currency, VAT amount, and VAT percentage."
+        conditions:
+          - "Partial match. fare corresponds to FARE PRICE in Transmodel (SD). The VAT fields (vatAmount, vatPercent) are fiscal/accounting attributes not modelled in Transmodel."
     description: Fare information, amount, currency and VAT
     type: object
     required:
@@ -1316,6 +1466,13 @@ definitions:
         format: float
         example: 6.0
   ticketHolder:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRANSPORT CUSTOMER (Sales Distribution MODEL)"
+        definition: "A reference to the ticket holder, comprising a unique traveller identifier and an optional display name."
+        conditions:
+          - "Partial match. ticketHolder aligns with a TRANSPORT CUSTOMER or CUSTOMER ACCOUNT reference in Transmodel (SD). travellerId maps to TRANSPORT CUSTOMER identifier; travellerName is an optional display attribute."
     description: Ticket holders name and identifier
     type: object
     required:
@@ -1330,6 +1487,14 @@ definitions:
         type: string
         example: "Alex Smith"
   ticket:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRAVEL DOCUMENT (Sales Distribution MODEL)"
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "Full ticket data and status, including identifier, issuance timestamp, signed MTB payload, token binding, ticket holder, and lifecycle status fields (active, activation, recover, refund, revoke, hindered, suspended)."
+        conditions:
+          - "Exact match. ticket maps directly to TRAVEL DOCUMENT / CUSTOMER PURCHASE PACKAGE in Transmodel (SD). The MTB payload (ticketPayload/mtb) is the BoB cryptographic representation of the travel document. Lifecycle status fields map to various CUSTOMER PURCHASE PACKAGE state attributes."
     description: Ticket data and status
     type: object
     required:
@@ -1393,6 +1558,13 @@ definitions:
         description: Ticket suspension status
         $ref: '#/definitions/suspensionStatus'
   ticketUpdateRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A request to update the device and/or token binding of an existing ticket."
+        conditions:
+          - "Partial match. ticketUpdateRequest updates security binding attributes of a CUSTOMER PURCHASE PACKAGE in Transmodel (SD). Device/token fields are BoB-specific with no Transmodel counterpart."
     description: Ticket update
     type: object
     properties:
@@ -1425,6 +1597,13 @@ definitions:
         $ref: '#/definitions/jwkPublic'
         x-nullable: true
   ticketBundle:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE CONTRACT (Sales Distribution MODEL)"
+        definition: "A group of tickets issued together from the same manifest, identified by a bundle identifier and settlement identifier, carrying a single signed MTB."
+        conditions:
+          - "Partial match. ticketBundle aligns with a FARE CONTRACT grouping multiple CUSTOMER PURCHASE PACKAGE instances in Transmodel (SD). The settlementId is a BoB-specific billing/settlement reference; the signed MTB is the cryptographic representation."
     description: |
       A group of tickets.
       All tickets must have been previously issued using the same manifest.
@@ -1460,6 +1639,13 @@ definitions:
         format: base64url
         example: "v2F2QmExYXBZAmSDWJ6_Y2FsZ2..."
   ticketIssueResponse:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "The response to a ticket issuance request, containing the issued ticket identifiers, a settlement identifier, and an optional ticket bundle."
+        conditions:
+          - "Partial match. ticketIssueResponse aligns with a SALES TRANSACTION response in Transmodel (SD). ticketIds correspond to issued CUSTOMER PURCHASE PACKAGE identifiers; settlementId is a BoB billing reference with no Transmodel counterpart."
     type: object
     required:
       - ticketIds
@@ -1479,24 +1665,14 @@ definitions:
         example: "73ed3699-0e93-4db8-b64a-2d9726413ced"
       ticketBundle:
         $ref: '#/definitions/ticketBundle'
-  mtbReference:
-    description: MTB reference
-    type: object
-    required:
-      - pid
-      - issuerSignature
-    properties:
-      pid:
-        description: Participant identifier
-        type: integer
-        format: int64
-        example: 16
-      issuerSignature:
-        description: MTB issuer signature
-        type: string
-        format: base64url
-        example: "MEQCIGSYn88hmpE8h0zvFfn+Pvx..."
   deviceReference:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A reference to a device that creates device-signed tickets, identified by the participant PID, device identifier (DID), and optional user-agent identifier."
+        conditions:
+          - "No direct Transmodel equivalent. deviceReference is a BoB-specific security infrastructure concept. Transmodel does not model hardware devices or device-signed credentials."
     description: Device reference, unique reference for device that creates device signed tickets
     type: object
     required:
@@ -1523,6 +1699,13 @@ definitions:
         type: integer
         example: 835
   tokenTransaction:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A token authentication transaction record comprising the token public key, authentication input data, authentication request, and authentication response from a contactless token (PICC)."
+        conditions:
+          - "No direct Transmodel equivalent. tokenTransaction is a BoB-specific NFC/contactless token authentication artefact. Transmodel does not model cryptographic challenge-response token transactions."
     type: object
     required:
       - tpk
@@ -1539,6 +1722,13 @@ definitions:
       aiResponse:
         $ref: '#/definitions/aiResponse'
   jwkPublic:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A public JSON Web Key (JWK per RFC 7517) for RSA or EC key types, used for cryptographic signature verification in the BoB ecosystem."
+        conditions:
+          - "No direct Transmodel equivalent. jwkPublic is a PKI artefact; Transmodel does not model cryptographic keys or public key infrastructure."
     type: object
     description: Public JSON Web Key (RFC 7517)
     required:
@@ -1581,6 +1771,13 @@ definitions:
         format: byte
         example: "AQAB"
   aiData:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "Authentication input data collected at the terminal for token authentication, including terminal PID, terminal identifier, application ID, signature counter, timestamp, and location."
+        conditions:
+          - "No direct Transmodel equivalent. aiData is BoB-specific NFC terminal authentication data. Transmodel does not model contactless token authentication protocols."
     description: Data used to produce Authentication input for token authentication
     type: object
     required:
@@ -1612,14 +1809,35 @@ definitions:
         pattern: "^\\-?[0-9]*(\\.[0-9]+)?,\\-?[0-9]*(\\.[0-9]+)?$"
         example: "59.329627,18.059201"
   aiRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "The authentication request message as sent to the contactless token (PICC), encoded as base64url."
+        conditions:
+          - "No direct Transmodel equivalent. aiRequest is a BoB-specific NFC/contactless authentication protocol artefact."
     description: Authentication request as sent to the PICC
     type: string
     format: base64url
   aiResponse:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "The authentication response message as received from the contactless token (PICC), encoded as base64url."
+        conditions:
+          - "No direct Transmodel equivalent. aiResponse is a BoB-specific NFC/contactless authentication protocol artefact."
     description: Authentication response as received from PICC
     type: string
     format: base64url
   ticketReference:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRAVEL DOCUMENT (Sales Distribution MODEL)"
+        definition: "A cross-participant reference to a ticket, comprising the participant identifier (PID) and the unique ticket identifier."
+        conditions:
+          - "Partial match. ticketReference is a pointer to a TRAVEL DOCUMENT / CUSTOMER PURCHASE PACKAGE in Transmodel (SD), extended with a BoB participant identifier to enable cross-participant lookup."
     type: object
     required:
       - pid

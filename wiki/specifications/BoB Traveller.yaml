@@ -877,6 +877,13 @@ paths:
 definitions:
 
   ticketNotification:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A push notification about a change in the state or validity of a ticket, including participant ID, ticket ID, a URI to refresh the ticket, the cause of change, and the event timestamp."
+        conditions:
+          - "Partial match. ticketNotification aligns with a CUSTOMER PURCHASE PACKAGE status notification in Transmodel (SD). The cause enum (stateChange, validityChange, other) maps to state-change events in the CUSTOMER PURCHASE PACKAGE lifecycle."
     type: object
     properties:
       pid:
@@ -905,6 +912,13 @@ definitions:
         example: '2020-08-28T23:20:50.52Z'
 
   travellerNotification:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A push notification message sent to a traveller, with an identifier, status (queued/sent/acknowledged/discarded), language, message text, and expiry."
+        conditions:
+          - "No direct Transmodel equivalent. travellerNotification is a BoB-specific asynchronous messaging concept. Transmodel does not model push notification delivery states."
     type: object
     required:
       - notificationId
@@ -936,6 +950,14 @@ definitions:
         example: "1985-04-12T23:20:50.52Z"
 
   travellerInformation:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "TRANSPORT CUSTOMER (Sales Distribution MODEL)"
+          - "CUSTOMER ACCOUNT (Sales Distribution MODEL)"
+        definition: "The profile of a registered traveller, including identifier, name, date of birth, email, phone, photo URL, preferred languages, and a list of associated tokens."
+        conditions:
+          - "Exact match. travellerInformation maps to TRANSPORT CUSTOMER / CUSTOMER ACCOUNT in Transmodel (SD). travellerId=TRANSPORT CUSTOMER identifier; travellerName/DOB/email/phone are CUSTOMER ACCOUNT profile attributes; travellerTokens align with MEDIUM ACCESS DEVICE registrations."
     type: object
     required:
       - travellerId
@@ -980,6 +1002,13 @@ definitions:
           $ref: '#/definitions/travellerToken'
 
   travellerToken:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "MEDIUM ACCESS DEVICE (Sales Distribution MODEL)"
+        definition: "A token registered to a traveller, identified by a participant PID, token serial number, and token identifier."
+        conditions:
+          - "Partial match. travellerToken corresponds to a MEDIUM ACCESS DEVICE registration in Transmodel (SD). The pid and serial fields align with the issuing organisation and device serial attributes; tokenId is the BoB-specific token handle."
     type: object
     additionalProperties: true
     required:
@@ -994,18 +1023,39 @@ definitions:
         type: string
 
   pid:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A BoB Participant Identifier — a numeric identifier assigned to each organisation participating in the BoB ecosystem."
+        conditions:
+          - "No direct Transmodel equivalent as a standalone scalar type. The concept maps to the identifier of an ORGANISATION (Access Management MODEL) or OPERATOR in Transmodel, but Transmodel does not define a typed PID scalar."
     description: Participant Identifier
     type: integer
     format: int64
     example: 1
 
   serial:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A token serial number — a numeric sequence identifier for a contactless token (e.g. smart card) within a participant's namespace."
+        conditions:
+          - "No direct Transmodel equivalent as a standalone scalar type. Conceptually aligns with a MEDIUM ACCESS DEVICE serial number attribute in Transmodel (SD)."
     description: Token serial number
     type: integer
     format: int64
     example: 42
 
   walletInformation:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE CONTRACT (Sales Distribution MODEL)"
+        definition: "The wallet state of a traveller, comprising a list of payment means available for purchasing products."
+        conditions:
+          - "Partial match. walletInformation aligns with a FARE CONTRACT or CUSTOMER ACCOUNT payment record in Transmodel (SD). The list of paymentMeans partially aligns with PAYMENT METHOD entries in a FARE CONTRACT."
     type: object
     additionalProperties: true
     required:
@@ -1017,6 +1067,13 @@ definitions:
           $ref: '#/definitions/paymentMeansItem'
 
   paymentMeansItem:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "PAYMENT METHOD (Sales Distribution MODEL)"
+        definition: "A payment means registered to a traveller, describing its type (purse/paymentcard/mobile/invoice/other), currency, balance, transaction limits, and preference order."
+        conditions:
+          - "Partial match. paymentMeansItem aligns with a PAYMENT METHOD or FARE CONTRACT ENTRY in Transmodel (SD). The type enum, currency, balance, and limit fields map to payment instrument attributes; tokenProofRequired is a BoB-specific security field."
     type: object
     properties:
       id:
@@ -1069,6 +1126,13 @@ definitions:
         type: boolean
 
   walletTransactionRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "A request to perform a wallet (payment means) transaction, specifying the amount, currency, payment means, optional PIN, and optional token proof for authentication."
+        conditions:
+          - "Partial match. walletTransactionRequest initiates a SALES TRANSACTION (SD) against a payment means. The tokenProof field is a BoB-specific authentication artefact with no Transmodel counterpart."
     type: object
     required:
       - transactionReference
@@ -1110,6 +1174,13 @@ definitions:
         $ref: '#/definitions/tokenProof'
 
   transactionInformation:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "A transaction record for a wallet payment, including identifier, requestor reference, amount, currency, payment means, status, expiry, and cancellable-until timestamps."
+        conditions:
+          - "Partial match. transactionInformation corresponds to a SALES TRANSACTION record in Transmodel (SD). The status lifecycle (pending/committed/cancelled) and expiry fields are BoB-specific payment lifecycle attributes not fully modelled in Transmodel."
     type: object
     required:
       - id
@@ -1154,6 +1225,13 @@ definitions:
         $ref: '#/definitions/tokenProof'
 
   transactionInformationUpdate:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "An update to a wallet transaction, carrying the new status (committed/cancelled) and an optional requestor reference."
+        conditions:
+          - "Partial match. transactionInformationUpdate represents a SALES TRANSACTION status update in Transmodel (SD)."
     type: object
     properties:
       status:
@@ -1163,6 +1241,13 @@ definitions:
         type: string
 
   transactionStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "The lifecycle status of a wallet transaction: pending, committed, or cancelled."
+        conditions:
+          - "Partial match. transactionStatus maps to SALES TRANSACTION state in Transmodel (SD). The pending/committed/cancelled states align with SALES TRANSACTION lifecycle states."
     description: Transaction status
     type: string
     enum:
@@ -1172,6 +1257,13 @@ definitions:
     example: "pending"
 
   transactionStatusUpdate:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "The set of valid target statuses when updating a wallet transaction: committed or cancelled."
+        conditions:
+          - "Partial match. transactionStatusUpdate is the writable subset of transactionStatus; aligns with SALES TRANSACTION lifecycle transitions in Transmodel (SD)."
     description: Transaction status
     type: string
     enum:
@@ -1180,6 +1272,13 @@ definitions:
     example: "commited"
 
   purchaseRequest:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES TRANSACTION (Sales Distribution MODEL)"
+        definition: "A request to purchase a product, specifying the participant, product identifier, and a requestor transaction reference."
+        conditions:
+          - "Partial match. purchaseRequest initiates a SALES TRANSACTION for a FARE PRODUCT / SALES OFFER PACKAGE in Transmodel (SD)."
     type: object
     properties:
       pid:
@@ -1192,6 +1291,13 @@ definitions:
         type: string
 
   tokenChallenge:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A cryptographic challenge issued to a token for authentication, encoded as a base64url string."
+        conditions:
+          - "No direct Transmodel equivalent. tokenChallenge is a BoB-specific challenge-response authentication artefact for contactless tokens; Transmodel does not model cryptographic challenges."
     type: object
     required:
       - authenticationChallenge
@@ -1202,6 +1308,13 @@ definitions:
         format: base64url
 
   tokenProof:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A token authentication proof comprising the traveller token reference, the challenge used, and the signed response from the token."
+        conditions:
+          - "No direct Transmodel equivalent. tokenProof is a BoB-specific cryptographic proof of token possession; Transmodel does not model challenge-response proofs."
     type: object
     properties:
       travellerToken:
@@ -1216,12 +1329,26 @@ definitions:
         format: base64url
 
   productSets:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "A list of product set information records representing products available to or held by a traveller."
+        conditions:
+          - "Partial match. productSets is a collection that aligns with a set of SALES OFFER PACKAGEs or CUSTOMER PURCHASE PACKAGEs in Transmodel (SD)."
     description: List of product information
     type: array
     items:
       $ref: '#/definitions/productSetInformation'
 
   productSetOptions:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE (Sales Distribution MODEL)"
+        definition: "Options for configuring a product set purchase, specifying traveller categories and property assignments."
+        conditions:
+          - "Partial match. productSetOptions captures the traveller composition and property selections when purchasing a SALES OFFER PACKAGE in Transmodel (SD)."
     type: object
     properties:
       travellersPerCategory:
@@ -1233,6 +1360,13 @@ definitions:
           $ref: '#/definitions/productProperty'
 
   productProperty:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE ELEMENT (Sales Distribution MODEL)"
+        definition: "A name-value pair representing a configurable property assignment on a product."
+        conditions:
+          - "Partial match. productProperty aligns with a SALES OFFER PACKAGE ELEMENT attribute assignment in Transmodel (SD), where a named property and its value correspond to an element's characteristic."
     description: Product property assignments
     type: object
     required:
@@ -1247,6 +1381,13 @@ definitions:
         type: string
 
   productPropertyDeclaration:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SALES OFFER PACKAGE ELEMENT (Sales Distribution MODEL)"
+        definition: "A declaration of a configurable product property, specifying its name, type, default value, mandatory flag, description, optional surcharges, grouping, and allowed values."
+        conditions:
+          - "Partial match. productPropertyDeclaration corresponds to the schema/declaration of a SALES OFFER PACKAGE ELEMENT property in Transmodel (SD). The surcharges array aligns with FARE PRICE entries for the element."
     description: |
       Product properties declaration. Contains identifier, type, description
       and an optional default value.
@@ -1301,12 +1442,27 @@ definitions:
                 $ref: '#/definitions/fare'
 
   travellersPerCategory:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "GROUP OF PASSENGERS (Sales Distribution MODEL)"
+        definition: "A list of traveller-per-category items describing the composition of a group travelling together."
+        conditions:
+          - "Partial match. travellersPerCategory maps to a GROUP OF PASSENGERS in Transmodel (SD), where each item represents the count of passengers in a given USER PROFILE category."
     description: Information about all travellers
     type: array
     items:
       $ref: '#/definitions/travellersPerCategoryItem'
 
   travellersPerCategoryItem:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "GROUP OF PASSENGERS (Sales Distribution MODEL)"
+          - "USER PROFILE (Sales Distribution MODEL)"
+        definition: "A single traveller-category entry specifying the category code, class of service, number of travellers, optional individual traveller identifiers, seating reservations, and a description."
+        conditions:
+          - "Partial match. travellersPerCategoryItem maps to an entry in a GROUP OF PASSENGERS in Transmodel (SD), with cat/cls aligning with USER PROFILE and class-of-service attributes."
     type: object
     required:
       - tra
@@ -1337,6 +1493,13 @@ definitions:
         type: string
 
   productSetInformation:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A product set held by a traveller, including its identifier, ticket bundles, title, description, planned rides, validity conditions, temporal and spatial constraints, status, and transaction reference."
+        conditions:
+          - "Partial match. productSetInformation corresponds to a CUSTOMER PURCHASE PACKAGE in Transmodel (SD). productSetId=CUSTOMER PURCHASE PACKAGE identifier; ticketBundles=issued CUSTOMER PURCHASE PACKAGE ELEMENTs; status aligns with CUSTOMER PURCHASE PACKAGE lifecycle."
     description: Product Set Information
     type: object
     required:
@@ -1381,6 +1544,13 @@ definitions:
         type: string
 
   productSetInformationUpdate:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "An update payload for a product set, carrying the new lifecycle status and an optional transaction reference."
+        conditions:
+          - "Partial match. productSetInformationUpdate represents a CUSTOMER PURCHASE PACKAGE lifecycle status transition in Transmodel (SD)."
     description: Product Set Information Update
     type: object
     required:
@@ -1393,6 +1563,13 @@ definitions:
         type: string
 
   productSetStatus:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "The lifecycle status of a product set: activated, expired, issued, recreated, refunded, revoked, or suspended."
+        conditions:
+          - "Partial match. productSetStatus maps to the state of a CUSTOMER PURCHASE PACKAGE in Transmodel (SD). The enum values correspond to CUSTOMER PURCHASE PACKAGE lifecycle transitions."
     description: Product set status
     type: string
     enum:
@@ -1406,6 +1583,13 @@ definitions:
     example: "issued"
 
   productSetStatusUpdate:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "The writable subset of product set lifecycle statuses: activated, issued, refunded, or revoked."
+        conditions:
+          - "Partial match. productSetStatusUpdate is the subset of CUSTOMER PURCHASE PACKAGE lifecycle transitions that may be written by an API caller in Transmodel (SD)."
     description: Product set status (updates)
     type: string
     enum:
@@ -1416,6 +1600,13 @@ definitions:
     example: "issued"
 
   ticketBundle:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "A bundle of tickets issued by a single participant, including their fares, a bundle title, description, and bundle identifier."
+        conditions:
+          - "Partial match. ticketBundle maps to a group of CUSTOMER PURCHASE PACKAGE ELEMENTs issued by one OPERATOR (participant) in Transmodel (SD). The fares array aligns with FARE PRICE entries for those elements."
     description: Tickets issued by a participant
     type: object
     required:
@@ -1444,6 +1635,13 @@ definitions:
         type: string
 
   ticket:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE ELEMENT (Sales Distribution MODEL)"
+        definition: "An individual ticket within a bundle, identified by its ticket identifier, product category, fare category, traveller composition, and product properties."
+        conditions:
+          - "Partial match. ticket maps to a CUSTOMER PURCHASE PACKAGE ELEMENT in Transmodel (SD). ticketId=element identifier; productCategoryId/fareCategoryId align with FARE PRODUCT and FARE CLASS categorisation."
     type: object
     required:
       - ticketId
@@ -1482,6 +1680,14 @@ definitions:
           $ref: '#/definitions/productPropertyDeclaration'
 
   temporalConstraints:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "USAGE VALIDITY PERIOD (Sales Distribution MODEL)"
+          - "VALIDITY CONDITION (Sales Distribution MODEL)"
+        definition: "The temporal validity constraints on a product set, including issue time, start/end of validity, relative validity duration, latest activation, activation period, number/remaining activations, and suspension expiry."
+        conditions:
+          - "Exact match. temporalConstraints maps directly to USAGE VALIDITY PERIOD / VALIDITY CONDITION in Transmodel (SD). startOfValidity/endOfValidity=USAGE VALIDITY PERIOD bounds; relativeValidity=duration; numberOfActivations/remainingActivations=FREQUENCY OF USE limits."
     description: Bundle time constraints
     type: object
     required:
@@ -1550,6 +1756,13 @@ definitions:
         example: "2021-06-14T22:00:00+02:00"
 
   spatialConstraint:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "GEOGRAPHICAL VALIDITY (Sales Distribution MODEL)"
+        definition: "A spatial constraint on a product set, specifying a named area and a union of geographical areas (circles, polygons, polylines)."
+        conditions:
+          - "Partial match. spatialConstraint maps to GEOGRAPHICAL VALIDITY in Transmodel (SD), which defines the spatial scope within which a SALES OFFER PACKAGE or FARE PRODUCT is valid."
     description: Product set spatial constraints
     type: object
     properties:
@@ -1562,6 +1775,13 @@ definitions:
           $ref: '#/definitions/geoAreas'
 
   geoAreas:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ZONE (Common Geometry MODEL)"
+        definition: "A union of geographical areas defined by circles, polygons, and/or polylines."
+        conditions:
+          - "Partial match. geoAreas maps to a ZONE boundary geometry in Transmodel (CG). The union of circles/polygons/polylines corresponds to the shape definition of a TOPOGRAPHIC PLACE or FARE ZONE."
     type: object
     description: Geographical areas (union)
     properties:
@@ -1579,6 +1799,13 @@ definitions:
           $ref: '#/definitions/polyline'
 
   circle:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ZONE (Common Geometry MODEL)"
+        definition: "A circular geographical area defined by a centre point and radius in metres."
+        conditions:
+          - "Partial match. circle maps to a circular ZONE boundary in Transmodel (CG)."
     description: Geographical circle (area)
     type: object
     required:
@@ -1594,18 +1821,39 @@ definitions:
         format: double
 
   polygon:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ZONE (Common Geometry MODEL)"
+        definition: "A polygonal geographical area defined as an ordered list of geo-positions."
+        conditions:
+          - "Partial match. polygon maps to a polygonal ZONE boundary in Transmodel (CG)."
     description: Geographical polygon (area)
     type: array
     items:
       $ref: '#/definitions/geoPosition'
 
   polyline:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ROUTE LINK (Transport Pattern MODEL)"
+        definition: "A geographical path defined as an ordered list of geo-positions."
+        conditions:
+          - "Partial match. polyline maps to a ROUTE LINK path geometry in Transmodel (TP), representing a linear geographical constraint."
     description: Geographical polygonal path (line)
     type: array
     items:
       $ref: '#/definitions/geoPosition'
 
   geoPosition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "LOCATION (Common Geometry MODEL)"
+        definition: "A WGS84 decimal geo-position with latitude, longitude, and optional altitude."
+        conditions:
+          - "Exact match. geoPosition maps directly to LOCATION in Transmodel (CG), which represents a point defined by WGS84 coordinates."
     description: Geopos (WGS84 decimal)
     type: object
     required:
@@ -1626,6 +1874,13 @@ definitions:
         format: double
 
   productCondition:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "VALIDITY CONDITION (Sales Distribution MODEL)"
+        definition: "A usage condition on a product, defined by a category (e.g. temporal, spatial) and a human-readable text description."
+        conditions:
+          - "Partial match. productCondition maps to a VALIDITY CONDITION in Transmodel (SD). The category/text pair aligns with a named VALIDITY CONDITION and its prose description."
     description: |
       A product condition. For recommended categories, see JSON schema
       in https://bitbucket.org/samtrafiken/bob-schema-product-conditions.
@@ -1642,6 +1897,14 @@ definitions:
         example: "Valid on weekdays at hours 09-15 and 18-04"
 
   ride:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SERVICE JOURNEY (Timetable Information MODEL)"
+          - "CUSTOMER RESERVATION (Sales Distribution MODEL)"
+        definition: "A planned ride within a journey, specifying boarding and alighting places, a service journey reference, and departure/arrival date-times."
+        conditions:
+          - "Partial match. ride maps to a SERVICE JOURNEY leg in Transmodel (TI), with boardingPlace/alightingPlace corresponding to SCHEDULED STOP POINTs and serviceJourneyReference to a SERVICE JOURNEY identifier. The reservation aspect aligns with CUSTOMER RESERVATION (SD)."
     description: A ride within a journey
     type: object
     properties:
@@ -1659,6 +1922,13 @@ definitions:
         format: date-time
 
   place:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "SCHEDULED STOP POINT (Transport Pattern MODEL)"
+        definition: "A place (stop) with a stop identifier, name, and optional geo-position."
+        conditions:
+          - "Exact match. place maps to a SCHEDULED STOP POINT in Transmodel (TP). stopId=SCHEDULED STOP POINT identifier; name=stop name; coordinate=LOCATION."
     type: object
     properties:
       stopId:
@@ -1670,6 +1940,13 @@ definitions:
         $ref: '#/definitions/geoPosition'
 
   fare:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "FARE PRICE (Sales Distribution MODEL)"
+        definition: "Fare information comprising the amount (excluding VAT), currency, optional label and description, VAT amount, and VAT percentage."
+        conditions:
+          - "Partial match. fare maps to a FARE PRICE in Transmodel (SD). amount/currency align with FARE PRICE monetary attributes; vatAmount/vatPercent are BoB-specific tax fields not explicitly modelled in Transmodel."
     description: Fare information, amount, currency and VAT.
     type: object
     required:
@@ -1702,6 +1979,13 @@ definitions:
         format: float
 
   activationData:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER PURCHASE PACKAGE (Sales Distribution MODEL)"
+        definition: "Data required to activate a product set ticket, specifying the activating participant, ticket identifier, optional activation timestamp, and optional event identifier."
+        conditions:
+          - "Partial match. activationData triggers a CUSTOMER PURCHASE PACKAGE activation event in Transmodel (SD). timeOfActivation aligns with the activation timestamp; pid/ticketId identify the OPERATOR and the CUSTOMER PURCHASE PACKAGE ELEMENT being activated."
     type: object
     required:
     - pid

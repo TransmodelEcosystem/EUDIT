@@ -875,6 +875,13 @@ securityDefinitions:
     in: header
 definitions:
   authtokenJwkPublic:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A cryptographic public key used to verify authentication token (JWT) signatures in the BoB ecosystem."
+        conditions:
+          - "No direct Transmodel equivalent. This is a PKI artefact (JWK per RFC 7517) specific to the BoB security infrastructure; Transmodel does not model cryptographic keys."
     type: object
     description: Public JSON Web Key (JWK) as defined in <a href="https://tools.ietf.org/html/rfc7517" target="_blank">RFC 7517</a>. Two algorithms are supported&#58; the primary algorithm is EC (kty=EC) and the fallback algorithm is RSA (kty=RSA).
     required:
@@ -910,6 +917,13 @@ definitions:
         description: RSA exponent parameter (required for kty=RSA)
         example: AQAB
   mtbJwkPublic:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A cryptographic public key used to verify Mobile Ticketing Barcode (MTB) signatures, optionally constrained to ID or Ticket type."
+        conditions:
+          - "No direct Transmodel equivalent. The bob_sc field (id/ticket) constrains the signing scope and partially aligns with TYPE OF TRAVEL DOCUMENT in Transmodel (SD), but the key object itself is a PKI artefact with no Transmodel counterpart."
     type: object
     description: Public JSON Web Key (JWK) as defined in <a href="https://tools.ietf.org/html/rfc7517" target="_blank">RFC 7517</a>. Two algorithms are supported&#58; the primary algorithm is EC (kty=EC) and the fallback algorithm is RSA (kty=RSA).
     required:
@@ -951,6 +965,13 @@ definitions:
           - id
           - ticket
   issuerSignatureConstraint:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A constraint specifying which participant (by PID) is an acceptable issuer and the maximum lifetime of signatures from that issuer."
+        conditions:
+          - "No direct Transmodel equivalent. This is a BoB-specific trust governance construct; Transmodel does not model cryptographic issuer constraints. The pid field weakly aligns with ORGANISATION (AM) identifier and signatureLifetime with a VALIDITY CONDITION temporal parameter."
     type: object
     required:
       - pid
@@ -965,6 +986,13 @@ definitions:
         type: string
         example: "P3W"
   endpoint:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A uniquely identified service endpoint combining an endpoint identifier with an endpoint call descriptor (type, URI, TLS parameters)."
+        conditions:
+          - "No direct Transmodel equivalent. Transmodel does not model service-registry entries or network endpoints. This is BoB-specific infrastructure metadata."
     allOf:
       - required:
           - endpointId
@@ -975,6 +1003,13 @@ definitions:
             example: 1
       - $ref: '#/definitions/endpointCall'
   endpointCall:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A service call descriptor specifying the API type (account, booking, ticket, validation, etc.), URI, version, and optional DANE/TLSA parameters."
+        conditions:
+          - "No direct Transmodel equivalent. The type enum (account/authentication/booking/device/inspection/product/resource/ticket/token/traveller/validation) maps to BoB functional domains but Transmodel does not represent service endpoint registrations."
     type: object
     required:
       - version
@@ -1027,6 +1062,13 @@ definitions:
             type: string
             pattern: "^(([0-9A-Fa-f]){2})+$"
   participantMetadata:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ORGANISATION (Access Management MODEL)"
+        definition: "A registry record for a BoB participant, including its identifier, name, domain, cryptographic public keys, service endpoints, issuer constraints, and free-form info."
+        conditions:
+          - "Partial match. participantMetadata broadly corresponds to an ORGANISATION (or OPERATOR / AUTHORITY) registry entry in Transmodel AM. The pid/organisationName/domainName fields align with organisation identity attributes. mtbPublicKeys, authtokenPublicKeys, interfaceEndpoints, and issuerSignatureConstraints are BoB-specific PKI and network fields with no Transmodel counterpart."
     type: object
     required:
       - pid
@@ -1068,10 +1110,24 @@ definitions:
       participantInfo:
         $ref: '#/definitions/participantInfo'
   participantMetadataFile:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A distributable file containing a list of BoB participant metadata records, used for federation and trust establishment."
+        conditions:
+          - "No direct Transmodel equivalent. This is a BoB-specific distribution artefact (an array of participantMetadata). Conceptually aligns with an ORGANISATION registry or directory, but Transmodel does not model trust federation files."
     type: array
     items:
       $ref: '#/definitions/participantMetadata'
   jws:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "A JSON Web Signature (JWS) container per RFC 7515 carrying a signed payload with one or more signatures."
+        conditions:
+          - "No direct Transmodel equivalent. This is a PKI/cryptographic envelope artefact; Transmodel does not model signed data containers."
     description: JSON Web Signature (JWS) Serialization as defined in <a href="https://tools.ietf.org/html/rfc7515" target="_blank">RFC 7515</a>, details in section <a href="https://tools.ietf.org/html/rfc7515#section-7.2.1" target="_blank">7.2.1</a>.
     type: object
     required:
@@ -1094,5 +1150,12 @@ definitions:
             signature:
               type: string
   participantInfo:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "ORGANISATION (Access Management MODEL)"
+        definition: "Free-form participant profile data, defined by an external JSON schema, carrying supplementary information about the BoB participant."
+        conditions:
+          - "Partial match. Broadly aligns with extended ORGANISATION attributes in Transmodel AM, but the content is governed by an external schema (bob-schema-participant-info) and is not directly modelled in Transmodel."
     description: Holds participant info. Specified in https://bitbucket.org/samtrafiken/bob-schema-participant-info/src/master/participant-info.json
     type: object

@@ -41,12 +41,27 @@ paths:
             $ref: '#/definitions/authToken'
 definitions:
   authToken:
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent. Closest structural analogy is TRANSPORT CUSTOMER ACCOUNT credential token."
+        conditions:
+          - "No direct equivalent: authToken is a cryptographic JWT wrapper for inter-participant authentication in the BoB security framework. Transmodel does not model the authentication token lifecycle; it assumes authentication is handled externally."
+          - "Partial match to CUSTOMER ACCOUNT credential concept in spirit: the token asserts the identity and authorisation class of a BoB participant entity."
     type: object
     required:
       - jwtCompact
     properties:
       jwtCompact:
         description: JWT as JWS Compact Serialization
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: the compact serialisation of a JWT is a cryptographic transport encoding with no counterpart in Transmodel's data model."
         type: string
         example: "REDACTED_JWT"
       header:
@@ -55,6 +70,13 @@ definitions:
         $ref: '#/definitions/jwtClaim'
   jwsHeader:
     title: RFC 7515 JWS header
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "No direct Transmodel equivalent"
+        definition: "No direct Transmodel equivalent. RFC 7515 JWS header carries cryptographic algorithm and key-identifier metadata."
+        conditions:
+          - "No direct equivalent: Transmodel does not model cryptographic signature headers. This is purely security infrastructure external to the Transmodel domain."
     type: object
     required:
       - alg
@@ -62,14 +84,36 @@ definitions:
     properties:
       alg:
         title: Algorithm
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: cryptographic algorithm identifiers are outside the Transmodel information model."
         type: string
         example: "ES256"
       kid:
         title: Key ID
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: key identifiers are cryptographic infrastructure with no Transmodel counterpart."
         type: string
         example: "auth20170320"
   jwtClaim:
     title: RFC 7519 JWT claim
+    x-semantics:
+      Transmodel:
+        concepts:
+          - "CUSTOMER ACCOUNT.Identifier (ST Fare Contract MODEL)"
+        definition: "An account of a TRANSPORT CUSTOMER for use in sales transactions."
+        conditions:
+          - "Partial match to CUSTOMER ACCOUNT: the JWT claim set identifies and authorises a BoB participant entity (validator, operator, etc.), analogous to the way a CUSTOMER ACCOUNT identifies and characterises a TRANSPORT CUSTOMER in Transmodel."
+          - "The BoB entity (sub claim) is typically a system actor rather than an end traveller, so this is a structural analogy rather than a semantic equivalence."
     type: object
     required:
       - iss
@@ -80,38 +124,87 @@ definitions:
       iss:
         title: Issuer claim
         description: Entity ID of issuer
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "OPERATOR.Id (TP Transport Organisation MODEL)"
+            definition: "Identifier of an OPERATOR."
+            conditions:
+              - "Partial match to OPERATOR.Id: the BoB issuer claim identifies the participant (organisation) that signed and issued the token, analogous to an OPERATOR or AUTHORITY identifier in Transmodel."
         type: string
         example: "1"
       sub:
         title: Subject claim
         description: Entity ID of subject
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "CUSTOMER ACCOUNT.Identifier (ST Fare Contract MODEL)"
+            definition: "Identifier of a CUSTOMER ACCOUNT."
+            conditions:
+              - "Partial match to CUSTOMER ACCOUNT.Identifier: the subject identifies the entity on whose behalf the token is issued. In BoB this is often a device or validator rather than a traveller, so the match is structural."
         type: string
         example: "validator37"
       nbf:
         title: Not-before claim
         description: NumericDate indicating start of claim validity
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION.FromDate (ST Sales Transaction MODEL)"
+            definition: "The start of a validity period."
+            conditions:
+              - "Partial match to VALIDITY CONDITION.FromDate: the not-before timestamp defines the earliest moment the token is valid, analogous to the start of a VALIDITY CONDITION."
         type: integer
         format: int64
         example: 1489998201
       iat:
         title: Issued-at claim
         description: NumericDate indicating time of claim issuance
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "SALES TRANSACTION.Date (ST Sales Transaction MODEL)"
+            definition: "The date and time of a SALES TRANSACTION."
+            conditions:
+              - "Partial match to SALES TRANSACTION.Date: the issued-at timestamp records when the authentication token was created, analogous to the creation timestamp of a transaction record."
         type: integer
         format: int64
         example: 1489998201
       exp:
         title: Expiration time
         description: NumericDate indicating end of claim validity
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "VALIDITY CONDITION.ToDate (ST Sales Transaction MODEL)"
+            definition: "The end of a validity period."
+            conditions:
+              - "Partial match to VALIDITY CONDITION.ToDate: the expiration timestamp defines when the token ceases to be valid, analogous to the end of a VALIDITY CONDITION."
         type: integer
         format: int64
         example: 1490001801
       bobHok:
         title: Holder of key claim
         description: SHA1 fingerprint (as hex) of entity TLS client certificate
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: holder-of-key binding via TLS certificate fingerprint is a cryptographic security mechanism outside the Transmodel information model."
         type: string
         example: "0a9a063eb8d540cbf7dfba7697c674d14a174f7d"
       bobAuthZ:
         title: Authorization Class claim
         description: Entity authorization class (AuthZ group)
+        x-semantics:
+          Transmodel:
+            concepts:
+              - "No direct Transmodel equivalent"
+            definition: "No direct Transmodel equivalent."
+            conditions:
+              - "No direct equivalent: BoB authorisation groups (e.g. 'val' for validator) are a role-based access-control construct with no direct counterpart in Transmodel. The closest analogy is a TYPE OF RESPONSIBILITY ROLE but Transmodel does not model API-level authorisation scopes."
         type: string
         example: "val"
