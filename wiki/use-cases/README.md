@@ -60,6 +60,12 @@ BoB (Backend of Backend) is an intentionally narrow B2B ticketing interoperabili
 See [bob.md](bob.md) for the complete list with endpoint references, uniqueness notes, and an explicit out-of-scope section.
 
 # Ticketing Specific use cases
+
+On ticketing system with urban and interurban transport modes (metro, bus, tramway, coach, cable, regional rail), they are specific use cases linked with thoses particularities : complex fare products, yearly pass with payment terms and instalments, transfers with fee or not, cutomer profiles (social rights, reduction cards, ...), group tickets,.. The travel document are also various : contactlexx card, paper ticket, QRcode, mobile application, embedded card, bank card. 
+It is not a full list.
+
+See [ticketing.md] for the complete list 
+
 ## (payment) Entering a SEPA Direct Debit Mandate to complete the sale
 For some FARE PRODUCT, having a valid mandate is mandatory in order to complete the sale. The customer enters his bank coordinates on his customer account and uses this payment method for the purchase. 
 
