@@ -64,4 +64,4 @@ See [bob.md](bob.md) for the complete list with endpoint references, uniqueness 
 On ticketing system with urban and interurban transport modes (metro, bus, tramway, coach, cable, regional rail), they are specific use cases linked with thoses particularities : complex fare products, yearly pass with payment terms and instalments, transfers with fee or not, cutomer profiles (social rights, reduction cards, ...), group tickets,.. The travel document are also various : contactlexx card, paper ticket, QRcode, mobile application, embedded card, bank card. 
 It is not a full list.
 
-See [ticketing.md] for the complete list 
+See [ticketing.md](ticketing.md) for the complete list 
