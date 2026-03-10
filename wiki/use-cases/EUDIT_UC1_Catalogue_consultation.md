@@ -1,6 +1,6 @@
 ### Part 1 — Use Case Overview
 
-* **Use Case ID & Name:** 6.5.2.1 — Choice of a solution by FARE PRODUCT catalogue consultation
+* **Use Case ID & Name:** EUDIT UC1 — Choice of a solution by FARE PRODUCT catalogue consultation
 * **Goal (Objective):** Enable the Transport Customer to select the most suitable fare solution by consulting the Fare Product catalogue and providing the information required to determine the best offer (product, package, price and guarantees).
 * **Scope:** Offer discovery / catalogue consultation (Fare Product catalogue)
 * **Level:** User-goal
@@ -15,7 +15,7 @@
 
   * **Reseller (API consumer / retailer):** supports the customer and initiates catalogue consultation
   * **Operator (represented by a Fare Product Distributor):** provides the Fare Product catalogue, prices, availability and guarantees
-* **Assumptions:**
+* **Assumptions / Context:**
 
   * The reseller is authorised to consult the operator’s Fare Product catalogue.
   * The catalogue and related pricing/guarantee information are available (online service or accessible dataset).
@@ -104,7 +104,7 @@ Condition: Required parameters are not provided (e.g., class, railcard).
 
 ### Part 7 — Business Rules
 
-* **Catalogue presentation rules:** Products may be ordered by operator, popularity, local usability, marketing rules, or operator priorities. 
+* **Catalogue presentation rules:** Products may be ordered by network, zone, product type, popularity, local usability, marketing rules, or operator/platform priorities. 
 * **Usage parameters:** Travel conditions can include interchange allowance, break of journey, validity duration, etc. 
 * **Commercial conditions:** Rules may apply for exchanging, refunding, cancelling, reserving, etc. 
 * **Optional paid parameters:** Some parameters may be optional but available at an additional price (e.g., different luggage allowances). 
