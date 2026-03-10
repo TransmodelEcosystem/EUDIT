@@ -164,7 +164,7 @@ A check mark indicates that the standard contains operations covering that domai
 | 10 | Notifications & Async | — | ✓ | ✓ | ✓ | — | — |
 | 11 | Identity, Auth & Participant Metadata | ✓ | ✓ | — | ✓ | ✓ | — |
 | 12 | Documents & Invoices | ✓ | — | — | — | — | ✓ |
-| 13 | Complaints & Support | ✓ | — | — | ✓ | — | — |
+| 13 | Complaints & Support | ✓ | ✓ | — | ✓ | — | — |
 
 **Key observations:**
 
