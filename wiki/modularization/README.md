@@ -64,11 +64,22 @@ Provider. It contains three `POST` operations under the `notifications` tag:
 `/processes/notification/execution`, `/processes/request-confirmation/execution`,
 and `/processes/request-payment/execution`.
 
-This is the **only spec in the repository with external `$ref`**. It imports 11
-components from `./TOMP-API 2.0.0.yaml` (parameters, responses, and scalar
-schemas). It also carries one broken reference to
-`../TOMP-API-6-AFTER-SALES.yaml`, a file not present in the repository — a trace
-of a prior modular file layout that was later consolidated.
+This is the **only spec in the repository with external `$ref`**. All three
+operations reference shared components from `./TOMP-API 2.0.0.yaml` (parameters,
+responses, and scalar schemas), confirming the current architecture: a monolithic
+TOMP-API spec extended by a dedicated reverse-channel notification file.
+
+Notably, `/processes/request-payment/execution` imports `financialDetail` from
+TOMP-API — making TOMP-API-MP a consumer of After-Sales schemas in addition to
+its primary notification role. The TO uses this endpoint to request payment from
+the MaaS Provider, covering fare finalisation and deposit collection over the
+reverse channel.
+
+A previously broken reference to `../TOMP-API-6-AFTER-SALES.yaml` (a file that
+was never present in the repository) has now been resolved. That reference was a
+trace of an earlier modular file layout in which the TOMP after-sales functions
+were intended to live in a separate spec file; the current design consolidates
+everything into the single `TOMP-API 2.0.0.yaml`.
 
 ### 1.4 OMSA 0.1.0
 
@@ -157,7 +168,7 @@ A check mark indicates that the standard contains operations covering that domai
 | 3 | Pricing & Offers | ✓ | ✓ | — | ✓ | ✓ | ✓ |
 | 4 | Booking & Reservation | ✓ | ✓ | — | ✓ | ✓ | ✓ |
 | 5 | Fulfillment & Ticketing | ✓ | ✓ | — | ✓ | ✓ | — |
-| 6 | After-Sales (Refund / Exchange / Cancel) | ✓ | ✓ | — | ✓ | ✓ | ✓ |
+| 6 | After-Sales (Refund / Exchange / Cancel) | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | 7 | Traveller & Account Management | ✓ | ✓ | — | ✓ | ✓ | — |
 | 8 | Asset & Token Management | — | ✓ | — | ✓ | ✓ | — |
 | 9 | Validation & Inspection | — | — | — | — | ✓ | — |
@@ -176,8 +187,11 @@ A check mark indicates that the standard contains operations covering that domai
   callbacks and the dedicated reverse-channel TOMP-API-MP file.
 * FerryGateway bundles Domains 2, 3, and 4 into single message pairs (e.g. `Book`
   covers reservation, pricing confirmation, and booking creation simultaneously).
-* The broken `$ref` in TOMP-API-MP to `../TOMP-API-6-AFTER-SALES.yaml` confirms
-  that TOMP originally anticipated a modular file layout aligned with these domains.
+* TOMP-API-MP's external references correctly point to `./TOMP-API 2.0.0.yaml`,
+  confirming the current architecture: a monolithic TOMP-API complemented by a
+  dedicated reverse-channel notification extension. A previously broken `$ref` to
+  a `TOMP-API-6-AFTER-SALES.yaml` module file — a trace of an earlier modular
+  layout that was never completed — has now been resolved.
 
 ---
 
