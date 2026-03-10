@@ -134,13 +134,21 @@ Condition: Required parameters are not provided (e.g., class, railcard).
 
 ---
 
-### Part 9 — Interfaces / API (if applicable)
+### Part 9 — Interfaces / API / user-actions
 
-*(The source text describes the functional behaviour but not specific endpoints; below is the interface intent implied by the use case.)* 
 
-* **Catalogue consultation:** Retrieve/present Fare Products and Sales Offer Packages, with filtering and ordering. 
-* **Optional availability / reservation initiation:** Start a reservation process to obtain availability (quota or seat map selection). 
-* **Pricing request:** Request and/or calculate prices for the selected Sales Offer Package(s), returning indicative or final prices depending on definition/reservation. 
+| Format-origin | API name or User action                                                      | Short description                                                                                                                    |
+| --------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Ticketing  (example)            | **Catalogue consultation**                                                  | Retrieve/present Fare Products and Sales Offer Packages, with filtering and ordering.                                             |
+| OSDM   (example)                | **Search within catalogue (user: “Search a product”)**                      | Query the catalogue using keywords/filters (operator, local products, popularity, marketing priorities, etc.).                       |
+| OSDM      (example)             | **Get offer/package details (user: “View product details”)**                | Return the selected package’s full content: usage parameters, commercial conditions, guarantees, optional parts and selection rules. |
+| OSDM                  | **Get indicative price (user: “Check price”)**                              | Provide an indicative price when the package is sufficiently defined and no reservation/availability confirmation is required.       |
+| OSDM  (example)                 | **Start availability / reservation (user: “Check availability / Reserve”)** | Initiate an availability check (quota or seat map) and, where applicable, create a short-term pre-reservation.                       |
+| OSDM (example)                  | **Get final price (user: “Confirm price after availability”)**              | Return the final price for the completely defined travel package, typically after availability/reservation confirmation.             |
+| OSDM  (example)                   | **Update selection / options (user: “Change class / add options”)**         | Recalculate conditions and prices when the user changes defining parameters (class, railcard, extras such as luggage allowance).     |
+| BoB (example)         | **Catalogue consultation (user: “Browse offers”)**                          | Equivalent capability in BoB-style APIs: consult available fare products/packages and their conditions.                              |
+| BoB (example)         | **Availability & pricing (user: “Validate availability and price”)**        | Equivalent capability in BoB-style APIs: check availability (if relevant) and return price/conditions for the chosen package.        |
+
 
 ---
 
@@ -150,5 +158,3 @@ Condition: Required parameters are not provided (e.g., class, railcard).
 * **Performance:** Indicative prices should be available early when possible; reservation flows should return availability and final price promptly to support customer choice. 
 * **Consistency:** Usage parameters and commercial conditions must be consistent with the chosen Sales Offer Package and reflected in the returned conditions/guarantees. 
 * **Traceability / origin:** Use case derived from the EUDIT repository entry “6.5.2.1 catalogue offers”. 
-
-If you want, I can also convert Parts 1–10 into **slide-ready bullets** (one part = one slide), matching exactly the deck format you added from slide 3.
