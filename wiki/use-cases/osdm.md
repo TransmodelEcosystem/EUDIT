@@ -12,7 +12,11 @@ Non-trip-based offers cover FARE PRODUCTs that are not tied to a specific schedu
 
 The RETAILER requests SALES OFFER PACKAGEs for products that are not bound to a specific trip (e.g. rail passes, zone passes, reduction cards, merchandise). Search parameters include begin of validity, region expressed as NUTS codes or PLACE references, FARE CLASS, flexibility, and PRODUCT TAGs.
 
-**Endpoint(s):** `POST /offers`
+**Endpoint(s):** 
+  - `POST /offers`
+  - `POST /product-search`     optional preliminary search for products
+  - `GET /product-tags`        get catalog selection options
+    
 **Unique to OSDM:** Yes — OSDM provides a structured `nonTripSearchCriteria` block in the shared `/offers` endpoint; no equivalent catalogue-driven offer search exists in TOMP-API, BoB, or FerryGateway.
 
 ---
