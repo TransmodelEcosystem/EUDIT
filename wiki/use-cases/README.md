@@ -32,7 +32,7 @@ A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actio
 # EUDIT Use cases
 
 ## to do
-## [EUDIT UC1 Catalogue consultation](EUDIT UC1 Catalogue consultation.md)
+## [EUDIT UC1 Catalogue consultation](EUDIT_UC1_Catalogue_consultation.md)
 
 # Steps 
 
