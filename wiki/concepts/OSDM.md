@@ -1,4 +1,6 @@
-Copyright UIC (see OSDM.io)
+Derived from OSDM 3.7.1, © 2020–23 International Union of Railways (UIC),
+licensed under the Apache License 2.0 (https://osdm.io).
+Concept definitions adapted and summarised for EUDIT.
 
 - **AbstractBookingPart** :  commmon data of a booking in the API.
 - **AbstractOfferPart** : common data of an offer in the API.
