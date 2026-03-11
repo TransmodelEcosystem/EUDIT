@@ -2085,6 +2085,12 @@ definitions:
         definition: "An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights."
         conditions:
           - "Partial match: a BoB place with id, name, and coordinate maps to an APDS Place representing a named physical location."
+      OJP:
+        concepts:
+          - "LocationStructure"
+        definition: "An OJP LocationStructure represents a named geographic entity — stop point, stop place, address, POI, or topographic place — used as origin, destination, or via in trip planning."
+        conditions:
+          - "Partial match: a BoB place with stopId, name, and coordinate maps to an OJP LocationStructure used as a named stop in trip planning."
     type: object
     properties:
       stopId:

@@ -6,6 +6,17 @@ Use cases are grouped by functional module, matching TOMP-API's own module struc
 
 ---
 
+## Authentication
+
+### obtain access token
+
+A client application obtains a Bearer access token from the TOMP-API authorisation server before calling any authenticated endpoint. TOMP-API supports two OAuth 2.0 token endpoint variants: `POST /oauth/token` (standard OAuth 2.0 client credentials / password / refresh_token grant) and `POST /connect/token` (OpenID Connect token endpoint). The MP submits client credentials or a refresh token; the server returns a Bearer access token for use in the `Authorization` header of subsequent calls.
+
+**Endpoint(s):** `POST /oauth/token`, `POST /connect/token`
+**Unique to TOMP-API:** No — OMSA also specifies `POST /oauth/token` as part of its API contract. OSDM and BoB reference external OAuth providers without specifying token endpoints in the spec itself.
+
+---
+
 ## Administration
 
 ### Add a customer

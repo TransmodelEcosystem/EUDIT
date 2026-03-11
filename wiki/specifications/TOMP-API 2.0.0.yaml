@@ -3157,6 +3157,12 @@ components:
           definition: 'An APDS Place represents a physical location (e.g. a car park or parking zone) that can contain spaces or equipment.'
           conditions:
           - 'Partial match: an assetCollection as a facility containing bookable units maps to an APDS Place containing parking spaces or mobility units.'
+        OJP:
+          concepts:
+          - OJPAvailabilityDelivery
+          definition: 'OJPAvailabilityDelivery (new in OJP v2.0) returns the physical availability of seats, spaces, or vehicles for specific trip legs.'
+          conditions:
+          - 'Partial match: an assetCollection listing available units at a site corresponds to the availability payload in OJPAvailabilityDelivery, which reports physical availability of mobility assets per leg.'
       description: a list of available assets.
       type: object
       properties:
@@ -7859,6 +7865,12 @@ components:
           definition: 'An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights.'
           conditions:
           - 'Partial match: a TOMP place with name and lat/lon directly maps to an APDS Place representing a named physical location.'
+        OJP:
+          concepts:
+          - LocationStructure
+          definition: 'An OJP LocationStructure represents a named geographic entity — stop point, stop place, address, POI, or topographic place — used as origin, destination, or via in trip planning.'
+          conditions:
+          - 'Partial match: a TOMP place as a named geographic location with coordinates maps to an OJP LocationStructure used as a journey origin or destination.'
       type: object
       description: >-
         address parts, where addressLine1 and 2 should contain the complete

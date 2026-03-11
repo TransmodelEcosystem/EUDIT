@@ -14,6 +14,7 @@ This directory contains concept glossaries for the foundational standards and on
 | [GTFS.md](GTFS.md) | GTFS Schedule + Flex | General Transit Feed Specification — schedule and demand-responsive file/field concepts (snake_case) |
 | [OCPI.md](OCPI.md) | OCPI v2.2.1 | Open Charge Point Interface — EV charging location, session, tariff, and token objects (PascalCase) |
 | [APDS.md](APDS.md) | APDS v1.x | Alliance for Parking Data Standards — parking place, right, rate, session, and organisation objects (PascalCase) |
+| [OJP.md](OJP.md) | OJP v2.0 (CEN/TS 17118:2017) | Open API for Distributed Journey Planning — trip, leg, stop event, fare, and place structures (PascalCase XSD) |
 
 ## Per-Standard Mappings
 

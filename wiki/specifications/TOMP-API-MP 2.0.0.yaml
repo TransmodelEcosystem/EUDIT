@@ -102,7 +102,7 @@ components:
             - inputs
             properties:
               inputs:
-                $ref: "../TOMP-API-6-AFTER-SALES.yaml#/components/schemas/financialDetail"
+                $ref: "./TOMP-API 2.0.0.yaml#/components/schemas/financialDetail"
 
   schemas:
     notificationInput:

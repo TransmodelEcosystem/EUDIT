@@ -470,6 +470,12 @@ definitions:
               definition: "An APDS Place is a physical location used to anchor rights and events."
               conditions:
                 - "Partial match: a boarding place reference maps to an APDS Place used as the occupancy event anchor location."
+              OJP:
+                concepts:
+                  - "PlaceRefStructure"
+                definition: "An OJP PlaceRefStructure is a lightweight reference to a named location (stop, address, POI, coordinate) used as origin/destination parameters in trip requests."
+                conditions:
+                  - "Partial match: a boarding place stop reference identifying the departure stop corresponds to an OJP PlaceRefStructure used as the origin parameter in trip requests."
       alightingPlace:
         $ref: '#/definitions/place'
         x-semantics:
@@ -638,6 +644,12 @@ definitions:
           definition: "An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights."
           conditions:
             - "Partial match: a BoB place with id, name, and coordinate maps to an APDS Place representing a named physical location."
+        OJP:
+          concepts:
+            - "GeoPosition"
+          definition: "An OJP GeoPosition holds the WGS84 latitude and longitude of a place, stop, or leg track point."
+          conditions:
+            - "Exact match: a BoB place coordinate (WGS84 lat/lon) directly corresponds to OJP GeoPosition."
   geoPosition:
     description: Geopos (WGS84 decimal)
     x-semantics:

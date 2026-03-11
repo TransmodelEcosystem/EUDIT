@@ -2026,6 +2026,12 @@ components:
           definition: "An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place."
           conditions:
             - "Exact match: a WGS84 coordinate pair directly corresponds to APDS PlaceLocation coordinates."
+        OJP:
+          concepts:
+            - "GeoPosition"
+          definition: "An OJP GeoPosition holds the WGS84 latitude and longitude of a place, stop, or leg track point."
+          conditions:
+            - "Exact match: a WGS84 coordinate pair (lat, lon) directly corresponds to OJP GeoPosition."
       type: array
       minItems: 2
       maxItems: 2
@@ -2073,6 +2079,12 @@ components:
           definition: "An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place."
           conditions:
             - "Exact match: GeoJSON Point geometry maps to APDS PlaceLocation as both represent a WGS84 coordinate point."
+        OJP:
+          concepts:
+            - "GeoPosition"
+          definition: "An OJP GeoPosition holds the WGS84 latitude and longitude of a place, stop, or leg track point."
+          conditions:
+            - "Exact match: GeoJSON Point geometry encoding a lat/lon coordinate directly corresponds to OJP GeoPosition."
       type: object
       description: Geojson Coordinate
       required:
@@ -2552,6 +2564,12 @@ components:
           definition: "An APDS OccupancyEvent records the start or end of an occupancy period at a place, including timestamps and place reference."
           conditions:
             - "Partial match: a leg as a travel segment with start/end events at named places corresponds to an APDS OccupancyEvent marking the occupancy lifecycle of the mobility unit."
+        OJP:
+          concepts:
+            - "FareProductStructure"
+          definition: "An OJP FareProductStructure is a saleable fare product applicable to one or more legs, carrying fare product ID, name, validity conditions, and booking arrangements."
+          conditions:
+            - "Exact match: an OMSA product as a named fare product with an id, type, and validity maps to an OJP FareProductStructure representing a saleable fare product."
       type: object
       properties:
         type:
@@ -2607,6 +2625,12 @@ components:
           definition: "An APDS Segment is an ordered division of a route or itinerary between two successive points."
           conditions:
             - "Partial match: a tripPattern as an ordered list of service journeys with places maps to a sequence of APDS Segments defining the itinerary."
+        OJP:
+          concepts:
+            - "TripStructure"
+          definition: "An OJP TripStructure is a complete door-to-door journey composed of an ordered list of LegStructures with start/end times, transfer count, and status."
+          conditions:
+            - "Exact match: an OMSA tripPattern as an ordered list of service journeys between named places directly corresponds to an OJP TripStructure representing a complete multi-leg journey."
       type: array
       items:
         type: object
@@ -4320,6 +4344,12 @@ components:
           definition: "An APDS Place is a physical location described by an identifier, name, and coordinates used to anchor rights and events."
           conditions:
             - "Exact match: a placeReference as a named location identifier maps directly to an APDS Place used as an anchor for mobility rights and events."
+        OJP:
+          concepts:
+            - "PlaceRefStructure"
+          definition: "An OJP PlaceRefStructure is a lightweight reference to a named location (stop, address, POI, coordinate) used as origin/destination parameters in trip requests."
+          conditions:
+            - "Exact match: an OMSA placeReference as a named location identifier maps directly to an OJP PlaceRefStructure used as an origin or destination reference in trip requests."
       type: object
       required:
       - placeId

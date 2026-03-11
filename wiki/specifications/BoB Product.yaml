@@ -1598,6 +1598,13 @@ definitions:
         definition: "An APDS Segment is an ordered division of a route or itinerary between two successive points."
         conditions:
           - "Partial match: BoB route as an ordered stop sequence corresponds to a series of APDS Segments defining the itinerary path."
+      OJP:
+        concepts:
+          - "TripStructure"
+          - "LegStructure"
+        definition: "An OJP TripStructure is a complete door-to-door journey composed of an ordered list of LegStructures. A LegStructure is a single segment of a trip."
+        conditions:
+          - "Partial match: a BoB route as an ordered list of stop identifiers corresponds to the stop sequence within OJP LegStructures that together form a TripStructure."
     description: ordered list of stopIds, groupIds or coordinates to define a route
     type: array
     items:

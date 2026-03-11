@@ -13,7 +13,7 @@ OMSA covers multimodal door-to-door trip booking: offer search, offer selection,
 A client application obtains a Bearer access token from the OMSA authorisation server before calling any authenticated endpoint. Supports `client_credentials`, `password`, and `refresh_token` grant types; the mTLS variant derives identity directly from the client certificate (O or CN field), ignoring request body credentials.
 
 **Endpoint(s):** `POST /oauth/token`
-**Unique to OMSA:** Yes — OMSA is the only in-scope standard that explicitly specifies an OAuth 2.0 token endpoint as part of the API contract. OSDM assumes an external IdP; TOMP-API and BoB reference external OAuth providers without specifying the token endpoint itself.
+**Unique to OMSA:** No — TOMP-API also specifies OAuth 2.0 token endpoints as part of its API contract (`POST /oauth/token` and `POST /connect/token`). OSDM assumes an external IdP; BoB references an external OAuth provider without specifying the token endpoint itself.
 
 ---
 
@@ -291,7 +291,7 @@ The table below cross-references every OMSA process and collection endpoint agai
 
 | Use Case | Endpoint | Primary Transmodel Concept(s) | Unique to OMSA |
 |----------|----------|-------------------------------|----------------|
-| obtain access token | `POST /oauth/token` | — | Yes |
+| obtain access token | `POST /oauth/token` | — | No |
 | retrieve landing page | `GET /` | — | No |
 | retrieve api definition | `GET /api` | — | No |
 | retrieve conformance declaration | `GET /conformance` | — | No |

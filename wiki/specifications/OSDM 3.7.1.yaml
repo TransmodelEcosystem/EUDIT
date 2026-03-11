@@ -15106,6 +15106,12 @@ components:
               definition: 'An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place.'
               conditions:
               - 'Exact match: geoLocation as a WGS84 coordinate point directly corresponds to APDS PlaceLocation.'
+              OJP:
+                concepts:
+                - GeoPosition
+                definition: 'An OJP GeoPosition holds the WGS84 latitude and longitude of a place, stop, or leg track point.'
+                conditions:
+                - 'Exact match: geoLocation as a WGS84 coordinate point directly corresponds to OJP GeoPosition.'
         vehicleType:
           $ref: '#/components/schemas/ContinuousServiceVehicleType'
           x-semantics:
@@ -15266,6 +15272,12 @@ components:
               definition: 'An APDS PlaceLocation specifies the geographic coordinates (WGS84 lat/lon) of a place.'
               conditions:
               - 'Exact match: geoPosition as a WGS84 coordinate point directly corresponds to APDS PlaceLocation.'
+              OJP:
+                concepts:
+                - GeoPosition
+                definition: 'An OJP GeoPosition holds the WGS84 latitude and longitude of a place, stop, or leg track point.'
+                conditions:
+                - 'Exact match: geoPosition as a WGS84 coordinate point directly corresponds to OJP GeoPosition.'
         startUsageDescription:
           description: start usage procedure description
           type: string
@@ -32716,6 +32728,12 @@ components:
           definition: 'An APDS Place is a physical location described by coordinates and a name, used to anchor parking or mobility rights.'
           conditions:
           - 'Partial match: an OSDM StopPlace as a named infrastructure location maps to an APDS Place representing a named physical location.'
+        OJP:
+          concepts:
+          - LocationStructure
+          definition: 'An OJP LocationStructure represents a named geographic entity — stop point, stop place, address, POI, or topographic place — used as origin, destination, or via in trip planning.'
+          conditions:
+          - 'Partial match: an OSDM StopPlace as a named passenger boarding location maps to an OJP LocationStructure used as a named stop point or stop place in trip planning.'
     StopPlaceRef:
       description: 'Reference to a Stop Place using URNs to define code.
 
