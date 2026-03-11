@@ -1,4 +1,4 @@
-## 6.5.2.1 Search for non-trip offers
+## 6.5.2.1 Search using a trip specification
 
 The use case covers the search for offers using a trip specifcation.  
 
