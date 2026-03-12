@@ -64,7 +64,7 @@ InterMOD is omitted — no specification is available.
 
 | Operation | OSDM 3.7.1 | TOMP-API 2.0.0 | OMSA 0.1.0 | BoB (full suite) | FerryGateway 1.3.1 |
 |-----------|-----------|---------------|-----------|-----------------|-------------------|
-| Search offers | `POST /offers` | `GET /collections/offers/items` | `POST /processes/search-offers/execute` | `POST /product` `GET /product` `GET /product/{productId}` (Product) | — |
+| Search offers | `POST /offers` | `POST /processes/search-offers/execution` | `POST /processes/search-offers/execute` | `POST /product` `GET /product` `GET /product/{productId}` (Product) | — |
 | Get additional offers on booked offer | `GET /bookings/{bookingId}/booked-offers/{bookedOfferId}/additional-offers` | — | — | — | — |
 | Get price / fare details | — | `GET /collections/fares/items` | — | `GET /productcat/fare` `GET /productcat/generic` `GET /productcat/product` (Product) | `GetPriceRequest/Response` |
 | Get product list / product search | `GET /products` `GET /products/{productId}` `GET /product-tags` `POST /products-search` | — | — | — | — |
