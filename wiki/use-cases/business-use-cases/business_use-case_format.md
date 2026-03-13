@@ -1,11 +1,8 @@
 
-## Part 1 : Use Case Overview
+## Part 1 : Overview
 
 - **Use Case ID & Name:** \<ID\> — \<Use Case Name\>
 - **Goal (Objective):** \<Business value in one sentence\>
-- **Scope:** \<System / product / domain boundary\>
-- **Level:** User-goal / Sub-function / Summary
-- **Trigger:** \<What starts the use case\>
 
 ---
 
@@ -108,6 +105,8 @@
 ## Part 9 — Interfaces / API / user-actions
 
 - **Operations / Endpoints:** \<operation names\>
+  
+- **Other standards mapping :** 
 
 | Format-origin | API name or User action                                                      | Short description                                                                                                                    |
 | --------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
