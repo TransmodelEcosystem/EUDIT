@@ -67,6 +67,9 @@ Checks the basket and executes each operation described by a basket element (far
 Delivers fulfilment with the purchase result (boarding-pass equivalent).
 The raw media for QR-code delivery is sent upon delivery of the purchase, taking advantage of the established connection between the customer and the distributor for immediate use.
 
+### Automatic store-value reload
+When the traveller taps on validator equipment with a FARE PRODUCT of AMOUNT OF PRICE UNITS type (on boarding or at checkout on closed networks), the system calculates the trip price and decreases the traveller's amount by the price. With a specific parameter, when the amount falls below a threshold, the system automatically sells a reload for the amount. It is an automatic purchase for the traveller: they will see a sale on their customer account.
+
 
 ## 6. After-Sales
 
