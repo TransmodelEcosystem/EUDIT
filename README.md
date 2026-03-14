@@ -48,7 +48,7 @@ The **[Wiki](../../wiki)** serves as the authoritative source for all foundation
 - **[Architecture](../../wiki/architecture)**
   Project scope definition and boundary conditions. 
 
-- **[Use Cases](/wiki/use-cases)** 
+- **[Use Cases](wiki/use-cases)** 
   Collection of use cases, CoRoM input.
 
 - **[User Actions](../../wiki/user-actions)**
