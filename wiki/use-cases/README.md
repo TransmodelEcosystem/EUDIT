@@ -32,7 +32,7 @@ A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actio
 # EUDIT Use cases
 
 ## to do
-## [BUC1 Catalogue consultation](/business-use-cases/BUC1_Catalogue-consultation.md)
+## [BUC1 Catalogue consultation](wiki/use-cases/business-use-cases/BUC1_Catalogue-consultation.md)
 
 # Added use cases OSDM
 
