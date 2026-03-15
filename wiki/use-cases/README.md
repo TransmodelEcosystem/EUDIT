@@ -34,45 +34,40 @@ A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actio
 ## to do
 ## [BUC1 Catalogue Consultation](business-use-cases/buc1-catalogue-consultation.md)
 
-# Added use cases OSDM
-
-# Search by trip
-
-# Steps 
 
 ## Ticketing Specific Steps
 
 On ticketing system with urban and interurban transport modes (metro, bus, tramway, coach, cable, regional rail), they are specific use cases linked with thoses particularities : complex fare products, yearly pass with payment terms and instalments, transfers with fee or not, cutomer profiles (social rights, reduction cards, ...), group tickets,.. The travel document are also various : contactlexx card, paper ticket, QRcode, mobile application, embedded card, bank card. 
 It is not a full list.
 
-See [ticketing.md](ticketing.md) for the complete list 
+See [ticketing.md](inputs/ticketing.md) for the complete list 
 
 ## OSDM Steps
 
 OSDM (Open Sales and Distribution Model) covers the full retail journey from offer search through booking, fulfillment, after-sales, and master data provision. It extends beyond the CoRoM scope into OSDM-specific areas such as graphical seat reservation, on-hold offers, the exchange flow, travel accounts, on-demand services, complaints, and API-driven webhooks.
 
-See [osdm.md](osdm.md) for the complete list with endpoint references and uniqueness notes.
+See [osdm.md](inputs/osdm.md) for the complete list with endpoint references and uniqueness notes.
 
 ## TOMP-API Steps
 
 TOMP-API (Transport Operator MaaS Platform API) targets shared-mobility and MaaS integration. In addition to standard offer/booking/after-sales flows it uniquely covers physical asset execution (lock/unlock, ETA, driving support), leg lifecycle management, driver's licence validation, deposit handling, and push notifications.
 
-See [tomp-api.md](tomp-api.md) for the complete list with endpoint references and uniqueness notes.
+See [tomp-api.md](inputs/tomp-api.md) for the complete list with endpoint references and uniqueness notes.
 
 ## OMSA Steps
 
 OMSA (Open MaaS Standard API) follows OGC API Processes conventions and covers the full mobility service lifecycle — authentication, discovery, offer search, traveller management, asset assignment, purchase, after-sales, travel documents, and payment. It is the only in-scope standard that specifies the OAuth2 token endpoint explicitly.
 
-See [omsa.md](omsa.md) for the complete list with endpoint references and uniqueness notes.
+See [omsa.md](inputs/omsa.md) for the complete list with endpoint references and uniqueness notes.
 
 ## FerryGateway Steps
 
 FerryGateway is an XML-based (request/response message pairs, not REST) standard for ferry booking. It covers sailing search, vessel timetables, route and port reference data, passenger and vehicle type catalogues, cabin and berth accommodation, ancillary services (meals, on-board), land/transfer connections, cancellation charges, invoicing, promotional codes, and QR-code travel documents.
 
-See [ferrygateway.md](ferrygateway.md) for the complete list with message-pair references and uniqueness notes.
+See [ferrygateway.md](inputs/ferrygateway.md) for the complete list with message-pair references and uniqueness notes.
 
 ## BoB Steps
 
 BoB (Backend of Backend) is an intentionally narrow B2B ticketing interoperability layer. It handles booking calls between a distributor and an operator backend and the exchange of signed Mobile Ticketing Blocks (MTBs) for validation. It is not a full booking API and deliberately omits trip search, offer search, seat reservation, and customer account management.
 
-See [bob.md](bob.md) for the complete list with endpoint references, uniqueness notes, and an explicit out-of-scope section.
+See [bob.md](inputs/bob.md) for the complete list with endpoint references, uniqueness notes, and an explicit out-of-scope section.
