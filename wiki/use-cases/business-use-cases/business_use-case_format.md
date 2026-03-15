@@ -3,7 +3,7 @@
 
 - **Use Case ID & Name:** \<ID\> — \<Use Case Name\>
 - **Goal (Objective):** \<Business value in one sentence\>
-
+- **Scope:** <System / product / domain boundary>
 ---
 
 ## Part 2 : Actors & Context
@@ -41,16 +41,19 @@
 
 ## Part 4 : Main Success Scenario (Happy Path)
 
-- **User actions:** « list »
+### 4.1 User actions: « list » :
 1. \<Actor action\>
 2. \<System response\>
 3. \<Actor action\>
 4. \<System response\>
 5. \<Outcome achieved\>  
    *(Keep steps observable and testable; typically 5–12 steps.)*
+   *user-actions in bold*
 
-- **Sequence diagram:**
-  - <img width="590" height="388" alt="image" src="https://github.com/user-attachments/assets/4d3ff9cc-0e49-4290-b5a9-057a3fed6793" />
+### 4.2 Sequence diagram:
+   *with user-actions*
+   <img width="590" height="388" alt="image" src="https://github.com/user-attachments/assets/4d3ff9cc-0e49-4290-b5a9-057a3fed6793" />
+
 
 ---
 
@@ -84,8 +87,6 @@
 - **BR2:** \<Rule\>
 - **BR3:** \<Rule\>
 
-*(If you have a rules catalogue, add rule IDs and references.)*
-
 ---
 
 ## Part 8 — Data (Inputs & Outputs)
@@ -104,25 +105,36 @@
 
 ## Part 9 — Interfaces / API / user-actions
 
-- **Operations / Endpoints:** \<operation names\>
+### 9.1 Business user-actions and interface mapping
+| User action                           | Business intent                                              | Expected result                                                      |
+| ------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------- |
+| Browse catalogue                      | Open the fare/product catalogue                              | Visible list of products / packages relevant to the customer context |
+
+### 9.2 Interfaces by user-action and standard
+
+#### For each user-action
+#### A. User action: “xxxxxxxxxx”
+
+Business meaning:
+The reseller opens......
+
+
+| Standard / source | API / message / user-action                                           | Type                      | Role in this BUC                                                                                         | Parameters / returned data                                                                                                                                                                               |
+| ----------------- | --------------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ticketing         | `get sale labels`                                                     | Reference data            | Retrieve labels, names and descriptions of FARE PRODUCTs and Sales Offer Packages for catalogue browsing | Returns names, descriptions, labels, comments of FARE PRODUCTs, Sales Offer Packages, payment means, social status and other purchase reference data                                                     |
+
+
+### **9.3 Operations / Endpoints:** 
+Consolidated interface inventory
+
+| Format-origin | API name | User-action | Short description |
+|---|---|---|---|
+| Ticketing | `get sale labels` | **Browse catalogue** | Retrieves labels, names, and descriptions used to expose Fare Product(s) and Sales Offer Package(s) in catalogue consultation. |
+
+### 9.4 Pagination and state management
+**Pagination rules:** \<page size, tokens, ordering\>
   
-- **Other standards mapping :** 
-
-| Format-origin | API name or User action                                                      | Short description                                                                                                                    |
-| --------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Ticketing  (example)            | **Catalogue consultation**                                                  | Retrieve/present Fare Products and Sales Offer Packages, with filtering and ordering.                                             |
-| OSDM   (example)                | **Search within catalogue (user: “Search a product”)**                      | Query the catalogue using keywords/filters (operator, local products, popularity, marketing priorities, etc.).                       |
-| OSDM      (example)             | **Get offer/package details (user: “View product details”)**                | Return the selected package’s full content: usage parameters, commercial conditions, guarantees, optional parts and selection rules. |
-| OSDM                  | **Get indicative price (user: “Check price”)**                              | Provide an indicative price when the package is sufficiently defined and no reservation/availability confirmation is required.       |
-| OSDM  (example)                 | **Start availability / reservation (user: “Check availability / Reserve”)** | Initiate an availability check (quota or seat map) and, where applicable, create a short-term pre-reservation.                       |
-| OSDM (example)                  | **Get final price (user: “Confirm price after availability”)**              | Return the final price for the completely defined travel package, typically after availability/reservation confirmation.             |
-| OSDM  (example)                   | **Update selection / options (user: “Change class / add options”)**         | Recalculate conditions and prices when the user changes defining parameters (class, railcard, extras such as luggage allowance).     |
-| BoB (example)         | **Catalogue consultation (user: “Browse offers”)**                          | Equivalent capability in BoB-style APIs: consult available fare products/packages and their conditions.                              |
-| BoB (example)         | **Availability & pricing (user: “Validate availability and price”)**        | Equivalent capability in BoB-style APIs: check availability (if relevant) and return price/conditions for the chosen package.        |
-
-- **Pagination rules:** \<page size, tokens, ordering\>
-- **Error handling:** \<main codes and meanings\>
-
+**State management:** \<data lifecycle modification during use-case\>
 
 ---
 
