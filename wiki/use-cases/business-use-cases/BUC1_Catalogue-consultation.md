@@ -48,7 +48,7 @@
 
 ## Part 4 : Main Success Scenario (Happy Path)
 
-### 4.1 User actions:** « list » :
+### 4.1 User actions: « list » :
 
 1. The Retailer starts the catalogue consultation on behalf of the Transport Customer, and the Retailer System performs **Browse catalogue** to retrieve an initial set of candidate Fare Product(s) and Sales Offer Package(s).
 2. The Transport Customer reviews the initial results and may perform **Filter / refine catalogue** to narrow the displayed Fare Product(s) and Sales Offer Package(s) according to the consultation context.
@@ -61,7 +61,7 @@
 9. The Transport Customer chooses the preferred solution, and the Retailer System performs **Keep selected option** so that the chosen Fare Product or Sales Offer Package is ready for the next booking or purchase step.
 
 
-### 4.2 Sequence diagram:**
+### 4.2 Sequence diagram:
 
 ```mermaid
 sequenceDiagram
@@ -402,7 +402,7 @@ The chosen result is preserved so the purchase/booking process can continue.
 
 
 
-- **9.3 Operations / Endpoints:** 
+### 9.3 Operations / Endpoints: 
 Consolidated interface inventory
 
 | Format-origin | API name | User-action | Short description |
