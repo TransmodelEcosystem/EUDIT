@@ -1,4 +1,1 @@
-Place for Business Use cases 
-High level use cases
-UML description
-Transmodel vocabulary
+Place for the Business Use cases, our High level use cases written with UML description and Transmodel vocabulary. 
