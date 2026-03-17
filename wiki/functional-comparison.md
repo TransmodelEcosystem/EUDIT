@@ -87,8 +87,7 @@ payment settlement across eight modules.
 * *MP callback* (`TOMP-API-MP v2.0.0`) — TO→MP notifications (`POST /processes/notification/execution`),
   confirmation requests, and payment requests
 
-**Notable gaps:** No standalone timetable endpoint, no dedicated authentication endpoint
-(OAuth assumed external). Disruption/situation feed is absent in the TO→MP direction; the
+**Notable gaps:** No standalone timetable endpoint. Disruption/situation feed is absent in the TO→MP direction; the
 MP callback covers operational notifications only.
 
 ---
@@ -219,7 +218,7 @@ the InterMOD specification has been published.
 | 20 | **Complaints & support** | ✅ `Complaint`, `CustomerComplaint`, `/reimbursements` | ✅ `support-tickets`, `request-support` | ❌ | ❌ | ❌ | ❓ |
 | 21 | **Travel guarantees & redress** | ❌ | ✅ `guarantee`, `redressOption`, `claim/confirm-redress` | ⚠️ `guarantees` field (not Transmodel-aligned) | ❌ | ❌ | ❓ |
 | 22 | **Promotions & discount codes** | ✅ `promotionCodes`, `corporateCodes`, `/reduction-cards` | ⚠️ `SALE DISCOUNT RIGHT` via fare element | ❌ | ⚠️ discount codes in `POST /product` filter | ✅ `GetOfferCodes` | ❓ |
-| 23 | **Authentication / security** | ⚠️ external OAuth assumed | ❌ | ✅ `POST /oauth/token` (3 grant types) | ✅ `GET /auth/{entityId}` explicit JWT/TLS auth endpoint | ❌ | ❓ |
+| 23 | **Authentication / security** | ⚠️ external OAuth assumed | ✅ `POST /oauth/token` + `POST /connect/token` (3 grant types + mTLS + OIDC) | ✅ `POST /oauth/token` (3 grant types + mTLS) | ✅ `GET /auth/{entityId}` explicit JWT/TLS auth endpoint | ❌ | ❓ |
 | 24 | **Disruption & real-time info** | ⚠️ `tripStatus`, `situationFullRefs` | ⚠️ `POST /processes/notification/execution` on MP callback (TOMP-API-MP) | ❌ | ❌ | ❌ | ❓ |
 | 25 | **API discovery / capability** | ❌ | ✅ `/api`, `/conformance`, `/processes` | ✅ `/api`, `/conformance`, `/processes` | ⚠️ `GET /participantMetadata` participant registry | ❌ | ❓ |
 
@@ -281,7 +280,7 @@ or architectural choices:
 | # | Functional area | Best available | Gap |
 |---|----------------|---------------|-----|
 | 24 | Disruption & real-time info | OSDM (`tripStatus`, `situationFullRefs`); TOMP-API-MP (`POST /processes/notification/execution`) | No standard provides a proper disruption or situation feed; TOMP-API-MP covers operational notifications only |
-| 23 | Authentication / security | OMSA (`POST /oauth/token`); BoB (`GET /auth/{entityId}` JWT/TLS) | OSDM and TOMP-API assume external OAuth; FerryGateway uses TPE agent context — no unified auth model |
+| 23 | Authentication / security | OMSA and TOMP-API (`POST /oauth/token` — near-identical implementations; TOMP-API adds `POST /connect/token` for OIDC); BoB (`GET /auth/{entityId}` JWT/TLS) | OSDM assumes external OAuth; FerryGateway uses TPE agent context — no unified cross-standard auth model |
 | 2 | Timetable / schedule | FerryGateway (full), OSDM (contextual) | TOMP-API, OMSA, and BoB have no timetable concept |
 | 18 | Customer account management | TOMP-API (full CRUD), BoB (Traveller API) | OMSA and FerryGateway treat the customer minimally or not at all |
 

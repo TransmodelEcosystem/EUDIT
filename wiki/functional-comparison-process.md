@@ -208,8 +208,7 @@ Going through the 25 areas:
     `fareStructureElement.priceCondition=DISCOUNT` but there is no dedicated discount
     code endpoint or corporate code concept.
 
-23. **Authentication** → ❌. No `/oauth/token` endpoint in the spec. Authentication
-    is assumed to be handled externally.
+23. **Authentication** → ✅. `POST /oauth/token` with `client_credentials`, `password`, and `refresh_token` grant types plus mTLS variant (identity from certificate O or CN; body ignored). Additionally `POST /connect/token` for OpenID Connect token issuance (dataspace JWT). Grant-type coverage is identical to OMSA; extends it with OIDC support.
 
 24. **Disruption & real-time** → ⚠️. `TOMP-API-MP v2.0.0` (the TO→MP callback API)
     provides `POST /processes/notification/execution` for operational notifications from the
@@ -281,8 +280,7 @@ Going through the 25 areas:
 
 22. **Promotions & discounts** → ❌.
 
-23. **Authentication** → ✅. `POST /oauth/token` with three grant types (client\_credentials,
-    password, refresh\_token). The only standard with an explicit auth endpoint in-spec.
+23. **Authentication** → ✅. `POST /oauth/token` with three grant types (`client_credentials`, `password`, `refresh_token`) and mTLS variant (identity from certificate O or CN). One of two in-scope standards with an explicit in-spec auth endpoint — TOMP-API uses an identical `POST /oauth/token` schema plus `POST /connect/token` for OIDC.
 
 24. **Disruption & real-time** → ❌.
 

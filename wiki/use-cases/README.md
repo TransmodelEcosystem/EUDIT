@@ -56,7 +56,7 @@ See [tomp-api.md](inputs/tomp-api.md) for the complete list with endpoint refere
 
 ## OMSA Steps
 
-OMSA (Open MaaS Standard API) follows OGC API Processes conventions and covers the full mobility service lifecycle — authentication, discovery, offer search, traveller management, asset assignment, purchase, after-sales, travel documents, and payment. It is the only in-scope standard that specifies the OAuth2 token endpoint explicitly.
+OMSA (Open MaaS Standard API) follows OGC API Processes conventions and covers the full mobility service lifecycle — authentication, discovery, offer search, traveller management, asset assignment, purchase, after-sales, travel documents, and payment. Together with TOMP-API, it is one of two in-scope standards that specify the OAuth 2.0 token endpoint (`POST /oauth/token`) explicitly in-spec; TOMP-API additionally provides `POST /connect/token` for OpenID Connect.
 
 See [omsa.md](inputs/omsa.md) for the complete list with endpoint references and uniqueness notes.
 

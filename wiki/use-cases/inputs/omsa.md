@@ -12,8 +12,10 @@ OMSA covers multimodal door-to-door trip booking: offer search, offer selection,
 
 A client application obtains a Bearer access token from the OMSA authorisation server before calling any authenticated endpoint. Supports `client_credentials`, `password`, and `refresh_token` grant types; the mTLS variant derives identity directly from the client certificate (O or CN field), ignoring request body credentials.
 
+**Comparison with TOMP-API:** The OMSA and TOMP-API `POST /oauth/token` implementations are near-identical — same three grant types, same mTLS variant (certificate O or CN field; body parameters ignored), same `application/x-www-form-urlencoded` encoding, and the spec description text is essentially word-for-word the same. TOMP-API additionally exposes `POST /connect/token` (OpenID Connect / dataspace JWT) which OMSA does not have. In practice, an implementation of one can be adapted to the other with minimal effort on the `/oauth/token` path.
+
 **Endpoint(s):** `POST /oauth/token`
-**Unique to OMSA:** No — TOMP-API also specifies OAuth 2.0 token endpoints as part of its API contract (`POST /oauth/token` and `POST /connect/token`). OSDM assumes an external IdP; BoB references an external OAuth provider without specifying the token endpoint itself.
+**Unique to OMSA:** No — TOMP-API also specifies `POST /oauth/token` with the same grant types and mTLS variant, plus `POST /connect/token` for OIDC. OSDM assumes an external IdP; BoB uses TLS client certificate + JWT (`GET /auth/{entityId}`) rather than OAuth.
 
 ---
 
