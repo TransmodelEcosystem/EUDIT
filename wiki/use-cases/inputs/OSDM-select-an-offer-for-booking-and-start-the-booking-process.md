@@ -1,0 +1,55 @@
+## 6.5.2.1 Select an offer for booking and start the booking process
+
+The use case covers the search for offers using a trip specifcation.  
+
+### Summary
+
+Request the API provider to turn an offer into a booking in pre-book state.
+
+### Steps
+- The customer has selected an offer for booking and starts the booking process.
+- The customer might in the same step also select optional offer parts
+- The consumer requests the offer to be pre-booked.
+- The provider returns a booking in state pre-booked
+
+### Description
+
+The customer has selected an offer for booking and starts the booking process. He might in the same step also select optional offer parts.
+
+The consumer requests the offer to be pre-booked via the API.
+
+The provider returns a booking in state pre-booked.
+
+The provided booking includes the booking parts with a validated availability. The prices of the booking parts might have changed compared to the offer. This must be indicated. The offer might not be available any more at all, this results in an error reply.
+
+The booking includes a time-limit until then it neds to be confirmed by the customer.
+
+If not already indicated in the offer, the booking includes the indication of required personal data.
+
+The booking includes additioanl fees based on the selected optional offer parts.
+
+THe booking indicated the applied reductions based on reduction cards or the passenger age.
+
+The booking indicates applied promotion codes and corporate tariffs.
+
+
+### Use case add-ons
+
+in case of return offers the offers of inbound and outbound trip need to be linked.
+
+
+
+### Non-functional requirements
+
+Avoid the exchange of catalogs to decople business logic between consumer and provider.
+
+Keep business logic flexible by limiting the use case on search parameters.
+
+Reduce costs significantly by limiting the exchange to search parameters.
+
+
+### Known implementations
+
+all OSDM implementations:
+
+https://osdm.io/tools/implementations/
