@@ -1,0 +1,66 @@
+## 6.5.2.1 Search using a trip specification
+
+The use case covers the search for offers using a trip specifcation.  
+
+### Summary
+
+Request the API provider for offers based on a trip specification.
+
+### Steps
+- The customer has made a trip search using the search engin of the API consumer.
+- The consumer extracts the trip specification and requests offers for the trip specification from the provider
+  - The consumer might request offers for a part of the trip only in case he splits the journey between different providers.
+  - The available fulfillment options must be provided by the consumer
+  - The consumer must provide the entire trip of indications on international trips to enable correct VAT calculations by the provider
+  - The consumer must provide the reductions cards the passengers would like to use
+  - The consumer must provide the date ofbirth of passengers. This might be replaced by a default date to get generic offers and be refined lateron to replace the offers by the correct ones for the passengers.  
+- display the offers for selection.
+
+### Description
+
+Request the API provider for offers based on a trip specification.
+
+The customer provides the passengers for the travel.
+
+The API consumer requests the offers and 
+
+The provider returns the list of offers for the search parameters. 
+
+Pagination is required.
+
+The offer contans all relevant information the customer needs to make his selection. This includes especially all prices and a description o the after sales conditions.
+
+The offer contains information on the selectable optional offer parts and the rules for selection.
+
+The offer contains information on possible through tickets with offers of other providers if applicable.
+
+The subsequent steps in the booking process are not specific to non-trip offers. 
+
+
+
+### Use case add-ons
+
+Allow to search promotional offers.
+
+Allow to search for bilateral coorporate offers.
+
+Fulfillment on chip cards might required the validation of the existing chip card content by the provider.
+
+Allow to search for return offers eigther in a one step request of via subsequent linked requests.
+
+
+
+### Non-functional requirements
+
+Avoid the exchange of catalogs to decople business logic between consumer and provider.
+
+Keep business logic flexible by limiting the use case on search parameters.
+
+Reduce costs significantly by limiting the exchange to search parameters.
+
+
+### Known implementations
+
+all OSDM implementations:
+
+https://osdm.io/tools/implementations/
