@@ -1,0 +1,628 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Support
+  description: >
+    RESTful resources for customer support, notifications, and webhooks.
+
+    Resources:
+    - `POST   /support-tickets` — open a support ticket
+    - `GET    /support-tickets` — list support tickets
+    - `GET    /support-tickets/{supportTicketId}` — get a support ticket
+    - `PATCH  /support-tickets/{supportTicketId}` — update a support ticket
+    - `GET    /notifications` — list notifications for the authenticated traveller
+    - `PATCH  /notifications/{notificationId}` — mark a notification read/unread
+    - `DELETE /notifications/{notificationId}` — dismiss a notification
+    - `POST   /webhooks` — register a webhook
+    - `GET    /webhooks` — list registered webhooks
+    - `GET    /webhooks/{webhookId}` — get a webhook
+    - `PATCH  /webhooks/{webhookId}` — update a webhook
+    - `DELETE /webhooks/{webhookId}` — unregister a webhook
+
+    Support ticket types: DAMAGE_REPORT, INCIDENT, QUESTION, EVIDENCE,
+    SERVICE_DISRUPTION, OTHER.
+
+    Transmodel references: CUSTOMER SERVICE, COMPLAINT, NOTICE.
+    TOMP-API equivalents: POST /processes/request-support/execution,
+    GET /collections/support-tickets/items.
+  version: 0.1.0
+  contact:
+    name: EUDIT Working Group (CEN TC278)
+  license:
+    name: European Union Public Licence (EUPL) 1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: SupportTickets
+    description: Customer support ticket lifecycle
+  - name: Notifications
+    description: In-app and push notifications for travellers
+  - name: Webhooks
+    description: Webhook registration and management
+
+paths:
+
+  # ─────────────────────────────────────────────────────────────────
+  # Support Tickets
+  # ─────────────────────────────────────────────────────────────────
+
+  /support-tickets:
+
+    post:
+      operationId: createSupportTicket
+      summary: Open a support ticket
+      description: >
+        Opens a new support ticket. The `supportType` determines the category:
+
+        - `DAMAGE_REPORT` — vehicle or asset damage
+        - `INCIDENT` / `ACCIDENT` — safety incident (triggers escalation)
+        - `QUESTION` — informational query
+        - `EVIDENCE` — attach additional evidence to a prior ticket
+        - `SERVICE_DISRUPTION` — report a service disruption
+        - `OTHER` — general issue
+
+        Returns `201 Created` with a `Location` header pointing to the new
+        ticket resource.
+
+        Transmodel: COMPLAINT submission.
+        TOMP-API equivalent: POST /processes/request-support/execution.
+      tags: [SupportTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createSupportTicketRequest'
+            example:
+              supportType: DAMAGE_REPORT
+              priority: ERROR_CAN_CONTINUE
+              context:
+                packageId: "550e8400-e29b-41d4-a716-446655440000"
+              comment: "The bicycle has a flat tyre."
+      responses:
+        "201":
+          description: Support ticket created.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportTicket'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    get:
+      operationId: listSupportTickets
+      summary: List support tickets
+      description: >
+        Returns support tickets associated with the authenticated customer,
+        optionally filtered by PACKAGE, support type, and status.
+        Results are sorted newest-first.
+
+        Transmodel: COMPLAINT list for TRANSPORT CUSTOMER.
+      tags: [SupportTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/filterPackageId'
+        - name: supportType
+          in: query
+          required: false
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportType'
+          description: Filter by support type.
+        - $ref: './components.yaml#/components/parameters/filterStatus'
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+      responses:
+        "200":
+          description: Paginated list of support tickets.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportTicket'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /support-tickets/{supportTicketId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/supportTicketId'
+
+    get:
+      operationId: getSupportTicket
+      summary: Get a support ticket
+      description: >
+        Returns the full detail of a single support ticket, including any
+        attached evidence items and the current status.
+
+        Transmodel: COMPLAINT detail.
+      tags: [SupportTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        "200":
+          description: Support ticket returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportTicket'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    patch:
+      operationId: updateSupportTicket
+      summary: Update a support ticket
+      description: >
+        Partially updates a support ticket (JSON Merge Patch). Allowed fields:
+        `status`, `comment`, `evidence`. Use `If-Match` for optimistic
+        concurrency.
+
+        Transmodel: COMPLAINT update.
+      tags: [SupportTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: './components.yaml#/components/schemas/supportTicketPatch'
+      responses:
+        "200":
+          description: Support ticket updated.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportTicket'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Notifications
+  # ─────────────────────────────────────────────────────────────────
+
+  /notifications:
+
+    get:
+      operationId: listNotifications
+      summary: List notifications
+      description: >
+        Returns notifications and warnings delivered to the authenticated
+        traveller, sorted newest-first. Includes booking confirmations,
+        leg state updates, service disruption alerts, and operator warnings.
+
+        Transmodel: NOTICE list for TRANSPORT CUSTOMER.
+        OMSA equivalent: GET /collections/notifications/items.
+      tags: [Notifications]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/filterPackageId'
+        - $ref: './components.yaml#/components/parameters/filterRead'
+        - name: notificationType
+          in: query
+          required: false
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/notificationType'
+          description: Filter by notification type.
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+      responses:
+        "200":
+          description: Paginated list of notifications.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/notification'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /notifications/{notificationId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/notificationId'
+
+    patch:
+      operationId: updateNotification
+      summary: Update a notification (mark read/unread)
+      description: >
+        Partially updates a notification (JSON Merge Patch). The only
+        writable field is `read` (boolean). Use this to mark a notification
+        as read or unread.
+
+        Transmodel: NOTICE acknowledgement.
+      tags: [Notifications]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: './components.yaml#/components/schemas/notificationPatch'
+            example:
+              read: true
+      responses:
+        "200":
+          description: Notification updated.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/notification'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: deleteNotification
+      summary: Dismiss a notification
+      description: >
+        Dismisses (permanently deletes) a notification from the traveller's
+        inbox. Returns `204 No Content`.
+      tags: [Notifications]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Webhooks
+  # ─────────────────────────────────────────────────────────────────
+
+  /webhooks:
+
+    post:
+      operationId: registerWebhook
+      summary: Register a webhook
+      description: >
+        Registers a new webhook endpoint. The server will POST events to the
+        `callbackUrl` when subscribed events occur.
+
+        Supported event types: `PACKAGE_CONFIRMED`, `PACKAGE_CANCELLED`,
+        `LEG_STATE_CHANGED`, `PAYMENT_RECEIVED`, `TRAVEL_DOCUMENT_ISSUED`,
+        `NOTIFICATION_SENT`, `SUPPORT_TICKET_UPDATED`.
+
+        Returns `201 Created` with a `Location` header and the registered
+        webhook resource (including the server-assigned secret for HMAC
+        signature verification).
+      tags: [Webhooks]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './components.yaml#/components/schemas/webhookRegistration'
+            example:
+              callbackUrl: "https://client.example.com/eudit-webhooks"
+              eventTypes: ["PACKAGE_CONFIRMED", "TRAVEL_DOCUMENT_ISSUED"]
+              description: "Production notification handler"
+      responses:
+        "201":
+          description: Webhook registered.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/webhook'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    get:
+      operationId: listWebhooks
+      summary: List registered webhooks
+      description: >
+        Returns all webhooks registered by the authenticated client.
+      tags: [Webhooks]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Paginated list of webhooks.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/webhook'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /webhooks/{webhookId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/webhookId'
+
+    get:
+      operationId: getWebhook
+      summary: Get a webhook
+      description: Returns a single registered webhook by ID.
+      tags: [Webhooks]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        "200":
+          description: Webhook returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/webhook'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    patch:
+      operationId: updateWebhook
+      summary: Update a webhook
+      description: >
+        Partially updates a webhook registration (JSON Merge Patch). Updatable
+        fields: `callbackUrl`, `eventTypes`, `active`, `description`. Use
+        `If-Match` for optimistic concurrency.
+      tags: [Webhooks]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: './components.yaml#/components/schemas/webhookPatch'
+            example:
+              active: false
+      responses:
+        "200":
+          description: Webhook updated.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/webhook'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: deleteWebhook
+      summary: Unregister a webhook
+      description: >
+        Permanently unregisters the webhook. No further events will be
+        delivered to the callback URL. Returns `204 No Content`.
+      tags: [Webhooks]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+
+  schemas:
+
+    createSupportTicketRequest:
+      type: object
+      description: >
+        Request body for opening a new support ticket.
+        Transmodel: COMPLAINT submission.
+        TOMP-API equivalent: supportTicket (subset used as request input).
+      required: [supportType, priority]
+      properties:
+        supportType:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportType'
+        priority:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportPriority'
+        context:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportContext'
+        location:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/geoJsonPoint'
+          description: Location of the incident or issue.
+        timestamp:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+          description: Time of the incident. If omitted the server uses the current time.
+        comment:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/longString'
+          description: Free-text description of the issue from the reporter.
+        contactInformation:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: >
+            End-user contact information (phone or email) to be used by the
+            support agent. Optional if already stored in the user profile.
+        evidence:
+          type: array
+          description: Supporting evidence items (photos, videos, documents).
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/evidenceItem'
+
+    supportTicketPatch:
+      $ref: './components.yaml#/components/schemas/supportTicketPatch'
+
+    notificationPatch:
+      $ref: './components.yaml#/components/schemas/notificationPatch'
+
+    webhookRegistration:
+      $ref: './components.yaml#/components/schemas/webhookRegistration'
+
+    webhook:
+      $ref: './components.yaml#/components/schemas/webhook'
+
+    webhookPatch:
+      $ref: './components.yaml#/components/schemas/webhookPatch'
+
+    pageInfo:
+      $ref: './components.yaml#/components/schemas/pageInfo'

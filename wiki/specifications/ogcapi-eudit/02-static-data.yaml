@@ -1,0 +1,896 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Static Data / MMTIS
+  description: >
+    Read-only collection endpoints for static and semi-static reference data.
+    These collections correspond to the MMTIS (Multimodal Travel Information
+    Services) data sets required by EU Delegated Regulation 2017/1926.
+
+    All endpoints are `GET /collections/{id}/items` following OGC API –
+    Features / Common Part 2 conventions. Authentication is optional;
+    servers may expose these collections as open data.
+
+    Transmodel concepts covered: USER PROFILE, TARIFF ZONE, ENTITLEMENT
+    PRODUCT, TYPE OF TRAVEL DOCUMENT, PASSENGER CATEGORY, LINE,
+    SCHEDULED STOP POINT, SERVICE JOURNEY (timetable), COACH LAYOUT.
+  version: 0.1.0
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Static Data
+    description: Reference data collections (MMTIS / open data)
+
+paths:
+
+  /collections/entitlements/items:
+    get:
+      operationId: getEntitlements
+      summary: List entitlements
+      description: >
+        Returns the catalogue of ENTITLEMENT PRODUCTs (concessions, passes,
+        discount schemes) available in the system.
+        Transmodel: ENTITLEMENT PRODUCT.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by issuing operator.
+      responses:
+        "200":
+          description: Entitlements returned.
+          headers:
+            Content-Language:
+              $ref: './components.yaml#/components/headers/Content-Language'
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/entitlement'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/card-types/items:
+    get:
+      operationId: getCardTypes
+      summary: List card types
+      description: >
+        Returns definitions of all reduction and loyalty card types
+        accepted for fare discounts.
+        Transmodel: TARIFF DOCUMENT TYPE.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        "200":
+          description: Card types returned.
+          headers:
+            Content-Language:
+              $ref: './components.yaml#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/cardType'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/user-profiles/items:
+    get:
+      operationId: getUserProfiles
+      summary: List user profiles
+      description: >
+        Returns the catalogue of USER PROFILEs (passenger categories) used
+        for fare eligibility: adult, child, senior, student, disabled, etc.
+        Transmodel: USER PROFILE.
+        OSDM equivalent: passenger-categories.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        "200":
+          description: User profiles returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/userProfile'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/fares/items:
+    get:
+      operationId: getFares
+      summary: List fare products
+      description: >
+        Returns FARE PRODUCTs available for pre-trip browsing.
+        This is a static/semi-static view; live pricing requires
+        `POST /processes/search-offers/execute`.
+        Transmodel: FARE PRODUCT.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: mode
+          in: query
+          required: false
+          schema:
+            $ref: './components.yaml#/components/schemas/mode'
+          description: Filter by transport mode.
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Fare products returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/fareProduct'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/licence-types/items:
+    get:
+      operationId: getLicenceTypes
+      summary: List licence types
+      description: >
+        Returns driving licence and permit types recognised by the system
+        for shared-mobility eligibility checks.
+        Transmodel: DRIVING LICENCE.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        "200":
+          description: Licence types returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/licenseType'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/passenger-categories/items:
+    get:
+      operationId: getPassengerCategories
+      summary: List passenger categories
+      description: >
+        Returns OSDM-style passenger categories used for booking passengers
+        on rail and ferry services. Equivalent to `GET /passenger-categories`
+        in OSDM 3.7.1.
+        Transmodel: USER PROFILE.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Passenger categories returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/passengerCategory'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/reduction-cards/items:
+    get:
+      operationId: getReductionCards
+      summary: List reduction card schemes
+      description: >
+        Returns the reduction card schemes accepted across operators
+        (e.g. national rail cards, city subscription cards).
+        Transmodel: TARIFF DOCUMENT TYPE.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        "200":
+          description: Reduction card schemes returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/cardType'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/product-tags/items:
+    get:
+      operationId: getProductTags
+      summary: List product tags
+      description: >
+        Returns the taxonomy of product tags used to classify FARE PRODUCTs
+        and SUPPLEMENT PRODUCTs (e.g. "refundable", "flexible", "eco",
+        "business", "group").
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        "200":
+          description: Product tags returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/productTag'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/zones/items:
+    get:
+      operationId: getZones
+      summary: List tariff zones
+      description: >
+        Returns TARIFF ZONEs as GeoJSON features (polygons). Used for
+        zone-based fare calculation.
+        Transmodel: TARIFF ZONE.
+        GTFS equivalent: fare_zones.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - $ref: './components.yaml#/components/parameters/bbox'
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Tariff zones returned as GeoJSON.
+          content:
+            application/geo+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/geoJsonFeatureCollection'
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/zone'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/routes/items:
+    get:
+      operationId: getRoutes
+      summary: List routes / lines
+      description: >
+        Returns transport LINEs/routes for network browsing.
+        Transmodel: LINE.
+        GTFS equivalent: routes.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - $ref: './components.yaml#/components/parameters/bbox'
+        - name: mode
+          in: query
+          required: false
+          schema:
+            $ref: './components.yaml#/components/schemas/mode'
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Routes returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/route'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/timetables/items:
+    get:
+      operationId: getTimetables
+      summary: List timetabled journeys
+      description: >
+        Returns SERVICE JOURNEYs (scheduled departures) for a given
+        origin-destination pair and date range.
+        Transmodel: SERVICE JOURNEY.
+        GTFS equivalent: trips + stop_times.
+        OSDM equivalent: trips.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: origin
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Origin stop/place identifier.
+        - name: destination
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Destination stop/place identifier.
+        - name: date
+          in: query
+          required: false
+          schema:
+            $ref: './components.yaml#/components/schemas/date'
+          description: Operating date (ISO 8601).
+        - name: mode
+          in: query
+          required: false
+          schema:
+            $ref: './components.yaml#/components/schemas/mode'
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Timetabled journeys returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/timetabledJourney'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/coach-layouts/items:
+    get:
+      operationId: getCoachLayouts
+      summary: List coach/vessel layouts
+      description: >
+        Returns the seat map / coach layout definitions for rail vehicles
+        and ferry vessels, used for graphical seat selection.
+        Transmodel: VEHICLE TYPE.
+        OSDM equivalent: coach-layouts.
+      tags: [Static Data]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: vehicleType
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by vehicle type identifier.
+        - name: operatorId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Coach layouts returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/coachLayout'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/datasources/items:
+    get:
+      operationId: getDatasources
+      summary: List data sources
+      description: >
+        Returns the list of data sources (operators, network managers,
+        data publishers) contributing data to this API deployment.
+        Required by EU Delegated Regulation 2017/1926 Art. 5.
+      tags: [Static Data]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        "200":
+          description: Data sources returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/dataSource'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+    OpenData:
+      $ref: './components.yaml#/components/securitySchemes/OpenData'
+
+  schemas:
+
+    fareProduct:
+      type: object
+      description: >
+        A FARE PRODUCT available for browsing. Includes name, description,
+        validity conditions, and applicable modes/operators.
+      x-tm: FARE PRODUCT
+      x-semantics:
+        Transmodel: FARE PRODUCT
+        OSDM: Product
+        ERA: fareProduct
+        OMSA: fareProduct
+      required: [id, name]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        name:
+          $ref: './components.yaml#/components/schemas/normalString'
+        description:
+          $ref: './components.yaml#/components/schemas/longString'
+        type:
+          type: string
+          enum:
+            - SINGLE_TRIP
+            - RETURN_TRIP
+            - DAY_PASS
+            - PERIOD_PASS
+            - POINT_TO_POINT
+            - ZONE_BASED
+            - FLAT_FARE
+            - PAY_AS_YOU_GO
+            - SUBSCRIPTION
+            - GROUP
+            - SUPPLEMENT
+        modes:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/mode'
+        operators:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/organisationReference'
+        classes:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/classOfUse'
+        conditions:
+          $ref: './components.yaml#/components/schemas/fareConditions'
+        tags:
+          type: array
+          items:
+            type: string
+
+    passengerCategory:
+      type: object
+      description: >
+        OSDM-style passenger category definition (adult, child, infant, etc.).
+        Transmodel: USER PROFILE.
+      x-tm: USER PROFILE
+      x-semantics:
+        Transmodel: USER PROFILE
+        OSDM: PassengerCategory
+      required: [id, name]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        name:
+          $ref: './components.yaml#/components/schemas/normalString'
+        description:
+          $ref: './components.yaml#/components/schemas/longString'
+        minAge:
+          type: integer
+        maxAge:
+          type: integer
+        requiresDocumentType:
+          type: string
+          description: >
+            Document type required to prove eligibility (e.g. PASSPORT for
+            infant fare, STUDENT_CARD for student discount).
+        operators:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/organisationReference'
+
+    productTag:
+      type: object
+      description: A tag used to classify fare and supplement products.
+      required: [id, label]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        label:
+          $ref: './components.yaml#/components/schemas/normalString'
+        description:
+          $ref: './components.yaml#/components/schemas/normalString'
+
+    route:
+      type: object
+      description: >
+        A transport LINE / route — the commercial service identifier.
+        Transmodel: LINE.
+        GTFS: route.
+      x-tm: LINE
+      x-semantics:
+        Transmodel: LINE
+        GTFS: route_id
+      required: [id, name, mode]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        name:
+          $ref: './components.yaml#/components/schemas/normalString'
+        shortName:
+          $ref: './components.yaml#/components/schemas/shortString'
+        mode:
+          $ref: './components.yaml#/components/schemas/mode'
+        operator:
+          $ref: './components.yaml#/components/schemas/organisationReference'
+        origin:
+          $ref: './components.yaml#/components/schemas/placeReference'
+        destination:
+          $ref: './components.yaml#/components/schemas/placeReference'
+        geometry:
+          $ref: './components.yaml#/components/schemas/geoJsonLineString'
+
+    timetabledJourney:
+      type: object
+      description: >
+        A single timetabled vehicle journey on a given operating date.
+        Transmodel: SERVICE JOURNEY.
+      x-tm: SERVICE JOURNEY
+      x-semantics:
+        Transmodel: SERVICE JOURNEY
+        GTFS: trip_id
+        OSDM: Trip
+      required: [id, departureTime, arrivalTime, origin, destination, mode]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        line:
+          $ref: './components.yaml#/components/schemas/lineReference'
+        operator:
+          $ref: './components.yaml#/components/schemas/organisationReference'
+        origin:
+          $ref: './components.yaml#/components/schemas/placeReference'
+        destination:
+          $ref: './components.yaml#/components/schemas/placeReference'
+        departureTime:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        arrivalTime:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        mode:
+          $ref: './components.yaml#/components/schemas/mode'
+        intermediateStops:
+          type: array
+          items:
+            type: object
+            properties:
+              place:
+                $ref: './components.yaml#/components/schemas/placeReference'
+              arrivalTime:
+                $ref: './components.yaml#/components/schemas/dateTime'
+              departureTime:
+                $ref: './components.yaml#/components/schemas/dateTime'
+        trainNumber:
+          $ref: './components.yaml#/components/schemas/shortString'
+        trainCategory:
+          $ref: './components.yaml#/components/schemas/shortString'
+          description: >
+            Train category code (e.g. IC, TGV, RE, ICE).
+
+    coachLayout:
+      type: object
+      description: >
+        Coach or vessel deck layout for graphical seat selection.
+        Transmodel: VEHICLE TYPE.
+        OSDM equivalent: coach-layout.
+      x-tm: VEHICLE TYPE
+      required: [id, vehicleType]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        vehicleType:
+          $ref: './components.yaml#/components/schemas/normalString'
+        operator:
+          $ref: './components.yaml#/components/schemas/organisationReference'
+        decks:
+          type: array
+          items:
+            $ref: '#/components/schemas/deckLayout'
+
+    deckLayout:
+      type: object
+      description: Layout of a single deck within a coach or vessel.
+      required: [deckId]
+      properties:
+        deckId:
+          $ref: './components.yaml#/components/schemas/shortString'
+        deckName:
+          $ref: './components.yaml#/components/schemas/normalString'
+        rows:
+          type: integer
+        columns:
+          type: integer
+        seats:
+          type: array
+          items:
+            $ref: '#/components/schemas/seatDefinition'
+
+    seatDefinition:
+      type: object
+      description: Definition of an individual seat in a coach/deck layout.
+      required: [seatNumber, row, column]
+      properties:
+        seatNumber:
+          $ref: './components.yaml#/components/schemas/shortString'
+        row:
+          type: integer
+        column:
+          type: integer
+        type:
+          type: string
+          enum: [WINDOW, AISLE, MIDDLE, TABLE, WHEELCHAIR_SPACE, BICYCLE_SPACE, PET_ALLOWED, OTHER]
+        orientation:
+          type: string
+          enum: [FORWARD, BACKWARD, SIDEWAYS]
+        available:
+          type: boolean
+          default: true
+
+    dataSource:
+      type: object
+      description: >
+        A data source contributing data to this API deployment.
+        Required by EU Delegated Regulation 2017/1926.
+      required: [id, name, type]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        name:
+          $ref: './components.yaml#/components/schemas/normalString'
+        type:
+          type: string
+          enum:
+            - OPERATOR
+            - NETWORK_MANAGER
+            - NATIONAL_ACCESS_POINT
+            - AGGREGATOR
+            - OTHER
+        country:
+          $ref: './components.yaml#/components/schemas/country'
+        contactUrl:
+          $ref: './components.yaml#/components/schemas/url'
+        licenceUrl:
+          $ref: './components.yaml#/components/schemas/url'
+        modes:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/mode'
+        lastUpdated:
+          $ref: './components.yaml#/components/schemas/dateTime'

@@ -17,7 +17,7 @@ The RETAILER requests SALES OFFER PACKAGEs for products that are not bound to a 
   - `POST /product-search`     optional preliminary search for products
   - `GET /product-tags`        get catalog selection options
     
-**Unique to OSDM:** Yes — OSDM provides a structured `nonTripSearchCriteria` block in the shared `/offers` endpoint; no equivalent catalogue-driven offer search exists in TOMP-API, BoB, or FerryGateway.
+**Unique to OSDM:** Partially — OMSA and TOMP-API support purchasing assets and on-demand services without a trip specification, which serves as a non-trip-based alternative. However, OSDM's structured `nonTripSearchCriteria` block supporting rail passes, zone passes, reduction cards, and merchandise by region and PRODUCT TAG is specific to the rail catalogue domain and has no direct equivalent in TOMP-API, BoB, or FerryGateway.
 
 ---
 
@@ -30,14 +30,14 @@ Trip-based offers are SALES OFFER PACKAGEs priced for one or more specific sched
 The RETAILER submits a full trip structure (sequence of legs with service numbers, departure times, and origin/destination) to request fares from a fare provider that works on explicit itinerary input rather than an OD search. The `tripkey` echoed in the response correlates request and result.
 
 **Endpoint(s):** `POST /offers`
-**Unique to OSDM:** No — other standards also support trip-specification-based fare requests, though OSDM's `tripSpecification` pattern is rail-specific.
+**Unique to OSDM:** No — OMSA supports equivalent trip-specification-based offer requests via `searchOfferInput.specification` (TRIP PATTERN / TRAVEL SPECIFICATION), and TOMP-API has a comparable planning endpoint accepting structured leg specifications. OSDM's `tripSpecification` pattern is rail-specific (service numbers, UIC stop codes, departure times). Note that OJP (Open Journey Planning), which is compatible with OSDM trip IDs, also uses trip specifications as a shared data model.
 
 ### search trip-based offers by trip id
 
 The RETAILER reuses trip IDs obtained from an earlier `/trips-collection` search to request bookable offers for known trips, avoiding a repeated journey-planner call.
 
 **Endpoint(s):** `POST /offers`
-**Unique to OSDM:** No — concept of offer search by pre-fetched trip ID is present in comparable standards.
+**Unique to OSDM:** Yes — offer search using pre-fetched trip IDs from a prior `/trips-collection` call has no equivalent in OMSA or TOMP-API, which do not expose a trip-ID-based offer search independent of a fresh origin-destination query.
 
 ### search trip-based offers by OD
 
@@ -85,14 +85,14 @@ The RETAILER updates the set of optional OFFER PARTs (ancillaries, optional rese
 Before committing to a specific seat, the RETAILER queries availability information: either a list of available places with properties (window, aisle, table, quiet zone) or a graphical coach-layout map suitable for visual seat selection. The request context can target an OFFER or a BOOKING.
 
 **Endpoint(s):** `GET /availabilities/preferences`, `GET /availabilities/place-map`, `GET /availabilities/vehicle-place-map`
-**Unique to OSDM:** Yes — graphical PLACE availability with coach-layout rendering and seat-selection fees is rail-specific and has no equivalent in TOMP-API, BoB, or FerryGateway.
+**Unique to OSDM:** Partially — OMSA and TOMP-API expose `GET /collections/assets/items` returning GeoJSON feature collections of available physical assets (vehicles, bays, berths), which serves a comparable purpose of querying available places before assignment. What is OSDM-specific is the graphical coach-layout rendering (`GET /availabilities/place-map`, `GET /availabilities/vehicle-place-map`) with named seat IDs, seat properties (window, aisle, table, quiet zone), and seat-selection fees — a model specific to rail carriage seating.
 
 ### select places for reservation
 
 The RETAILER submits specific place selections (seat numbers from a graphical map) for one or more reservation OFFER PARTs on the pre-booked booking. The reservation is updated with the `reservedPlaces` element.
 
 **Endpoint(s):** `PATCH /bookings/{bookingId}/booked-offers/{bookedOfferId}/reservations/{reservationId}`
-**Unique to OSDM:** Yes — graphical seat reservation with explicit place IDs referencing a COACH LAYOUT is unique to rail (OSDM); no equivalent in TOMP-API, BoB, or FerryGateway.
+**Unique to OSDM:** Partially — OMSA `assign-asset/execute` and TOMP-API support assigning a specific physical asset (vehicle, berth, bay) to a leg, which is functionally comparable to place selection. What is OSDM-specific is the use of explicit graphical place IDs referencing a COACH LAYOUT, where seat positions are identified by their position in a rendered deck plan — a model specific to rail carriage seat reservation.
 
 ### select nearby places for reservation
 
@@ -120,7 +120,7 @@ The RETAILER adds an additional ancillary or optional reservation OFFER PART to 
 The RETAILER requests an ON HOLD OFFER that, if accepted, will extend the ticket time limit on a `PREBOOKED` booking, preventing it from expiring while the TRANSPORT CUSTOMER completes payment or decision-making. The offer may carry a fee.
 
 **Endpoint(s):** `POST /bookings/{bookingId}/on-hold-offer`
-**Unique to OSDM:** Yes — the explicit on-hold offer mechanism (time-limited lock with optional fee) is not present in TOMP-API, BoB, or FerryGateway.
+**Unique to OSDM:** Partially — OMSA `extend-expiry-time/execute` and TOMP-API both provide mechanisms to extend the confirmation deadline for a pending booking. What is distinctive to OSDM is the on-hold offer model: the extension requires a formal offer that may carry a fee, which the RETAILER must explicitly accept — making it a commercial transaction rather than a simple administrative extension.
 
 ### accept an on-hold offer to extend the pre-booking time
 
@@ -161,7 +161,7 @@ The RETAILER calls `POST /bookings/{bookingId}/fulfillments` to confirm the book
 For MULTI-JOURNEY PRODUCTs (passes, multi-ride tickets) the FULFILLMENT enters state `AVAILABLE` rather than `FULFILLED`. The RETAILER or TRANSPORT CUSTOMER PATCHes the individual fulfillment to activate it by providing a travel date or zone selection, after which the fulfillment becomes `FULFILLED` for that usage instance.
 
 **Endpoint(s):** `PATCH /fulfillments/{fulfillmentId}`, `GET /fulfillments/{fulfillmentId}`
-**Unique to OSDM:** Yes — the `AVAILABLE` → `FULFILLED` activation model for multi-journey/pass products with quota management is specific to OSDM's rail pass and account-based ticketing approach.
+**Unique to OSDM:** Partially — OMSA and TOMP-API both produce per-leg travel documents and track leg status, which implies similar per-journey activation states within a multi-leg booking. What is OSDM-specific is the explicit `AVAILABLE` → `FULFILLED` state transition model for MULTI-JOURNEY PRODUCTs (passes, multi-ride tickets) with quota management, where each individual usage instance must be activated by the RETAILER by supplying a travel date or zone selection.
 
 ---
 
@@ -181,14 +181,14 @@ The RETAILER retrieves additional SALES OFFER PACKAGEs that can be added to an e
 The RETAILER submits a `POST /bookings/{bookingId}/refund-offers` specifying the FULFILLMENT IDs to be refunded. The provider calculates and returns one or more REFUND OFFERs showing the refund amount, any cancellation fee, and validity window.
 
 **Endpoint(s):** `POST /bookings/{bookingId}/refund-offers`
-**Unique to OSDM:** No — refund offer calculation exists in BoB and FerryGateway; the two-step request/confirm pattern is analogous.
+**Unique to OSDM:** No — refund offer calculation exists in BoB, FerryGateway, OMSA (`GET /collections/refund-options/items` for available refund options, `claim-refund-option/execute` for claiming), and TOMP-API (after-sales cancellation flow). The OSDM two-step request/confirm pattern is analogous to OMSA's claim/confirm refund model.
 
 ### request partial refund offers for a booking
 
 The RETAILER requests a partial REFUND OFFER by specifying a subset of passengers, booking parts, or trip legs within a collective FULFILLMENT (e.g. cancel only the return leg, or remove one passenger from a group booking).
 
 **Endpoint(s):** `POST /bookings/{bookingId}/refund-offers` (with `refundSpecification`)
-**Unique to OSDM:** Yes — the explicit `refundSpecification` model for passenger-level and segment-level partial refunds within collective FULFILLMENTs (collective ticketing) has no direct equivalent in the other in-scope standards.
+**Unique to OSDM:** Partially — OMSA `claim-refund-option/execute` supports `remove_traveller` and `remove_ancillary` refund types, and TOMP-API supports partial after-sales operations, both of which cover partial refund scenarios. What is OSDM-specific is the `refundSpecification` model enabling passenger-level and segment-level partial refunds within collective FULFILLMENTs (collective ticketing), where a subset of passengers or trip legs can be refunded from a shared ticket.
 
 ### accept refund offer
 
@@ -202,7 +202,7 @@ The RETAILER confirms a REFUND OFFER to execute the cancellation and credit the 
 The RETAILER requests a RELEASE OFFER to invalidate the admission right and free reserved resources (e.g. reserved seat) without immediately refunding the TRANSPORT CUSTOMER. Release is used when a third party (e.g. a carrier) initiates the process; the money refund follows later.
 
 **Endpoint(s):** `POST /bookings/{bookingId}/release-offers`
-**Unique to OSDM:** Yes — the release (resource invalidation separate from financial refund) is a rail-specific concept with no counterpart in TOMP-API, BoB, or FerryGateway.
+**Unique to OSDM:** Yes — the release (resource invalidation separate from financial refund) is a rail-specific concept with no direct counterpart in TOMP-API, BoB, or FerryGateway. Note that OMSA and TOMP-API `cancel-package` combine resource release and financial settlement into a single atomic operation; OSDM's distinctive feature is the deliberate separation of the two steps, allowing a carrier to free reserved resources (seats, quotas) before the financial refund is processed.
 
 ### request partial release offer for a booking
 
@@ -223,7 +223,7 @@ The RETAILER confirms the RELEASE OFFER, executing the resource release. The aff
 The RETAILER submits the FULFILLMENT IDs to be exchanged (and optionally an overrule code for carrier-initiated exchanges) to receive a list of EXCHANGE OFFERs for alternative trips or products. This does not yet change the booking state.
 
 **Endpoint(s):** `POST /bookings/{bookingId}/exchange-offers`
-**Unique to OSDM:** Yes — a structured exchange offer flow (distinct from cancel + rebook) is specific to OSDM; none of the other in-scope standards expose a dedicated exchange-offer resource.
+**Unique to OSDM:** Partially — OMSA and TOMP-API handle exchanges by including the original package reference as context in a new offer search or booking, effectively an implicit exchange. What is OSDM-specific is the dedicated exchange-offer resource: a formal multi-step flow where EXCHANGE OFFERs are computed, presented to the RETAILER for selection, and then executed — distinct from a cancel + rebook pattern.
 
 ### select exchange offer and start the exchange process
 
@@ -237,7 +237,7 @@ The RETAILER selects an EXCHANGE OFFER and initiates an exchange operation, whic
 The RETAILER confirms the exchange by calling `POST /bookings/{bookingId}/fulfillments`, which issues new FULFILLMENTs for the replacement booking parts and releases the original. The exchange operation can also be abandoned with DELETE.
 
 **Endpoint(s):** `POST /bookings/{bookingId}/fulfillments`, `DELETE /bookings/{bookingId}/exchange-operations/{exchangeOperationId}`
-**Unique to OSDM:** Yes — confirming an exchange via the fulfillment endpoint, with automatic release of originals, is specific to OSDM's exchange model.
+**Unique to OSDM:** Partially — OMSA `confirm-package/execute` and TOMP-API booking confirmation serve the equivalent role of finalising a rebooked journey. What is OSDM-specific is the confirmation of an exchange via the fulfillment endpoint with automatic release of the original FULFILLMENTs as an atomic operation — an integral part of OSDM's dedicated exchange-operation resource model.
 
 ---
 
@@ -250,7 +250,7 @@ A TRAVEL ACCOUNT in OSDM represents an account-based entitlement: a `TravelPassA
 The RETAILER or TRANSPORT CUSTOMER retrieves the current state of a TRAVEL ACCOUNT, including account type, issuer, remaining usage (balance, travel dates, or rides), and a history of consumptions.
 
 **Endpoint(s):** `GET /travel-accounts`, `GET /travel-accounts` (with `travelAccount` query parameter)
-**Unique to OSDM:** Yes — an explicit TRAVEL ACCOUNT resource representing account-based ticketing state (pass accounts, multi-ride accounts) is unique to OSDM among the in-scope standards.
+**Unique to OSDM:** Yes — an explicit TRAVEL ACCOUNT resource representing persistent account-based ticketing state (pass balance, multi-ride quota, reduction card status) is unique to OSDM among the in-scope standards. OMSA and TOMP-API expose traveller attributes (USER PROFILE, entitlements, commercial profiles) as per-booking data associated with a package, but do not model a standing account with its own balance and consumption history independent of any specific booking.
 
 ---
 
@@ -263,28 +263,28 @@ OSDM extends its booking flow to cover continuous (unscheduled) on-demand transp
 The RETAILER searches for trips that include a continuous on-demand service as a first-mile or last-mile leg. The trip planner returns a `ContinuousService` within the trip, and available pick-up places and vehicle types are included.
 
 **Endpoint(s):** `POST /trips-collection`, `GET /availabilities/on-demand-services`
-**Unique to OSDM:** Yes — OSDM's `ContinuousServiceOfferPart` integrating on-demand modes (bikes, scooters, taxis) within a rail itinerary has no counterpart in BoB or FerryGateway. TOMP-API covers on-demand mobility but not within a unified rail booking flow.
+**Unique to OSDM:** Partially — TOMP-API supports multimodal packages that can include rail legs alongside on-demand mobility legs, and OMSA `search-offers/execute` can return mixed-mode itineraries. What is OSDM-specific is the `ContinuousService` integration within a rail-first trip search: on-demand legs are surfaced as `ContinuousServiceOfferPart` items within a trip returned by `/trips-collection`, allowing a single OSDM booking to cover both the rail leg and the first/last-mile on-demand component.
 
 ### book an on-demand service
 
 The RETAILER books a `ContinuousServiceOfferPart` as part of the overall trip booking. The pricing model (fixed, pre-paid with post-use refund, or post-payment) is indicated in the `ContinuousServiceBookingPart`.
 
 **Endpoint(s):** `POST /bookings`, `POST /bookings/{bookingId}/fulfillments`
-**Unique to OSDM:** Yes — booking a continuous on-demand service as an integrated OFFER PART within an OSDM booking is specific to this standard.
+**Unique to OSDM:** Partially — TOMP-API's core function is on-demand service booking, and OMSA `purchase-package/execute` can book multimodal packages including on-demand legs. What is OSDM-specific is the `ContinuousServiceOfferPart` model: the on-demand leg is booked as an integrated OFFER PART within the same OSDM booking as the rail leg, using OSDM's standard `POST /bookings` and fulfillment flow rather than a separate provider API call.
 
 ### allocate a vehicle for on-demand service
 
 After the booking is confirmed, the TRANSPORT CUSTOMER selects a specific vehicle and pick-up place. The RETAILER PATCHes the FULFILLMENT with a `ContinuousServiceVehicleSelection`; the provider blocks the vehicle and returns credentials to start usage.
 
 **Endpoint(s):** `GET /availabilities/continuousServiceBookingPart/{id}` (conceptual; maps to `GET /availabilities/on-demand-services`), `PATCH /fulfillments/{fulfillmentId}`
-**Unique to OSDM:** Yes — vehicle allocation via FULFILLMENT patching is specific to OSDM's deep integration model.
+**Unique to OSDM:** Partially — OMSA `assign-asset/execute` and TOMP-API both support assigning a specific vehicle to a leg, which is functionally equivalent to vehicle allocation. What is OSDM-specific is the FULFILLMENT-based vehicle selection model: the TRANSPORT CUSTOMER patches a confirmed FULFILLMENT with a `ContinuousServiceVehicleSelection`, after which the provider blocks the vehicle and returns usage credentials (unlock codes, app deep links) within the FULFILLMENT response.
 
 ### start and end usage of on-demand service
 
 The TRANSPORT CUSTOMER starts the on-demand service (unlocking the vehicle) and ends it (locking/returning), both modelled as PATCH operations on the `ContinuousServiceUsage` sub-resource of the FULFILLMENT. The provider updates pricing at the end of usage (post-payment) or issues a refund (pre-payment).
 
 **Endpoint(s):** `PATCH /fulfillments/{fulfillmentId}/continuous-service-usage/{continuousServiceUsageId}`, `GET /fulfillments/{fulfillmentId}/continuous-service-usage/{continuousServiceUsageId}`, `DELETE /fulfillments/{fulfillmentId}/continuous-service-usage/{continuousServiceUsageId}`
-**Unique to OSDM:** Yes — start/end usage lifecycle for on-demand vehicles within a FULFILLMENT is OSDM-specific.
+**Unique to OSDM:** Partially — TOMP-API `start-leg`/`end-leg` processes and OMSA leg lifecycle management are direct functional equivalents for starting and ending usage of an on-demand service. What is OSDM-specific is the `ContinuousServiceUsage` sub-resource model: start and end are PATCH operations on a named sub-resource of the FULFILLMENT, with the provider updating pricing at end of usage (post-payment) or issuing a refund (pre-payment) within the same OSDM booking record.
 
 ---
 
@@ -310,7 +310,7 @@ Reimbursements apply to tickets that were unused or only partially used, where t
 The RETAILER submits a reimbursement request on behalf of the TRANSPORT CUSTOMER, including proof documents where available. The provider investigates and, if the claim is valid, enables a refund via the standard refund flow with the appropriate overrule code.
 
 **Endpoint(s):** `POST /bookings/{bookingId}/reimbursements`, `GET /bookings/{bookingId}/reimbursements`, `GET /bookings/{bookingId}/reimbursements/{reimbursementId}`
-**Unique to OSDM:** Yes — a dedicated reimbursement resource for non-use claims with documentary proof is specific to OSDM and its rail/EU regulatory context.
+**Unique to OSDM:** Partially — OMSA and TOMP-API cover reimbursement for unused services via their refund/redress flows. What is OSDM-specific is the documentary proof requirement: the RETAILER may submit formal proof documents (e.g. a carrier-issued non-use certificate per UIC IRS 90918-4 / TAP-TSI B.14), and the OSDM reimbursement resource is explicitly aligned with EU Passenger Rights Regulation (PRR) and COTIF obligations, which have no equivalent framing in OMSA or TOMP-API.
 
 ---
 
@@ -323,7 +323,7 @@ OSDM provides a webhook (asynchronous push) mechanism allowing the DISTRIBUTOR o
 The RETAILER registers a webhook endpoint and receives push notifications when a booking, fulfillment, or booked-offer state changes on the provider side. The consumer then retrieves the updated booking to reconcile its own records.
 
 **Endpoint(s):** Webhook (push, separate webhook YAML spec); `GET /bookings/{bookingId}`, `GET /bookings/{bookingId}/fulfillments`
-**Unique to OSDM:** Yes — a standardised webhook for proactive booking-change notification is defined in the OSDM webhook specification and has no direct equivalent in the other in-scope standards.
+**Unique to OSDM:** Partially — TOMP-API defines a notifications endpoint (`POST /notifications`) that serves a comparable purpose of proactively informing the consumer of booking or leg state changes. What is OSDM-specific is the definition of the webhook in a separate, dedicated webhook YAML specification (maintained alongside the main OSDM YAML), providing a formally standardised push contract rather than an optional callback pattern.
 
 ---
 
@@ -336,21 +336,21 @@ OSDM exposes read-only master-data endpoints that the RETAILER can poll periodic
 The RETAILER searches for PLACE references by name substring or code to support origin/destination autocomplete and to resolve PLACE IDs used elsewhere in the API.
 
 **Endpoint(s):** `GET /places`, `GET /places/{placeId}`
-**Unique to OSDM:** No — place/stop lookup is a common capability across TOMP-API, BoB, and FerryGateway.
+**Unique to OSDM:** Partially — place/stop lookup is a common capability across BoB and FerryGateway. Note that TOMP-API does not include an in-spec place search; it relies on external data sources (NeTEx, GBFS, CHB) for stop and place resolution, making OSDM's `GET /places` endpoint more self-contained for stop discovery.
 
 ### retrieve coach layouts
 
 The RETAILER downloads COACH LAYOUT definitions (deck plans with seat positions, properties, and numbering) to render a graphical seat-selection map for the TRANSPORT CUSTOMER.
 
 **Endpoint(s):** `GET /coach-layouts`, `GET /coach-layouts/{layoutId}`, `GET /coach-deck-layouts`, `GET /coach-deck-layouts/{layoutId}`
-**Unique to OSDM:** Yes — coach/deck layout data for graphical place reservation is rail-specific and has no counterpart in the other in-scope standards.
+**Unique to OSDM:** Partially — OMSA and TOMP-API expose `GET /collections/assets/items` returning GeoJSON layouts of physical assets (vehicles, bays, berths), which can represent spatial layouts of assignable places. What is OSDM-specific is the structured COACH LAYOUT model: named seat positions with explicit place IDs, deck plans with rendered coach-map data, and seat properties (window, aisle, table, quiet zone) designed for graphical seat-selection rendering in rail booking UIs.
 
 ### retrieve reduction card types
 
 The RETAILER downloads the provider's supported REDUCTION CARD types so it can present valid card options to the TRANSPORT CUSTOMER during an offer request.
 
 **Endpoint(s):** `GET /reduction-cards`
-**Unique to OSDM:** Yes — a structured reduction-card catalogue is specific to OSDM's rail fare reduction model.
+**Unique to OSDM:** Partially — TOMP-API provides a card-type collection as comparable reference data for loyalty or entitlement cards. What is OSDM-specific is the reduction-card catalogue in the rail fare reduction context: cards are modelled as SALE DISCOUNT RIGHTs with associated eligibility rules, age requirements, and discount percentages that feed directly into the OSDM fare-calculation engine.
 
 ### retrieve products
 
@@ -378,4 +378,4 @@ The RETAILER downloads ZONE definitions (geographic fare zones used in zone-base
 The RETAILER fetches the provider's defined PASSENGER CATEGORies (age groups, passenger types) to populate passenger selection UIs and to map them correctly when constructing offer requests.
 
 **Endpoint(s):** `GET /passenger-categories`
-**Unique to OSDM:** No — passenger category definitions exist as reference data in other standards as well.
+**Unique to OSDM:** No — equivalent passenger/traveller category reference data exists in BoB (`GET /productcat/traveller`, returning TRANSPORT CUSTOMER categories with eligibility conditions), FerryGateway (`GetPassengerAndVehicleTypesRequest`, returning age-band categories with min/max age bounds), and OMSA/TOMP-API (user profile catalogues defining passenger types and eligibility). OSDM's `GET /passenger-categories` is the rail-specific instantiation of this shared concept.

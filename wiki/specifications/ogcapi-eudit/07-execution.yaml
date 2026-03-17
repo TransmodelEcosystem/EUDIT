@@ -1,0 +1,1445 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Execution
+  description: >
+    Processes and collections for the execution phase of a trip or mobility service.
+    This module covers leg lifecycle management (start, pause, resume, end, extend,
+    postpone), product activation (activate, initiate-leg), and asset operations
+    (unlock, lock, open-trunk, allocate-vehicle, swipe-in).
+
+    The execution phase begins once a PACKAGE is in `confirmed` state and the
+    traveller is ready to begin travel. Each LEG transitions through a defined
+    state machine: `not_started` → `preparing` → `prepared` → `in_use` →
+    `paused` → `ended`.
+
+    Processes:
+    - `start-leg` — begin a LEG (transition `not_started`/`preparing` → `in_use`)
+    - `pause-leg` — temporarily pause an active LEG (e.g. stop a shared bike ride)
+    - `resume-leg` — resume a paused LEG
+    - `end-leg` — end an active or paused LEG (transition → `ended`)
+    - `extend-leg` — extend the duration/time of a LEG
+    - `postpone-leg` — postpone the start or end time of a LEG
+    - `activate-product` — activate a product (e.g. a travel pass, day ticket)
+    - `initiate-leg` — initiate the preparation phase of a LEG
+    - `unlock-asset` — unlock a vehicle or access point (e.g. bike lock, locker)
+    - `lock-asset` — lock a vehicle or access point
+    - `open-trunk` — open the trunk/cargo area of a vehicle
+    - `allocate-vehicle` — allocate a specific vehicle to a LEG (operator-side)
+    - `swipe-in` — record a check-in/swipe-in event at a barrier or terminal
+
+    Collections:
+    - `active-legs` — currently active or prepared LEGs for a PACKAGE
+    - `leg-events` — timestamped lifecycle events for a LEG
+
+    Transmodel references: SERVICE JOURNEY, VEHICLE JOURNEY, LEG, ACCESS,
+    TRANSPORT CUSTOMER ACCOUNT, VEHICLE TYPE.
+
+    TOMP-API equivalents: POST /processes/{legOperation}-leg/execution,
+    POST /processes/{assetOperation}-asset/execution,
+    POST /processes/{productOperation}-product/execution.
+  version: 0.1.0
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Execution
+    description: Leg lifecycle, product activation, and asset operations
+
+security:
+  - BearerAuth: []
+  - OAuth: [write]
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+    OAuthPKI:
+      $ref: './components.yaml#/components/securitySchemes/OAuthPKI'
+    OpenData:
+      $ref: './components.yaml#/components/securitySchemes/OpenData'
+
+  schemas:
+
+    legReference:
+      $ref: './components.yaml#/components/schemas/legReference'
+
+    assetReference:
+      $ref: './components.yaml#/components/schemas/assetReference'
+
+    productReference:
+      $ref: './components.yaml#/components/schemas/productReference'
+
+    legOperationInputs:
+      type: object
+      description: >
+        Common inputs for all leg lifecycle processes (start, pause, resume, end,
+        extend, postpone). The `legId` (and `packageId`) identify the target LEG.
+        Location fields provide context for the operation. `targetTime` is used
+        for extend/postpone to indicate the new desired end or start time.
+        `evidence` can attach photos or documents to the event.
+        TOMP-API equivalent: legRequest inputs.
+      required: [packageId, legId]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        timestamp:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: >
+            Client-side timestamp of the operation. If omitted, the server uses
+            its own clock.
+        userLocation:
+          $ref: './components.yaml#/components/schemas/geoJsonPoint'
+          description: >
+            Current GPS position of the user/device at time of operation.
+        assetLocation:
+          $ref: './components.yaml#/components/schemas/geoJsonPoint'
+          description: >
+            Current GPS position of the asset/vehicle at time of operation.
+        currentCharge:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: >
+            Current battery/fuel charge level (%), applicable to electric vehicles.
+        targetTime:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: >
+            Desired new end time (for `extend-leg`) or new start time (for
+            `postpone-leg`). Ignored by start/pause/resume/end.
+        travelClass:
+          $ref: './components.yaml#/components/schemas/shortString'
+          description: >
+            Travel class code if the traveller is switching class mid-journey.
+        comment:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Free-text comment to attach to the leg event.
+        evidence:
+          type: array
+          description: >
+            Photos or supporting documents uploaded for this event (e.g. damage
+            photos when ending a shared vehicle leg with a damage report).
+          items:
+            type: object
+            required: [url, mimeType]
+            properties:
+              url:
+                $ref: './components.yaml#/components/schemas/url'
+              mimeType:
+                $ref: './components.yaml#/components/schemas/shortString'
+
+    legOperationResult:
+      type: object
+      description: >
+        Result returned after a successful leg lifecycle operation.
+        Contains the updated package state and the specific leg that was
+        affected.
+        Transmodel: updated PACKAGE containing updated LEG.
+        TOMP-API: packageResponse.
+      x-tm: PACKAGE
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        packageStatus:
+          $ref: './components.yaml#/components/schemas/packageStatus'
+        leg:
+          $ref: './components.yaml#/components/schemas/leg'
+        message:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            Human-readable status message from the server (e.g. "Leg started
+            successfully", "Asset unlocked").
+        retryAfter:
+          type: integer
+          description: >
+            Seconds the client should wait before retrying. Present only when
+            the server is temporarily unable to fulfil the request (e.g. asset
+            communication timeout). HTTP 503 is returned alongside this field.
+
+    assetOperationInputs:
+      type: object
+      description: >
+        Inputs for asset lock/unlock/open-trunk operations.
+        TOMP-API equivalent: assetRequest inputs.
+      required: [packageId, legId, assetId]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        assetId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        timestamp:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        location:
+          $ref: './components.yaml#/components/schemas/geoJsonPoint'
+          description: Current GPS position of the user at time of operation.
+
+    productActivationInputs:
+      type: object
+      description: >
+        Inputs for product activation and leg initiation processes.
+        TOMP-API equivalent: productRequest inputs.
+      required: [packageId, productId]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        productId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+          description: >
+            Target leg to initiate (required for `initiate-leg`; optional for
+            `activate-product`).
+        timestamp:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        location:
+          $ref: './components.yaml#/components/schemas/geoJsonPoint'
+
+    swipeInInputs:
+      type: object
+      description: >
+        Inputs for a check-in / swipe-in event at a barrier or access terminal.
+        The swipe-in records the entry point and timestamp, and may trigger
+        automatic leg start for scheduled services.
+        Transmodel: CHECK-IN, ACCESS.
+        OMSA: swipe-in (equivalent).
+      x-tm: ACCESS
+      x-semantics:
+        transmodel: ACCESS
+        omsa: swipe-in
+      required: [packageId, stopAreaRef]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        stopAreaRef:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            Identifier of the stop area or boarding zone where the swipe-in
+            occurred.
+        barrierRef:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Identifier of the specific barrier/gate/terminal device.
+        timestamp:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        deviceId:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Identifier of the validation device (e.g. reader serial number).
+        tokenId:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            Token identifier from the travel document used for entry (NFC card,
+            barcode, Aztec code, etc.).
+
+    allocateVehicleInputs:
+      type: object
+      description: >
+        Inputs for operator-side vehicle allocation to a LEG. This is used by
+        dispatchers or automated systems to assign a specific VEHICLE to a
+        requested service leg.
+        Transmodel: VEHICLE ASSIGNMENT.
+        OMSA: allocate-vehicle (equivalent).
+      x-tm: VEHICLE
+      x-semantics:
+        transmodel: VEHICLE ASSIGNMENT
+        omsa: allocate-vehicle
+      required: [packageId, legId, assetId]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        assetId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        operatorRef:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Identifier of the operating company making the allocation.
+        vehicleTypeRef:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            Reference to the VEHICLE TYPE that has been allocated.
+        estimatedDepartureTime:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        boardingLocation:
+          $ref: './components.yaml#/components/schemas/geoJsonPoint'
+
+    legEvent:
+      type: object
+      description: >
+        A timestamped lifecycle event for a LEG (start, pause, resume, end, etc.).
+        Useful for audit trails and passenger rights evidence.
+        Transmodel: SERVICE JOURNEY / VEHICLE JOURNEY event.
+      x-tm: LEG
+      x-semantics:
+        transmodel: SERVICE JOURNEY
+      required: [eventId, legId, eventType, timestamp]
+      properties:
+        eventId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        eventType:
+          type: string
+          enum:
+            - start
+            - pause
+            - resume
+            - end
+            - extend
+            - postpone
+            - activate
+            - initiate
+            - unlock
+            - lock
+            - open-trunk
+            - allocate
+            - swipe-in
+          description: Type of execution event.
+        timestamp:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        legStateBefore:
+          $ref: './components.yaml#/components/schemas/legState'
+        legStateAfter:
+          $ref: './components.yaml#/components/schemas/legState'
+        location:
+          $ref: './components.yaml#/components/schemas/geoJsonPoint'
+        assetId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        comment:
+          $ref: './components.yaml#/components/schemas/normalString'
+
+    legEventCollection:
+      type: object
+      description: Paginated collection of LEG lifecycle events.
+      required: [numberMatched, numberReturned, events]
+      properties:
+        numberMatched:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        numberReturned:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/legEvent'
+
+    activeLegCollection:
+      type: object
+      description: >
+        Collection of currently active or prepared LEGs for a PACKAGE.
+        Useful for the mobile client to poll the current execution state.
+      required: [numberMatched, numberReturned, legs]
+      properties:
+        numberMatched:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        numberReturned:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        legs:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/leg'
+
+paths:
+
+  # ─────────────────────────────────────────────────────────────────
+  # Leg Lifecycle Processes
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/start-leg/execute:
+    post:
+      operationId: executeStartLeg
+      summary: Start Leg
+      description: >
+        Begins a confirmed LEG. The LEG transitions from `not_started` or
+        `preparing` to `in_use`. For shared-mobility legs, this may trigger
+        unlocking the asset.
+
+        For scheduled services (rail, bus, ferry) this records the check-in
+        event and marks the passenger as boarded.
+
+        Transmodel: commencement of SERVICE JOURNEY for a TRANSPORT CUSTOMER.
+        TOMP-API equivalent: POST /processes/start-leg/execution.
+        OMSA equivalent: POST /processes/start-leg/execute.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+          description: >
+            `respond-sync` (default): wait for result (max 30 s).
+            `respond-async`: return immediately with a job reference.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/legOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg started successfully (synchronous response).
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+            Content-Language:
+              $ref: './components.yaml#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted for asynchronous processing.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: URL of the job status resource.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+        '409':
+          description: >
+            Conflict — the LEG is not in a valid state for this operation
+            (e.g. already started or already ended).
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+        '503':
+          description: >
+            Service temporarily unavailable (e.g. asset communication timeout).
+            The `retryAfter` field in the body indicates when to retry.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg started
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/pause-leg/execute:
+    post:
+      operationId: executePauseLeg
+      summary: Pause Leg
+      description: >
+        Temporarily pauses an active LEG. The LEG transitions from `in_use` to
+        `paused`. Applicable to shared-mobility services where a customer can
+        stop a hire midway (e.g. pause a bicycle hire during a shop visit).
+
+        For on-demand services, pausing may lock the asset automatically.
+
+        Transmodel: temporary interruption of SERVICE JOURNEY by TRANSPORT CUSTOMER.
+        TOMP-API equivalent: POST /processes/pause-leg/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/legOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg paused successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted for asynchronous processing.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: Conflict — LEG is not currently active.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+        '503':
+          description: Service temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg paused
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/resume-leg/execute:
+    post:
+      operationId: executeResumeLeg
+      summary: Resume Leg
+      description: >
+        Resumes a paused LEG. The LEG transitions from `paused` back to
+        `in_use`. For shared-mobility, this typically unlocks the asset again.
+
+        TOMP-API equivalent: POST /processes/resume-leg/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/legOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg resumed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: Conflict — LEG is not currently paused.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+        '503':
+          description: Service temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg resumed
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/end-leg/execute:
+    post:
+      operationId: executeEndLeg
+      summary: End Leg
+      description: >
+        Ends an active or paused LEG. The LEG transitions to `ended`. For
+        shared-mobility, this locks the asset and computes the final usage
+        charge. The `evidence` field should include photos of the asset condition
+        at the return location.
+
+        For scheduled services, this records the alighting event.
+
+        Transmodel: completion of SERVICE JOURNEY for a TRANSPORT CUSTOMER.
+        TOMP-API equivalent: POST /processes/end-leg/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/legOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg ended successfully. Final usage and charges are in the response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: Conflict — LEG is already ended or not started.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+        '503':
+          description: Service temporarily unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg ended
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/extend-leg/execute:
+    post:
+      operationId: executeExtendLeg
+      summary: Extend Leg
+      description: >
+        Extends the duration or end time of an active LEG. The `targetTime` in
+        the inputs specifies the desired new end time. The server checks
+        availability and fare conditions before granting the extension; an
+        additional charge may be incurred.
+
+        TOMP-API equivalent: POST /processes/extend-leg/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/legOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg extended successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: Conflict — extension not permitted by fare conditions or availability.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg extended
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/postpone-leg/execute:
+    post:
+      operationId: executePostponeLeg
+      summary: Postpone Leg
+      description: >
+        Postpones the start time of a not-yet-started LEG. The `targetTime` in
+        the inputs specifies the desired new start time. The server checks
+        vehicle/slot availability.
+
+        TOMP-API equivalent: POST /processes/postpone-leg/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/legOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg postponed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: >
+            Conflict — the LEG cannot be postponed (e.g. already started, or
+            target time conflicts with a later leg in the same package).
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg postponed
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Product Activation Processes
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/activate-product/execute:
+    post:
+      operationId: executeActivateProduct
+      summary: Activate Product
+      description: >
+        Activates a FARE PRODUCT within a confirmed PACKAGE. Examples include
+        activating a day pass, a travel zone subscription, or a stored-value card
+        that requires explicit activation before first use.
+
+        The product transitions from `pending` (or equivalent unactivated state) to
+        an active/usable state. This may update the travel document stored in the
+        package.
+
+        Transmodel: activation of FARE PRODUCT or CAPPED DISCOUNT RIGHT.
+        TOMP-API equivalent: POST /processes/activate-product/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/productActivationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Product activated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: >
+            Conflict — product already activated or cannot be activated in its
+            current state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — product activated
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/initiate-leg/execute:
+    post:
+      operationId: executeInitiateLeg
+      summary: Initiate Leg
+      description: >
+        Initiates the preparation phase of a LEG, transitioning it from
+        `not_started` to `preparing`. Used in on-demand services to signal that
+        the customer is ready and the operator should prepare the vehicle
+        (e.g. dispatch a taxi, charge an e-scooter, pre-cool the vehicle).
+
+        The leg remains in `preparing` until the operator signals readiness
+        (via `allocate-vehicle`) or the vehicle is physically available, after
+        which the customer calls `start-leg`.
+
+        TOMP-API equivalent: POST /processes/initiate-leg-product/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/productActivationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Leg initiation accepted. Leg is now in `preparing` state.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: Conflict — LEG is not in `not_started` state.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — leg initiated
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Asset Operations
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/unlock-asset/execute:
+    post:
+      operationId: executeUnlockAsset
+      summary: Unlock Asset
+      description: >
+        Sends an unlock command to a vehicle or access point (e.g. bike lock,
+        cargo locker, electric scooter handlebar lock). The client must supply
+        both the LEG and ASSET identifiers.
+
+        The server communicates with the IoT device and returns the result. If
+        the device is temporarily unreachable, HTTP 503 is returned with a
+        `retryAfter` value.
+
+        Transmodel: VEHICLE access control.
+        TOMP-API equivalent: POST /processes/unlock-asset/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/assetOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Asset unlocked successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+        '503':
+          description: Asset temporarily unreachable. See `retryAfter`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — asset unlocked
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/lock-asset/execute:
+    post:
+      operationId: executeLockAsset
+      summary: Lock Asset
+      description: >
+        Sends a lock command to a vehicle or access point. Typically called after
+        `pause-leg` or `end-leg` to secure the asset.
+
+        TOMP-API equivalent: POST /processes/lock-asset/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/assetOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Asset locked successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '503':
+          description: Asset temporarily unreachable. See `retryAfter`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — asset locked
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/open-trunk/execute:
+    post:
+      operationId: executeOpenTrunk
+      summary: Open Trunk
+      description: >
+        Opens the trunk or cargo compartment of a vehicle. Used for cargo
+        scooters, car boot services, and bike-share cargo models.
+
+        TOMP-API equivalent: POST /processes/open-trunk-asset/execution.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/assetOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Trunk opened successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '503':
+          description: Asset temporarily unreachable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+
+  /processes/allocate-vehicle/execute:
+    post:
+      operationId: executeAllocateVehicle
+      summary: Allocate Vehicle
+      description: >
+        Operator-side: allocates a specific VEHICLE to a LEG. Called by a
+        dispatcher or fleet-management system after an operator receives an
+        `initiate-leg` request. After allocation, the LEG transitions from
+        `preparing` to `prepared` and the customer is notified of the assigned
+        vehicle details.
+
+        Transmodel: VEHICLE ASSIGNMENT.
+        OMSA equivalent: POST /processes/assign-asset/execute (similar).
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write, admin]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/allocateVehicleInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Vehicle allocated successfully. LEG is now `prepared`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '403':
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        '409':
+          description: Conflict — vehicle already allocated to another booking.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — vehicle allocated
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/swipe-in/execute:
+    post:
+      operationId: executeSwipeIn
+      summary: Swipe In
+      description: >
+        Records a check-in event at a fare gate, barrier, or access terminal.
+        Used for scheduled services (rail, metro, bus) where the traveller taps
+        their travel document at a reader. This may trigger automatic leg start
+        for account-based ticketing (ABT) schemes.
+
+        The `tokenId` identifies the travel token (NFC card, barcode, etc.) used
+        for the swipe-in. The server matches the token to an active PACKAGE and
+        records the entry event.
+
+        Transmodel: CHECK-IN, ACCESS.
+        OMSA equivalent: POST /processes/swipe-in/execute (inferred).
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/swipeInInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Swipe-in recorded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          description: No active PACKAGE found for the supplied token.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — swipe-in recorded
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/legOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Collections
+  # ─────────────────────────────────────────────────────────────────
+
+  /collections/active-legs/items:
+    get:
+      operationId: getActiveLegs
+      summary: Get Active Legs
+      description: >
+        Returns the currently active or prepared LEGs associated with a PACKAGE.
+        Useful for the mobile client to poll execution state during a journey.
+
+        Transmodel: active SERVICE JOURNEYs for TRANSPORT CUSTOMER.
+        TOMP-API equivalent: (no direct equivalent; derived from packageResponse).
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/packageId'
+        - name: legState
+          in: query
+          required: false
+          schema:
+            $ref: './components.yaml#/components/schemas/legState'
+          description: Filter by LEG state.
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+      responses:
+        '200':
+          description: List of active/prepared legs.
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+            Content-Language:
+              $ref: './components.yaml#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/activeLegCollection'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+
+  /collections/leg-events/items:
+    get:
+      operationId: getLegEvents
+      summary: Get Leg Events
+      description: >
+        Returns the timestamped lifecycle events for a specific LEG. Useful for
+        audit trails, passenger-rights evidence, and support investigations.
+
+        Events are returned in reverse-chronological order (newest first).
+
+        Transmodel: SERVICE JOURNEY lifecycle events.
+      tags: [Execution]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/legId'
+        - $ref: './components.yaml#/components/parameters/packageId'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+      responses:
+        '200':
+          description: List of leg lifecycle events.
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+            Content-Language:
+              $ref: './components.yaml#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/legEventCollection'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'

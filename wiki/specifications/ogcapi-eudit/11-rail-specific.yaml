@@ -1,0 +1,1634 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Rail-Specific (OSDM)
+  description: >
+    Processes and collections specific to rail transport, integrating
+    **OSDM (Open Sales and Distribution Model)** semantics with the EUDIT
+    unified API model.
+
+    Rail bookings have specific requirements not covered by the core offer/purchase
+    modules: graphical seat and coach layout selection, on-hold offers (extending
+    the booking TTL for a fee), exchange of purchased fulfillments, back-office
+    reimbursement claims, and travel account queries (loyalty cards, multi-ride
+    passes, reduction cards).
+
+    Processes:
+    - `search-seat-map` — retrieve the graphical seat/place availability map for
+      a specific coach/deck
+    - `on-hold-offer` — place a booking on hold (extend TTL, pay deposit)
+    - `confirm-on-hold` — confirm a previously placed on-hold offer
+    - `cancel-on-hold` — cancel a pending on-hold offer without charge
+    - `search-exchange-offers` — search for exchange offers for purchased
+      fulfillments
+    - `exchange-offer` — initiate an exchange operation (modify/rebook)
+    - `confirm-exchange` — confirm a provisional exchange
+    - `cancel-exchange` — cancel a provisional exchange without committing
+    - `reimbursement-claim` — submit a back-office reimbursement claim
+    - `get-travel-account` — retrieve a passenger's travel account
+
+    Collections:
+    - `seat-maps` — graphical coach/deck layouts with per-seat availability
+    - `coach-layouts` — static coach deck layout definitions (OSDM CoachDeckLayout)
+    - `travel-account` — passenger travel account (loyalty, multi-ride, passes)
+    - `exchange-operations` — active or historical exchange operations
+    - `reimbursements` — submitted reimbursement claims with status
+
+    Transmodel references: TRAIN ELEMENT, VEHICLE TYPE, TRAIN COMPONENT,
+    BOOKING, FULFILLMENT, REIMBURSEMENT.
+    OSDM source: OSDM 3.7.1.yaml.
+  version: 0.1.0
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Rail Seat Maps
+    description: Coach layouts and graphical seat availability
+  - name: Rail On-Hold
+    description: On-hold offer management (TTL extension and deposit)
+  - name: Rail Exchange
+    description: Ticket exchange and rebooking
+  - name: Rail Reimbursement
+    description: Back-office reimbursement claims
+  - name: Rail Account
+    description: Travel account (loyalty, passes, multi-ride)
+
+security:
+  - BearerAuth: []
+  - OAuth: [write]
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+    OAuthPKI:
+      $ref: './components.yaml#/components/securitySchemes/OAuthPKI'
+    OpenData:
+      $ref: './components.yaml#/components/securitySchemes/OpenData'
+
+  schemas:
+
+    # ── Seat Map / Coach Layout ────────────────────────────────────
+
+    deckLevel:
+      type: string
+      description: >
+        Level of a double-deck coach.
+        OSDM: CoachDeckLevel.
+        Transmodel: DECK LEVEL (SP Deck Plan MODEL).
+      x-tm: DECK LEVEL
+      x-semantics:
+        transmodel: DECK LEVEL
+        osdm: CoachDeckLevel
+      enum:
+        - SINGLE_DECK
+        - LOWER_DECK
+        - MIDDLE_DECK
+        - UPPER_DECK
+
+    gridDimension:
+      type: object
+      description: >
+        Width × height of the coach grid (number of columns × number of rows).
+        OSDM: GridDimension.
+      required: [width, height]
+      properties:
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+
+    placeAvailabilityStatus:
+      type: string
+      description: Availability status of an individual seat/place.
+      enum:
+        - AVAILABLE
+        - RESERVED
+        - BLOCKED
+        - OCCUPIED
+        - OUT_OF_SERVICE
+        - PRE_SELECTED
+
+    coachPlace:
+      type: object
+      description: >
+        A single seat or standing place within a coach deck layout.
+        OSDM: Place (within PlaceGroup).
+        Transmodel: SEAT.
+      x-tm: SEAT
+      x-semantics:
+        transmodel: SEAT
+        osdm: Place
+      required: [placeNumber, column, row]
+      properties:
+        placeNumber:
+          $ref: './components.yaml#/components/schemas/shortString'
+          description: Seat number or label (e.g. `12A`, `42`).
+        column:
+          type: integer
+          description: Column index in the coach grid (0-based).
+        row:
+          type: integer
+          description: Row index in the coach grid (0-based).
+        availabilityStatus:
+          $ref: '#/components/schemas/placeAvailabilityStatus'
+        serviceClass:
+          $ref: './components.yaml#/components/schemas/classOfUse'
+        accommodationType:
+          $ref: './components.yaml#/components/schemas/shortString'
+          description: >
+            Accommodation type code (e.g. `SEAT`, `COUCHETTE`, `SLEEPER`,
+            `RECLINER`, `COMPARTMENT`).
+        accommodationSubTypes:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/shortString'
+          description: >
+            Sub-type codes (e.g. `WINDOW`, `AISLE`, `MIDDLE`, `FACING`,
+            `SIDE_TABLE`, `POWER_SOCKET`, `SILENT_ZONE`).
+        accessible:
+          type: boolean
+          description: Whether this place is wheelchair-accessible.
+        gender:
+          type: string
+          enum: [FEMALE, MALE, MIXED]
+          description: >
+            Gender restriction for this place (applicable in compartment coaches).
+        direction:
+          type: string
+          enum: [FORWARD, BACKWARD]
+          description: Direction of travel this seat faces.
+
+    placeGroup:
+      type: object
+      description: >
+        A group of seats within a deck sharing the same service class and
+        accommodation type.
+        OSDM: PlaceGroup.
+      required: [serviceClass, places]
+      properties:
+        serviceClass:
+          $ref: './components.yaml#/components/schemas/classOfUse'
+        accommodationType:
+          $ref: './components.yaml#/components/schemas/shortString'
+        accommodationSubTypes:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/shortString'
+        places:
+          type: array
+          items:
+            $ref: '#/components/schemas/coachPlace'
+
+    coachDeckLayout:
+      type: object
+      description: >
+        Graphical layout of a single coach deck, including all seats and
+        decorative elements (walls, doors, toilets).
+        OSDM: CoachDeckLayout.
+        Transmodel: DECK LEVEL / TRAIN COMPONENT layout.
+      x-tm: TRAIN COMPONENT
+      x-semantics:
+        transmodel: TRAIN COMPONENT
+        osdm: CoachDeckLayout
+      required: [id, name, deckLevel, dimension]
+      properties:
+        id:
+          $ref: './components.yaml#/components/schemas/normalString'
+        name:
+          $ref: './components.yaml#/components/schemas/normalString'
+        deckLevel:
+          $ref: '#/components/schemas/deckLevel'
+        dimension:
+          $ref: '#/components/schemas/gridDimension'
+        lowFloorEntry:
+          type: boolean
+          description: True on the lowest deck (ground-level boarding on some trains).
+        placeGroups:
+          type: array
+          items:
+            $ref: '#/components/schemas/placeGroup'
+        coachNumber:
+          $ref: './components.yaml#/components/schemas/shortString'
+          description: Coach/carriage number in the train composition.
+        vehicleRef:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Reference to the VEHICLE TYPE assigned to this coach.
+
+    coachDeckLayoutCollection:
+      type: object
+      description: Collection of coach deck layouts for a train.
+      required: [numberMatched, numberReturned, layouts]
+      properties:
+        numberMatched:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        numberReturned:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        layouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/coachDeckLayout'
+
+    seatMapSearchInputs:
+      type: object
+      description: >
+        Inputs for retrieving the seat availability map for specific coaches/decks.
+        The `reservationRef` ties the availability query to an existing offer
+        or booking so the server can apply the correct fare class constraints.
+        OSDM equivalent: POST /availabilities/vehicle-place-map.
+        Transmodel: SERVICE RESTRICTION / SEAT AVAILABILITY.
+      x-tm: SEAT AVAILABILITY
+      x-semantics:
+        transmodel: SERVICE RESTRICTION
+        osdm: PlaceAvailabilityMapRequest
+      required: [packageId, placeRestrictions]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        placeRestrictions:
+          type: array
+          minItems: 1
+          description: >
+            List of place restrictions — one per fare/booking part being reserved.
+          items:
+            type: object
+            required: [reservationRef]
+            properties:
+              reservationRef:
+                $ref: './components.yaml#/components/schemas/normalString'
+                description: >
+                  OSDM ReservationReference: identifies the offer or fare being
+                  reserved (e.g. offer ID, booking part ID).
+              serviceClass:
+                $ref: './components.yaml#/components/schemas/classOfUse'
+              accommodationSubTypes:
+                type: array
+                items:
+                  $ref: './components.yaml#/components/schemas/shortString'
+
+    seatMapResult:
+      type: object
+      description: >
+        Seat availability map for a train, including per-coach availability.
+        OSDM equivalent: PlaceAvailabilityMapResponse.
+      required: [coaches]
+      properties:
+        coaches:
+          type: array
+          description: Coaches ordered by their physical position in the train.
+          items:
+            type: object
+            required: [coachNumber, deckLayouts]
+            properties:
+              coachNumber:
+                $ref: './components.yaml#/components/schemas/shortString'
+              deckLayouts:
+                type: array
+                items:
+                  $ref: '#/components/schemas/coachDeckLayout'
+        preSelectedPlaces:
+          type: array
+          description: Places pre-selected by the server (e.g. for group bookings).
+          items:
+            type: object
+            properties:
+              coachNumber:
+                $ref: './components.yaml#/components/schemas/shortString'
+              placeNumber:
+                $ref: './components.yaml#/components/schemas/shortString'
+              travellerRef:
+                $ref: './components.yaml#/components/schemas/uuid'
+
+    # ── On-Hold Offer ─────────────────────────────────────────────
+
+    onHoldOfferInputs:
+      type: object
+      description: >
+        Inputs for placing a booking on hold. This extends the booking's
+        TTL by the specified number of minutes, typically for a fee and/or
+        deposit. Useful when the customer needs more time to confirm payment.
+        OSDM equivalent: POST /bookings/{id}/on-hold-offer.
+        Transmodel: BOOKING reservation extension.
+      x-tm: BOOKING
+      x-semantics:
+        transmodel: BOOKING
+        osdm: OnHoldOfferRequest
+      required: [packageId, increaseTTLMinutes]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        increaseTTLMinutes:
+          type: integer
+          minimum: 1
+          description: >
+            Number of minutes by which to extend the booking's TTL.
+            The maximum allowed value is operator-defined (typically 30–120 min).
+
+    onHoldOffer:
+      type: object
+      description: >
+        An on-hold offer created for a booking. Contains the fee charged and the
+        new expiry timestamp.
+        OSDM equivalent: OnHoldOffer schema.
+      x-semantics:
+        osdm: OnHoldOffer
+      required: [onHoldOfferId, validFrom, validUntil, increasedTTL]
+      properties:
+        onHoldOfferId:
+          $ref: './components.yaml#/components/schemas/normalString'
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        createdOn:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        validFrom:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        validUntil:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        confirmedOn:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: Populated when the on-hold offer has been confirmed.
+        onHoldFee:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+          description: Fee charged to place the booking on hold.
+        deposit:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+          description: Deposit amount held against the booking.
+        increasedTTL:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: New expiry timestamp for the booking after the extension.
+
+    onHoldOfferResult:
+      type: object
+      description: Result of an on-hold offer operation.
+      required: [onHoldOffer]
+      properties:
+        onHoldOffer:
+          $ref: '#/components/schemas/onHoldOffer'
+
+    # ── Exchange ──────────────────────────────────────────────────
+
+    exchangeStatus:
+      type: string
+      description: >
+        Lifecycle status of an exchange operation.
+        OSDM: ExchangeStatus.
+      enum:
+        - PREBOOKED
+        - CONFIRMED
+        - FULFILLED
+        - CANCELLED
+        - ERROR
+
+    exchangeOfferSearchInputs:
+      type: object
+      description: >
+        Inputs for searching available exchange offers for one or more purchased
+        fulfillments. The passenger specifies which fulfillments they wish to
+        exchange and optionally provides new trip/offer criteria.
+        OSDM equivalent: POST /bookings/{id}/exchange-offers.
+        Transmodel: BOOKING exchange search.
+      x-tm: BOOKING
+      x-semantics:
+        transmodel: BOOKING
+        osdm: ExchangeOfferCollectionRequest
+      required: [packageId, fulfillmentIds]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        fulfillmentIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            IDs of the fulfillments (travel documents / tickets) to exchange.
+        origin:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: New origin stop/station reference (if the route is changing).
+        destination:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: New destination stop/station reference.
+        departureTime:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: Desired new departure time.
+        arrivalTime:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: Desired latest arrival time.
+        serviceClass:
+          $ref: './components.yaml#/components/schemas/classOfUse'
+          description: Desired service class for the new journey.
+        overruleCode:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            Operator override code for waiving exchange fees or conditions
+            (e.g. for disruption situations).
+
+    exchangeOffer:
+      type: object
+      description: >
+        A single exchange offer returned by a search. The offer describes the
+        new journey and any price difference (surcharge or refund delta).
+        OSDM equivalent: ExchangeOffer.
+      required: [exchangeOfferId, summary]
+      properties:
+        exchangeOfferId:
+          $ref: './components.yaml#/components/schemas/normalString'
+        summary:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Human-readable summary of the new journey.
+        priceDifference:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+          description: >
+            Price difference: positive = surcharge to pay; negative = refund
+            to receive.
+        validUntil:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: Expiry time for this exchange offer.
+        newLeg:
+          $ref: './components.yaml#/components/schemas/leg'
+          description: The new LEG that would replace the exchanged fulfillment.
+
+    exchangeOfferCollection:
+      type: object
+      description: Collection of available exchange offers.
+      required: [numberMatched, numberReturned, exchangeOffers]
+      properties:
+        numberMatched:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        numberReturned:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        exchangeOffers:
+          type: array
+          items:
+            $ref: '#/components/schemas/exchangeOffer'
+
+    exchangeOperationInputs:
+      type: object
+      description: >
+        Inputs for initiating an exchange operation (provisional rebooking).
+        The passenger selects one or more exchange offers returned by
+        `search-exchange-offers`.
+        OSDM equivalent: POST /bookings/{id}/exchange-operations.
+      required: [packageId, selectedExchangeOfferIds]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        selectedExchangeOfferIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: './components.yaml#/components/schemas/normalString'
+          description: IDs of the exchange offers selected by the passenger.
+
+    confirmExchangeInputs:
+      type: object
+      description: >
+        Inputs for confirming a provisional exchange operation.
+        OSDM equivalent: PATCH /bookings/{id}/exchange-operations/{id}.
+      required: [packageId, exchangeOperationId]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        exchangeOperationId:
+          $ref: './components.yaml#/components/schemas/normalString'
+        fulfillmentMediaPreference:
+          $ref: './components.yaml#/components/schemas/shortString'
+          description: >
+            Preferred fulfillment medium for the new travel documents (e.g.
+            `PDF`, `AZTEC`, `NFC`, `BARCODE`).
+
+    exchangeOperation:
+      type: object
+      description: >
+        An exchange operation record. Initially in `PREBOOKED` state; moves to
+        `CONFIRMED` after `confirm-exchange` and `FULFILLED` when travel
+        documents are issued.
+        OSDM equivalent: ExchangeOperation schema.
+        Transmodel: BOOKING exchange.
+      x-tm: BOOKING
+      x-semantics:
+        transmodel: BOOKING
+        osdm: ExchangeOperation
+      required: [exchangeOperationId, status]
+      properties:
+        exchangeOperationId:
+          $ref: './components.yaml#/components/schemas/normalString'
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        status:
+          $ref: '#/components/schemas/exchangeStatus'
+        exchangeOffers:
+          type: array
+          items:
+            $ref: '#/components/schemas/exchangeOffer'
+        ticketTimeLimit:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: >
+            Deadline for confirming this exchange. After this time the exchange
+            operation expires.
+        newFulfillmentIds:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            IDs of the new travel documents/fulfillments issued after confirmation.
+        issuedVoucherIds:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            IDs of any vouchers issued as part of the exchange (e.g. refund
+            voucher if the exchange resulted in a credit).
+
+    exchangeOperationResult:
+      type: object
+      description: Result of an exchange operation (create, confirm, or cancel).
+      required: [exchangeOperation]
+      properties:
+        exchangeOperation:
+          $ref: '#/components/schemas/exchangeOperation'
+
+    exchangeOperationCollection:
+      type: object
+      description: Collection of exchange operations for a PACKAGE.
+      required: [numberMatched, numberReturned, exchangeOperations]
+      properties:
+        numberMatched:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        numberReturned:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        exchangeOperations:
+          type: array
+          items:
+            $ref: '#/components/schemas/exchangeOperation'
+
+    # ── Reimbursement ─────────────────────────────────────────────
+
+    reimbursementStatus:
+      type: string
+      description: >
+        Processing mode for a reimbursement claim.
+        OSDM: ReimbursementStatus.
+      enum:
+        - IMMEDIATE
+        - DELAYED
+
+    backOfficeStatus:
+      type: string
+      description: >
+        Processing status of a back-office reimbursement.
+        OSDM: BackOfficeStatus.
+      enum:
+        - RECEIVED
+        - IN_REVIEW
+        - ADDITIONAL_INFO_NEEDED
+        - APPROVED
+        - REJECTED
+        - PAID
+
+    reimbursementInputs:
+      type: object
+      description: >
+        Inputs for submitting a back-office reimbursement claim. Used when the
+        standard online cancellation/refund flow does not apply — e.g. goodwill
+        gestures, manual disruption claims, or delayed reimbursement requests.
+        OSDM equivalent: POST /bookings/{id}/reimbursements.
+        Transmodel: REIMBURSEMENT CLAIM / EU PASSENGER RIGHTS.
+      x-tm: REIMBURSEMENT CLAIM
+      x-semantics:
+        transmodel: REIMBURSEMENT CLAIM
+        osdm: ReimbursementRequest
+      required: [packageId, reimbursementReason, fulfillmentIds, passengerIds]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        reimbursementReason:
+          $ref: './components.yaml#/components/schemas/longString'
+          description: Free-text description of why the reimbursement is requested.
+        fulfillmentIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: './components.yaml#/components/schemas/normalString'
+          description: IDs of the fulfillments (tickets) for which reimbursement is claimed.
+        passengerIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: './components.yaml#/components/schemas/uuid'
+          description: Traveller references for whom the claim applies.
+        reimbursementDate:
+          $ref: './components.yaml#/components/schemas/dateTime'
+          description: Date of the incident/travel failure that triggered this claim.
+        supportingDocuments:
+          type: array
+          description: Scanned receipts, delay certificates, or other supporting evidence.
+          items:
+            type: object
+            required: [url, mimeType]
+            properties:
+              url:
+                $ref: './components.yaml#/components/schemas/url'
+              mimeType:
+                $ref: './components.yaml#/components/schemas/shortString'
+              documentType:
+                $ref: './components.yaml#/components/schemas/shortString'
+                description: >
+                  Type of document (e.g. `DELAY_CERTIFICATE`, `RECEIPT`,
+                  `PASSENGER_RIGHTS_FORM`).
+
+    reimbursement:
+      type: object
+      description: >
+        A reimbursement claim record with status and back-office decision.
+        OSDM equivalent: Reimbursement schema.
+        Transmodel: REIMBURSEMENT CLAIM.
+      x-tm: REIMBURSEMENT CLAIM
+      x-semantics:
+        transmodel: REIMBURSEMENT CLAIM
+        osdm: Reimbursement
+      required: [reimbursementId, status, backOfficeStatus]
+      properties:
+        reimbursementId:
+          $ref: './components.yaml#/components/schemas/normalString'
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        status:
+          $ref: '#/components/schemas/reimbursementStatus'
+        backOfficeStatus:
+          $ref: '#/components/schemas/backOfficeStatus'
+        submittedAt:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        updatedAt:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        missingInformation:
+          type: array
+          items:
+            $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            List of additional information items the back-office requires before
+            processing the claim (present when `backOfficeStatus` is
+            `ADDITIONAL_INFO_NEEDED`).
+        approvedAmount:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+          description: Amount approved for reimbursement (present when status is APPROVED or PAID).
+        rejectionReason:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Reason for rejection (present when status is REJECTED).
+        paymentReference:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Payment reference number (present when status is PAID).
+
+    reimbursementResult:
+      type: object
+      description: Result of a reimbursement claim submission or status query.
+      required: [reimbursement]
+      properties:
+        reimbursement:
+          $ref: '#/components/schemas/reimbursement'
+
+    reimbursementCollection:
+      type: object
+      description: Collection of reimbursement claims for a PACKAGE.
+      required: [numberMatched, numberReturned, reimbursements]
+      properties:
+        numberMatched:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        numberReturned:
+          $ref: './components.yaml#/components/schemas/normalInt'
+        reimbursements:
+          type: array
+          items:
+            $ref: '#/components/schemas/reimbursement'
+
+    # ── Travel Account ─────────────────────────────────────────────
+
+    travelAccountType:
+      type: string
+      description: >
+        Type of travel account.
+        OSDM: TravelAccountType.
+        Transmodel: TRANSPORT CUSTOMER ACCOUNT TYPE.
+      x-tm: TRANSPORT CUSTOMER ACCOUNT
+      x-semantics:
+        transmodel: TRANSPORT CUSTOMER ACCOUNT
+        osdm: TravelAccountType
+      enum:
+        - LINKED_TICKET
+        - LOYALTY_CARD
+        - MULTI_RIDE
+        - REDUCTION_CARD
+        - TRAVEL_PASS
+
+    travelAccountConsumption:
+      type: object
+      description: >
+        A consumption event on a travel account (e.g. one ride used from a
+        multi-ride card, or points earned/spent on a loyalty card).
+        OSDM: TravelAccountConsumption.
+      properties:
+        consumedAt:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        description:
+          $ref: './components.yaml#/components/schemas/normalString'
+        amount:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+        points:
+          type: integer
+          description: Points earned or spent (for loyalty accounts).
+        remainingBalance:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+        remainingRides:
+          type: integer
+          description: Remaining rides (for multi-ride accounts).
+
+    travelAccount:
+      type: object
+      description: >
+        A passenger's travel account. May be a loyalty card (points/miles),
+        a multi-ride card (stored rides), a reduction card (entitling to
+        discounted fares), a travel pass (unlimited travel in a zone/period),
+        or a linked ticket (tied to a specific journey).
+        OSDM equivalent: AbstractTravelAccount + subtypes.
+        Transmodel: TRANSPORT CUSTOMER ACCOUNT.
+      x-tm: TRANSPORT CUSTOMER ACCOUNT
+      x-semantics:
+        transmodel: TRANSPORT CUSTOMER ACCOUNT
+        osdm: AbstractTravelAccount
+      required: [accountType, issuer, number, validFrom, validUntil]
+      properties:
+        accountType:
+          $ref: '#/components/schemas/travelAccountType'
+        issuer:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Name or code of the issuing operator.
+        number:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: Account/card number.
+        holderName:
+          $ref: './components.yaml#/components/schemas/normalString'
+        validFrom:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        validUntil:
+          $ref: './components.yaml#/components/schemas/dateTime'
+        currentBalance:
+          $ref: './components.yaml#/components/schemas/amountOfMoney'
+          description: Current monetary balance (for value-based accounts).
+        currentPoints:
+          type: integer
+          description: Current loyalty points.
+        remainingRides:
+          type: integer
+          description: Remaining rides (for multi-ride accounts).
+        regionalConstraint:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: >
+            Zone or regional validity constraint (e.g. `ZONE_AB`,
+            `NATIONAL`, `INTERNATIONAL`).
+        consumptions:
+          type: array
+          description: Recent consumption events. Present when `embed=CONSUMPTIONS`.
+          items:
+            $ref: '#/components/schemas/travelAccountConsumption'
+
+    travelAccountResult:
+      type: object
+      description: Result of a travel account query.
+      required: [travelAccount]
+      properties:
+        travelAccount:
+          $ref: '#/components/schemas/travelAccount'
+
+paths:
+
+  # ─────────────────────────────────────────────────────────────────
+  # Seat Map Processes
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/search-seat-map/execute:
+    post:
+      operationId: executeSearchSeatMap
+      summary: Search Seat Map
+      description: >
+        Retrieves the graphical seat/place availability map for the coaches of
+        a specific train service. The result shows which seats are available,
+        reserved, or blocked, taking into account the passenger's fare class
+        and accommodation type preferences.
+
+        Use this process to display a visual seat picker in the booking UI.
+        Once a seat is selected, use `04-presales.yaml assign-seat` to
+        actually assign the seat to a traveller.
+
+        Transmodel: SEAT AVAILABILITY for SERVICE JOURNEY.
+        OSDM equivalent: POST /availabilities/vehicle-place-map.
+      tags: [Rail Seat Maps]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/seatMapSearchInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Seat map retrieved successfully.
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+            Content-Language:
+              $ref: './components.yaml#/components/headers/Content-Language'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/seatMapResult'
+        '201':
+          description: Job accepted for asynchronous processing.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — seat map ready
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/seatMapResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  # ─────────────────────────────────────────────────────────────────
+  # On-Hold Offer Processes
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/on-hold-offer/execute:
+    post:
+      operationId: executeOnHoldOffer
+      summary: Place On-Hold Offer
+      description: >
+        Extends the TTL of a PACKAGE booking by placing it on hold. A fee and/or
+        deposit may be charged. Returns the on-hold offer details including the
+        new expiry timestamp.
+
+        Useful when the passenger needs extra time to complete a group booking
+        or arrange payment but does not want to lose the reserved seats.
+
+        Transmodel: BOOKING reservation extension.
+        OSDM equivalent: POST /bookings/{bookingId}/on-hold-offer.
+      tags: [Rail On-Hold]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/onHoldOfferInputs'
+      responses:
+        '200':
+          description: On-hold offer created. Booking TTL extended.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/onHoldOfferResult'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+        '409':
+          description: >
+            Conflict — on-hold not permitted (e.g. booking already confirmed,
+            or the maximum extension limit has been reached).
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+
+  /processes/confirm-on-hold/execute:
+    post:
+      operationId: executeConfirmOnHold
+      summary: Confirm On-Hold Offer
+      description: >
+        Confirms a previously placed on-hold offer. This commits the extended
+        TTL and charges the on-hold fee. The booking remains in its current
+        state until the passenger proceeds to `05-purchase.yaml`.
+
+        OSDM equivalent: PATCH /bookings/{bookingId}/on-hold-offer/{id}.
+      tags: [Rail On-Hold]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, onHoldOfferId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    onHoldOfferId:
+                      $ref: './components.yaml#/components/schemas/normalString'
+      responses:
+        '200':
+          description: On-hold offer confirmed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/onHoldOfferResult'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+
+  /processes/cancel-on-hold/execute:
+    post:
+      operationId: executeCancelOnHold
+      summary: Cancel On-Hold Offer
+      description: >
+        Cancels a pending on-hold offer without charging the fee. The booking
+        returns to its original TTL. Cannot be called after `confirm-on-hold`.
+
+        OSDM equivalent: DELETE /bookings/{bookingId}/on-hold-offer/{id}.
+      tags: [Rail On-Hold]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, onHoldOfferId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    onHoldOfferId:
+                      $ref: './components.yaml#/components/schemas/normalString'
+      responses:
+        '200':
+          description: On-hold offer cancelled.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cancelled:
+                    type: boolean
+                  onHoldOfferId:
+                    $ref: './components.yaml#/components/schemas/normalString'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+        '409':
+          description: On-hold already confirmed; cannot cancel.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Exchange Processes
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/search-exchange-offers/execute:
+    post:
+      operationId: executeSearchExchangeOffers
+      summary: Search Exchange Offers
+      description: >
+        Searches for available alternative journeys to which the passenger can
+        exchange one or more purchased fulfillments. Returns a list of exchange
+        offers with price differences.
+
+        Transmodel: BOOKING exchange offer search.
+        OSDM equivalent: POST /bookings/{bookingId}/exchange-offers.
+      tags: [Rail Exchange]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/exchangeOfferSearchInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Exchange offers found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exchangeOfferCollection'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — exchange offers ready
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/exchangeOfferCollection'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/exchange-offer/execute:
+    post:
+      operationId: executeExchangeOffer
+      summary: Initiate Exchange
+      description: >
+        Initiates a provisional exchange operation by selecting one or more
+        exchange offers. The exchange enters `PREBOOKED` state. No fulfillments
+        are issued yet. The passenger must call `confirm-exchange` to finalise.
+
+        Transmodel: provisional BOOKING exchange.
+        OSDM equivalent: POST /bookings/{bookingId}/exchange-operations.
+      tags: [Rail Exchange]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/exchangeOperationInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Exchange operation initiated (PREBOOKED).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exchangeOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '409':
+          description: Exchange not permitted by fare conditions or availability.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — exchange initiated
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/exchangeOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/confirm-exchange/execute:
+    post:
+      operationId: executeConfirmExchange
+      summary: Confirm Exchange
+      description: >
+        Confirms a provisional exchange operation. The original fulfillments are
+        revoked and new travel documents are issued. The exchange transitions
+        from `PREBOOKED` to `CONFIRMED` → `FULFILLED`.
+
+        Transmodel: confirmed BOOKING exchange with FULFILLMENT issuance.
+        OSDM equivalent: PATCH /bookings/{bookingId}/exchange-operations/{id}.
+      tags: [Rail Exchange]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/confirmExchangeInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Exchange confirmed. New fulfillments issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exchangeOperationResult'
+        '201':
+          description: Job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+        '409':
+          description: Exchange already confirmed or expired.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — exchange confirmed
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/exchangeOperationResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  /processes/cancel-exchange/execute:
+    post:
+      operationId: executeCancelExchange
+      summary: Cancel Exchange
+      description: >
+        Cancels a provisional exchange operation in `PREBOOKED` state without
+        committing to the new itinerary. The original fulfillments remain valid.
+
+        Cannot be called after `confirm-exchange`.
+
+        OSDM equivalent: DELETE /bookings/{bookingId}/exchange-operations/{id}.
+      tags: [Rail Exchange]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, exchangeOperationId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    exchangeOperationId:
+                      $ref: './components.yaml#/components/schemas/normalString'
+      responses:
+        '200':
+          description: Exchange operation cancelled.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cancelled:
+                    type: boolean
+                  exchangeOperationId:
+                    $ref: './components.yaml#/components/schemas/normalString'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          $ref: './components.yaml#/components/responses/404NotFound'
+        '409':
+          description: Exchange already confirmed; cannot cancel.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Reimbursement Processes
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/reimbursement-claim/execute:
+    post:
+      operationId: executeReimbursementClaim
+      summary: Submit Reimbursement Claim
+      description: >
+        Submits a back-office reimbursement claim for a passenger who did not
+        travel, only partially travelled, or is entitled to compensation under
+        EU Passenger Rights Regulations (PRR).
+
+        The claim is processed asynchronously by the operator's back-office team.
+        The status can be tracked via `GET /collections/reimbursements/items`.
+
+        Transmodel: REIMBURSEMENT CLAIM / EU PASSENGER RIGHTS.
+        OSDM equivalent: POST /bookings/{bookingId}/reimbursements.
+      tags: [Rail Reimbursement]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-async
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  $ref: '#/components/schemas/reimbursementInputs'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        '200':
+          description: Claim submitted (synchronous — immediate decision).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reimbursementResult'
+        '201':
+          description: Claim submitted and queued for back-office review.
+          headers:
+            Location:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Async callback — reimbursement claim status update
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/reimbursementResult'
+              responses:
+                '200':
+                  description: Callback received.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Travel Account Process
+  # ─────────────────────────────────────────────────────────────────
+
+  /processes/get-travel-account/execute:
+    post:
+      operationId: executeGetTravelAccount
+      summary: Get Travel Account
+      description: >
+        Retrieves the passenger's travel account from the operator's system.
+        The `issuer` and `number` uniquely identify the account across operators.
+
+        Optional `embedConsumptions` flag includes recent consumption events in
+        the response (useful for displaying a statement/history).
+
+        Transmodel: TRANSPORT CUSTOMER ACCOUNT.
+        OSDM equivalent: GET /travel-accounts (wrapped as OGC process for
+        consistency).
+      tags: [Rail Account]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [issuer, accountNumber]
+                  properties:
+                    issuer:
+                      $ref: './components.yaml#/components/schemas/normalString'
+                      description: >
+                        Issuing operator code (e.g. `DB`, `SBB`, `NS`, `SNCF`).
+                    accountNumber:
+                      $ref: './components.yaml#/components/schemas/normalString'
+                      description: Account/card number.
+                    embedConsumptions:
+                      type: boolean
+                      default: false
+                      description: >
+                        If `true`, include recent consumption events in the
+                        response.
+      responses:
+        '200':
+          description: Travel account retrieved.
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/travelAccountResult'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        '404':
+          description: Travel account not found for the given issuer and number.
+          content:
+            application/problem+json:
+              schema:
+                $ref: './components.yaml#/components/schemas/errorResponse'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Collections
+  # ─────────────────────────────────────────────────────────────────
+
+  /collections/coach-layouts/items:
+    get:
+      operationId: getCoachLayouts
+      summary: Get Coach Deck Layouts
+      description: >
+        Returns the static graphical coach deck layouts for a train service or
+        vehicle type. These layouts define the physical arrangement of seats,
+        compartments, and graphic elements.
+
+        For per-departure seat availability, use `search-seat-map` instead.
+
+        Transmodel: TRAIN COMPONENT layout.
+        OSDM equivalent: GET /coach-deck-layouts.
+      tags: [Rail Seat Maps]
+      security:
+        - OpenData: []
+        - BearerAuth: []
+      parameters:
+        - name: vehicleTypeRef
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by vehicle type reference.
+        - name: serviceJourneyRef
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by service journey (train run) reference.
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+      responses:
+        '200':
+          description: Coach deck layouts.
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/coachDeckLayoutCollection'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+
+  /collections/exchange-operations/items:
+    get:
+      operationId: getExchangeOperations
+      summary: Get Exchange Operations
+      description: >
+        Returns active or historical exchange operations for a PACKAGE.
+        Transmodel: BOOKING exchange history.
+        OSDM equivalent: GET /bookings/{bookingId}/exchange-operations.
+      tags: [Rail Exchange]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/packageId'
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/exchangeStatus'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        '200':
+          description: List of exchange operations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exchangeOperationCollection'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+
+  /collections/reimbursements/items:
+    get:
+      operationId: getReimbursements
+      summary: Get Reimbursement Claims
+      description: >
+        Returns reimbursement claims submitted for a PACKAGE, with current
+        back-office status.
+        OSDM equivalent: GET /bookings/{bookingId}/reimbursements (extended).
+      tags: [Rail Reimbursement]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/packageId'
+        - name: backOfficeStatus
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/backOfficeStatus'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        '200':
+          description: List of reimbursement claims.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/reimbursementCollection'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+
+  /collections/travel-account/items:
+    get:
+      operationId: getTravelAccountCollection
+      summary: Get Travel Accounts
+      description: >
+        Returns travel accounts linked to the authenticated passenger's profile.
+        OSDM equivalent: GET /travel-accounts.
+      tags: [Rail Account]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - name: accountType
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/travelAccountType'
+        - name: issuer
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by issuing operator.
+        - name: embedConsumptions
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+      responses:
+        '200':
+          description: List of travel accounts.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [numberMatched, numberReturned, travelAccounts]
+                properties:
+                  numberMatched:
+                    $ref: './components.yaml#/components/schemas/normalInt'
+                  numberReturned:
+                    $ref: './components.yaml#/components/schemas/normalInt'
+                  travelAccounts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/travelAccount'
+        '400':
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        '401':
+          $ref: './components.yaml#/components/responses/401Unauthorized'

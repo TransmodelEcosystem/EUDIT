@@ -20,7 +20,7 @@ Returns the set of routes (port pairs + operator) that an operator makes availab
 Returns the operator's master reference tables for passenger age-band categories (Adult/Child/Infant with min/max age bounds) and vehicle dimension categories (lead vehicle and trailer), so that clients can build correctly validated search requests.
 
 **Message(s):** `GetPassengerAndVehicleTypesRequest` / `GetPassengerAndVehicleTypesResponse`
-**Unique to FerryGateway:** Yes — combining TRANSPORT CUSTOMER USER PROFILE definitions and VEHICLE TYPE dimensional catalogues in a single reference-data query has no equivalent in OSDM, TOMP-API, BoB, or OMSA.
+**Unique to FerryGateway:** Partially — TOMP-API and OMSA expose user profile catalogues covering passenger type definitions, and TOMP-API 1.6+ includes a product model that can describe vehicle types. What remains distinctive to FerryGateway is the combination of passenger age-band categories and vehicle dimensional catalogues (lead vehicle and trailer) in a single reference-data query, along with the ferry-specific age-range bounds and vehicle dimension parameters.
 
 ---
 
@@ -82,7 +82,7 @@ Retrieves the catalogue of purchasable on-board and land services available for 
 Places a temporary hold on a sailing and fare for a specified party without committing to a binding purchase. The reservation has status `Reserved` and creates a CUSTOMER RESERVATION CREATION EVENT. The booking may later be confirmed or allowed to expire.
 
 **Message(s):** `ReservationRequest` / `ReservationResponse`
-**Unique to FerryGateway:** No — temporary reservation/hold workflows exist in OSDM and BoB. The FerryGateway implementation is distinguished by its inclusion of vehicles and pets in the held party.
+**Unique to FerryGateway:** No — temporary reservation/hold workflows exist in OSDM, BoB, OMSA (`select-offers/execute` placing a package in `selected` status), and TOMP-API booking initiation. The FerryGateway implementation is distinguished by its inclusion of vehicles and pets in the held party.
 
 ---
 
@@ -91,7 +91,7 @@ Places a temporary hold on a sailing and fare for a specified party without comm
 Converts an existing temporary reservation (status `Reserved`) into a binding confirmed booking (status `Booked`). Triggers the transition from a CUSTOMER RESERVATION CREATION EVENT to a confirmed CUSTOMER PURCHASE PACKAGE.
 
 **Message(s):** `ConfirmReservationRequest` / `ConfirmReservationResponse`
-**Unique to FerryGateway:** No — a two-step reserve-then-confirm pattern also appears in OSDM and BoB. The FerryGateway variant is structurally equivalent.
+**Unique to FerryGateway:** No — a two-step reserve-then-confirm pattern also appears in OSDM, BoB, OMSA (`confirm-package/execute`), and TOMP-API booking confirmation. The FerryGateway variant is structurally equivalent.
 
 ---
 
@@ -120,7 +120,7 @@ Retrieves the full details of an existing booking by its booking reference. Retu
 Books a cabin or berth category for specified passengers on a sailing. The accommodation service carries occupancy constraints (min/max occupants, berth count), accessibility flag, pet-allowed flag, and allergy-friendly flag. Mandatory cabin routes declare `IsAccommodationMandatory` in the sailing response.
 
 **Message(s):** `GetServicesRequest` / `GetServicesResponse` (Mode = `OnBoardAccommodations`), then included in `BookRequest` / `ReservationRequest`
-**Unique to FerryGateway:** Yes — cabin/berth accommodation as a structured first-class booking entity with occupancy constraints, accessibility indicators, and per-passenger assignment is specific to the ferry domain and has no equivalent in OSDM, TOMP-API, BoB, or OMSA.
+**Unique to FerryGateway:** Partially — OMSA `assign-asset/execute` and TOMP-API can model cabin or berth as a generic assignable asset. What remains distinctive to FerryGateway is the structured treatment of cabin/berth as a first-class booking entity with occupancy constraints (min/max occupants, berth count), accessibility flags, pet-allowed flags, allergy-friendly flags, and per-passenger assignment — attributes that are specific to the ferry accommodation domain.
 
 ---
 
@@ -129,7 +129,7 @@ Books a cabin or berth category for specified passengers on a sailing. The accom
 Books a meal option for specified passengers on a sailing. Meal options carry diet-type specifications (Meat, Fish, Vegetarian, Vegan, Celiac, Jewish, Islamic), time slot, and on-board facility code. Passenger age-band (adult/child) determines applicable meal choices.
 
 **Message(s):** `GetServicesRequest` / `GetServicesResponse` (Mode = `OnBoardMeal`), then included in `BookRequest` / `ReservationRequest`
-**Unique to FerryGateway:** Partially — catering service booking does not appear as a structured workflow in OSDM, TOMP-API, BoB, or OMSA; it is effectively unique to the ferry domain in this standard set.
+**Unique to FerryGateway:** No — OMSA `assign-ancillary/execute` and TOMP-API ancillary assignment both cover catering and meal services as assignable ancillaries. The FerryGateway-specific elements are the structured diet-type specification (Meat, Fish, Vegetarian, Vegan, Celiac, Jewish, Islamic), the time slot and on-board facility code, and the per-passenger age-band meal selection.
 
 ---
 
@@ -138,7 +138,7 @@ Books a meal option for specified passengers on a sailing. Meal options carry di
 Books a generic on-board facility (cinema, conference room, lounge, spa, internet, excursion) for a specified number of units or passengers on a sailing.
 
 **Message(s):** `GetServicesRequest` / `GetServicesResponse` (Mode = `OnBoard`), then included in `BookRequest` / `ReservationRequest`
-**Unique to FerryGateway:** Partially — ancillary on-board service selection does not appear as a structured workflow in OSDM, TOMP-API, BoB, or OMSA.
+**Unique to FerryGateway:** No — OMSA `assign-ancillary/execute` and TOMP-API ancillary assignment both support generic on-board service selection. The FerryGateway-specific elements are the ferry-domain service categories (cinema, conference room, lounge, spa, internet, excursion, kennel) and the unit-count booking model.
 
 ---
 
@@ -149,7 +149,7 @@ Books a generic on-board facility (cinema, conference room, lounge, spa, interne
 Queries available connecting bus services to or from the ferry port for a specific sailing. The response describes bus departure/arrival times, stop identifiers, per-passenger-category pricing, and direction (to sailing / from sailing). This connects the ferry leg into a door-to-port multimodal journey.
 
 **Message(s):** `GetBusTransferRequest` / `GetBusTransferResponse`
-**Unique to FerryGateway:** Partially — multimodal connection queries exist in TOMP-API and InterMOD; however, a purpose-built ferry-port bus transfer query (with `ToSailing` / `FromSailing` directionality and per-category fares) is specific to FerryGateway.
+**Unique to FerryGateway:** Partially — multimodal connection queries exist in TOMP-API and InterMOD. Note that InterMOD is an in-scope EUDIT standard; its specifications are available under `wiki/specifications/`. A purpose-built ferry-port bus transfer query (with `ToSailing` / `FromSailing` directionality and per-category fares) remains specific to FerryGateway; InterMOD and TOMP-API do not model the sailing-relative direction parameter.
 
 ---
 
@@ -189,7 +189,7 @@ Submits the cancellation of a confirmed booking. The request includes the expect
 Retrieves the list of financial invoices issued to an agent or operator within a specified date range. Each invoice aggregates one or more confirmed CUSTOMER PURCHASE PACKAGEs and carries totals for amount, commission, tax base, tax amount, and tax rate. The invoice lifecycle (`Issued` / `Paid` / `Payment Delayed`) has no Transmodel equivalent.
 
 **Message(s):** `GetInvoicesRequest` / `GetInvoicesResponse`
-**Unique to FerryGateway:** Partially — OSDM and BoB have no structured invoice-retrieval workflow; the FerryGateway invoicing message is a B2B settlement mechanism specific to the ferry distribution channel, not modelled elsewhere in this standard set.
+**Unique to FerryGateway:** No — TOMP-API `GET /collections/payments/items` provides a comparable B2B payment/invoice collection endpoint. OSDM and BoB have no structured invoice-retrieval workflow. The FerryGateway invoicing message remains distinctive in its aggregation of CUSTOMER PURCHASE PACKAGEs into a single invoice with commission, tax base, and tax-rate breakdown.
 
 ---
 
@@ -211,7 +211,7 @@ Returns the promotional offer codes defined by an operator, together with each c
 A QR code travel document (boarding pass equivalent) is returned as part of any booking or booking-retrieval response (`BookResponse`, `RecallBookingResponse`, `ConfirmReservationResponse`). QR codes may be issued at the booking level and/or per-passenger. They are the digital materialisation of a TRAVEL DOCUMENT against the CUSTOMER PURCHASE PACKAGE.
 
 **Message(s):** Embedded in `BookResponse` / `RecallBookingResponse` / `ConfirmReservationResponse` (`QrCode` element)
-**Unique to FerryGateway:** No — QR-code / barcode travel documents are produced by OSDM and BoB. The FerryGateway implementation is equivalent, returning base64-encoded QR data in the booking response.
+**Unique to FerryGateway:** No — QR-code / barcode travel documents are produced by OSDM, BoB, and OMSA (`GET /collections/travel-documents/items`). TOMP-API also covers digital travel documents. OMSA notably supports multiple travel document formats (QR, Aztec, NFC token, Bluetooth key, external link) in addition to QR codes. The FerryGateway implementation is equivalent, returning base64-encoded QR data in the booking response.
 
 ---
 
@@ -220,7 +220,7 @@ A QR code travel document (boarding pass equivalent) is returned as part of any 
 | Use Case | Message Pair | Unique to FerryGateway |
 |----------|-------------|------------------------|
 | get routes | `GetRoutes` / `GetRoutesResponse` | Yes |
-| get passenger and vehicle types | `GetPassengerAndVehicleTypesRequest` / `GetPassengerAndVehicleTypesResponse` | Yes |
+| get passenger and vehicle types | `GetPassengerAndVehicleTypesRequest` / `GetPassengerAndVehicleTypesResponse` | Partially |
 | get timetables | `GetTimeTablesRequest` / `GetTimeTablesResponse` | Partially |
 | search sailings | `GetSailingsRequest` / `GetSailingsResponse` | Yes |
 | filter mini-cruise sailings | `GetSailingsRequest` / `GetSailingsResponse` | Yes |
@@ -230,13 +230,13 @@ A QR code travel document (boarding pass equivalent) is returned as part of any 
 | confirm reservation | `ConfirmReservationRequest` / `ConfirmReservationResponse` | No |
 | create binding booking | `BookRequest` / `BookResponse` | No |
 | retrieve booking | `RecallBookingRequest` / `RecallBookingResponse` | No |
-| select cabin or berth accommodation | `GetServicesRequest` + `BookRequest` | Yes |
-| select meal service | `GetServicesRequest` + `BookRequest` | Partially |
-| select generic on-board service | `GetServicesRequest` + `BookRequest` | Partially |
+| select cabin or berth accommodation | `GetServicesRequest` + `BookRequest` | Partially |
+| select meal service | `GetServicesRequest` + `BookRequest` | No |
+| select generic on-board service | `GetServicesRequest` + `BookRequest` | No |
 | query connecting bus transfers | `GetBusTransferRequest` / `GetBusTransferResponse` | Partially |
 | select land service | `GetServicesRequest` + `BookRequest` | Partially |
 | query cancellation charge | `GetCancelChargeRequest` / `GetCancelChargeResponse` | No |
 | cancel booking | `CancelBookingRequest` / `CancelBookingResponse` | No |
-| retrieve invoices | `GetInvoicesRequest` / `GetInvoicesResponse` | Partially |
+| retrieve invoices | `GetInvoicesRequest` / `GetInvoicesResponse` | No |
 | retrieve offer codes | `GetOfferCodesRequest` / `GetOfferCodesResponse` | No |
 | issue QR code travel document | Embedded in booking responses | No |

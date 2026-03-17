@@ -1,0 +1,604 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Authentication & Customer Management
+  description: >
+    OAuth 2.0 token endpoints and TRANSPORT CUSTOMER (profile + cards) resources.
+
+    Authentication:
+    - `POST /oauth/token` — token grant
+    - `POST /oauth/token/refresh` — token refresh
+    - `POST /oauth/token/revoke` — token revocation (RFC 7009)
+    - `GET  /oauth/jwks` — public key set (JWKS, RFC 7517)
+
+    Customer management:
+    - `POST /customers` — register a new TRANSPORT CUSTOMER
+    - `GET/PUT/DELETE /customers/{customerId}` — profile management
+    - `GET/POST /customers/{customerId}/cards` — card registration and listing
+    - `GET/DELETE /customers/{customerId}/cards/{cardId}` — card detail
+
+    Transmodel concept: TRANSPORT CUSTOMER.
+  version: 0.1.0
+  contact:
+    name: EUDIT Working Group (CEN TC278)
+  license:
+    name: European Union Public Licence (EUPL) 1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Authentication
+    description: Token issuance, refresh, revocation, and JWKS
+  - name: Customers
+    description: TRANSPORT CUSTOMER profile management
+  - name: Cards
+    description: Customer discount / loyalty card management
+
+paths:
+
+  /oauth/token:
+    post:
+      operationId: createToken
+      summary: Obtain access token
+      description: >
+        Standard OAuth 2.0 token endpoint (RFC 6749).
+        Supports `client_credentials`, `password`, `refresh_token`, and
+        `authorization_code` grant types. Returns a JWT access token.
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type]
+              properties:
+                grant_type:
+                  type: string
+                  enum:
+                    - client_credentials
+                    - password
+                    - refresh_token
+                    - authorization_code
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                  format: password
+                refresh_token:
+                  type: string
+                code:
+                  type: string
+                redirect_uri:
+                  type: string
+                  format: uri
+                scope:
+                  type: string
+                  example: "read write"
+      responses:
+        "200":
+          description: Token issued successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+              example:
+                access_token: "eyJhbGciOiJSUzI1NiJ9..."
+                token_type: Bearer
+                expires_in: 3600
+                refresh_token: "dGhpcyBpcyBhIHJlZnJlc2ggdG9rZW4..."
+                scope: "read write"
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /oauth/token/refresh:
+    post:
+      operationId: refreshToken
+      summary: Refresh access token
+      description: >
+        Obtains a new access token using a valid refresh token.
+        The old refresh token is invalidated; a new one is issued.
+      tags: [Authentication]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+                clientId:
+                  type: string
+      responses:
+        "200":
+          description: Token refreshed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tokenResponse'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /oauth/token/revoke:
+    post:
+      operationId: revokeToken
+      summary: Revoke a token (RFC 7009)
+      description: >
+        Revokes an access or refresh token. After revocation the token is
+        immediately rejected by all protected endpoints.
+      tags: [Authentication]
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+                  description: The token to revoke.
+                tokenTypeHint:
+                  type: string
+                  enum: [access_token, refresh_token]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /oauth/jwks:
+    get:
+      operationId: getJwks
+      summary: JSON Web Key Set
+      description: >
+        Returns the server's public key set (RFC 7517 / RFC 7518).
+        Clients use these keys to verify JWT signatures without contacting
+        the authorisation server on each request.
+      tags: [Authentication]
+      security:
+        - OpenData: []
+      responses:
+        "200":
+          description: JWKS returned successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/jwks'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /customers:
+    post:
+      operationId: createCustomer
+      summary: Register a TRANSPORT CUSTOMER
+      description: >
+        Creates a new TRANSPORT CUSTOMER account. Returns `201 Created`
+        with a `Location` header pointing to the new customer resource.
+      tags: [Customers]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customerRegistration'
+            example:
+              email: maria.rossi@example.com
+              firstName: Maria
+              lastName: Rossi
+              dateOfBirth: "1985-03-12"
+              phone: "+39 06 1234 5678"
+              preferredLanguage: it
+      responses:
+        "201":
+          description: Customer registered. See `Location` header for the resource URL.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /customers/{customerId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/customerId'
+
+    get:
+      operationId: getCustomer
+      summary: Get TRANSPORT CUSTOMER profile
+      description: Returns the full profile of an authenticated TRANSPORT CUSTOMER.
+      tags: [Customers]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        "200":
+          description: Customer profile returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    put:
+      operationId: replaceCustomer
+      summary: Replace TRANSPORT CUSTOMER profile
+      description: >
+        Full replacement of the customer profile. Requires a current `ETag`
+        in the `If-Match` header for optimistic concurrency.
+      tags: [Customers]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/customerRegistration'
+      responses:
+        "200":
+          description: Customer profile replaced.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/customer'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: deleteCustomer
+      summary: Deregister TRANSPORT CUSTOMER
+      description: >
+        Permanently deregisters the customer account. All personal data is
+        queued for deletion per the applicable data-protection regulation.
+        Returns `204 No Content` on success.
+      tags: [Customers]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /customers/{customerId}/cards:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/customerId'
+
+    get:
+      operationId: listCustomerCards
+      summary: List customer discount / loyalty cards
+      description: >
+        Returns all CARD resources registered to the TRANSPORT CUSTOMER.
+        Cards are referenced during offer search to apply applicable discounts.
+      tags: [Cards]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Card list returned.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/card'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    post:
+      operationId: registerCard
+      summary: Register a card
+      description: >
+        Registers a new discount, loyalty, or entitlement card for the customer.
+        Returns `201 Created` with a `Location` header.
+      tags: [Cards]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/cardRegistration'
+            example:
+              cardTypeId: "railcard-senior-uk"
+              cardNumber: "1234567890"
+              expiresAt: "2027-12-31"
+      responses:
+        "201":
+          description: Card registered.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/card'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /customers/{customerId}/cards/{cardId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/customerId'
+      - $ref: './components.yaml#/components/parameters/cardId'
+
+    get:
+      operationId: getCard
+      summary: Get a card
+      description: Returns the full detail of a registered CARD.
+      tags: [Cards]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      responses:
+        "200":
+          description: Card returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/card'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: removeCard
+      summary: Remove a card
+      description: Removes the card registration from the customer profile.
+      tags: [Cards]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+    OAuthPKI:
+      $ref: './components.yaml#/components/securitySchemes/OAuthPKI'
+    OpenData:
+      $ref: './components.yaml#/components/securitySchemes/OpenData'
+
+  schemas:
+
+    tokenResponse:
+      type: object
+      description: OAuth 2.0 token response (RFC 6749 §5.1).
+      required: [access_token, token_type]
+      properties:
+        access_token:
+          type: string
+          description: JWT access token (compact serialisation).
+        token_type:
+          type: string
+          enum: [Bearer]
+        expires_in:
+          type: integer
+          description: Lifetime of the access token in seconds.
+          example: 3600
+        refresh_token:
+          type: string
+        scope:
+          type: string
+          example: "read write"
+        bobAuthToken:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobAuthToken'
+          description: >
+            BoB-specific auth token, present when the token was issued via
+            BoB mTLS authentication (OAuthPKI scheme).
+
+    jwks:
+      type: object
+      description: JSON Web Key Set (RFC 7517).
+      required: [keys]
+      properties:
+        keys:
+          type: array
+          items:
+            type: object
+            description: A single JWK (key type, algorithm, key ID, and public key material).
+            additionalProperties: true
+      example:
+        keys:
+          - kty: RSA
+            use: sig
+            alg: RS256
+            kid: "2024-01-01"
+            n: "sY2ik..."
+            e: AQAB
+
+    customerRegistration:
+      type: object
+      description: Fields required to register or replace a TRANSPORT CUSTOMER.
+      required: [email, firstName, lastName]
+      properties:
+        email:
+          type: string
+          format: email
+        firstName:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        lastName:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        dateOfBirth:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/date'
+        phone:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/shortString'
+        preferredLanguage:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/tinyString'
+        address:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/address'
+        accessibilityNeeds:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/accessibilityNeed'
+
+    customer:
+      allOf:
+        - $ref: '#/components/schemas/customerRegistration'
+        - type: object
+          required: [id, createdAt]
+          properties:
+            id:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+            createdAt:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+            updatedAt:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+            status:
+              type: string
+              enum: [active, suspended, deregistered]
+
+    cardRegistration:
+      type: object
+      description: Fields required to register a discount or loyalty card.
+      required: [cardTypeId]
+      properties:
+        cardTypeId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        cardNumber:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        expiresAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+
+    card:
+      allOf:
+        - $ref: '#/components/schemas/cardRegistration'
+        - type: object
+          required: [id, cardTypeId]
+          properties:
+            id:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+            cardType:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/cardTypeReference'
+            registeredAt:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+            status:
+              type: string
+              enum: [active, expired, revoked]

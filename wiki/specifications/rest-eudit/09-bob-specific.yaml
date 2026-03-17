@@ -1,0 +1,1398 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – BoB-Specific
+  description: >
+    RESTful resources for the **BoB (Beskrivning och Biljett)** interoperable
+    mobile-ticketing standard used in Nordic public transport.
+
+    BoB defines a binary ticket format (MTB), a key distribution mechanism
+    (KDK), a ticket lifecycle protocol (TICKLE), and a trust hierarchy based
+    on TLS client certificates mapped to JWT claims.
+
+    Resources:
+    - `POST   /bob/auth-tokens` — obtain a BoB JWT auth token
+    - `GET    /bob/tickets` — list BoB tickets
+    - `GET    /bob/tickets/{bobTicketId}` — get a BoB ticket
+    - `PATCH  /bob/tickets/{bobTicketId}` — update ticket status (activate, revoke, refund, hinder)
+    - `GET    /bob/tickets/{bobTicketId}/token-bundles` — list token bundles for a ticket
+    - `POST   /bob/tickets/{bobTicketId}/revocations` — revoke a ticket
+    - `POST   /bob/tickets/{bobTicketId}/suspensions` — suspend a ticket
+    - `DELETE /bob/tickets/{bobTicketId}/suspensions` — unsuspend a ticket
+    - `POST   /bob/tickets/{bobTicketId}/recoveries` — recover a ticket to a new device
+    - `POST   /bob/token-bundles` — create a token bundle
+    - `GET    /bob/token-bundles` — list token bundles
+    - `GET    /bob/token-bundles/{bobTicketId}` — get a token bundle
+    - `POST   /bob/validation-events` — submit a validation event (online validation or batch)
+    - `GET    /bob/validation-events` — list validation events
+    - `GET    /bob/blacklist` — get the revocation blacklist
+    - `POST   /bob/blacklist` — add an entry to the blacklist
+    - `GET    /bob/whitelist` — get the pre-authorization whitelist
+    - `POST   /bob/whitelist` — add an entry to the whitelist
+    - `GET    /bob/tickle-macros` — list TICKLE macro sets
+    - `GET    /bob/tickle-macros/{serial}` — get a specific TICKLE macro set
+    - `POST   /bob/fraud-checks` — run a velocity-based fraud check
+
+    Transmodel references: TRAVEL DOCUMENT, FARE PRODUCT, TRANSPORT CUSTOMER.
+    BoB source specs: BoB Authentication.yaml, BoB Ticket.yaml,
+    BoB Validation.yaml.
+  version: 0.1.0
+  contact:
+    name: EUDIT Working Group (CEN TC278)
+  license:
+    name: European Union Public Licence (EUPL) 1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: BoBAuth
+    description: BoB authentication token issuance
+  - name: BoBTickets
+    description: BoB ticket issuance, activation, and lifecycle management
+  - name: BoBTokenBundles
+    description: BoB token bundle management
+  - name: BoBValidation
+    description: Ticket validation, blacklist, whitelist, and fraud detection
+  - name: BoBMacros
+    description: TICKLE macro sets for offline validity checking
+
+paths:
+
+  # ─────────────────────────────────────────────────────────────────
+  # BoB Auth Tokens
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/auth-tokens:
+
+    post:
+      operationId: createBobAuthToken
+      summary: Obtain a BoB auth token
+      description: >
+        Issues a BoB JWT auth token containing the `bobHok` (Holder-of-Key)
+        and `bobAuthZ` claims required for BoB ticket operations. The token
+        is bound to the device's public key (HoK binding).
+
+        BoB equivalent: POST /token (BoB Authentication spec).
+      tags: [BoBAuth]
+      security:
+        - OAuthPKI: []
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './components.yaml#/components/schemas/bobAuthRequest'
+      responses:
+        "201":
+          description: BoB auth token issued.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobAuthToken'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # BoB Tickets
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/tickets:
+
+    post:
+      operationId: issueBobTicket
+      summary: Issue BoB ticket(s)
+      description: >
+        Issues one or more BoB MTB tickets from a ticket manifest. The manifest
+        specifies the product(s), validity period, passenger category, and zones.
+
+        The response contains the issued ticket record(s) including the
+        base64url MTB payload ready for presentation to validator devices.
+
+        If `requestId` is supplied the operation is idempotent — duplicate
+        submissions return the original tickets (409 Conflict on hash collision
+        with different parameters).
+
+        Returns `201 Created` with a `Location` header for the primary ticket.
+
+        Transmodel: TRAVEL DOCUMENT issuance.
+        BoB equivalent: POST /ticket.
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/issueBobTicketRequest'
+      responses:
+        "201":
+          description: Ticket(s) issued successfully.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    minItems: 1
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTicket'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "409":
+          description: >
+            Conflict — ticket already issued for this manifest/requestId
+            combination (idempotency collision with different parameters).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    get:
+      operationId: listBobTickets
+      summary: List BoB tickets
+      description: >
+        Returns BoB ticket records, optionally filtered by PACKAGE or status
+        flags. BoB equivalent: GET /ticket.
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/filterPackageId'
+        - name: active
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Filter by active status.
+        - name: refunded
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Filter by refunded status.
+        - name: revoked
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Filter by revoked status.
+        - name: travellerId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by passenger identifier.
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Paginated list of BoB tickets.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTicket'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /bob/tickets/{bobTicketId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/bobTicketId'
+
+    get:
+      operationId: getBobTicket
+      summary: Get a BoB ticket
+      description: >
+        Returns the full record of a single BoB ticket, including the MTB
+        payload and lifecycle status flags.
+        BoB equivalent: GET /ticket/{ticketId}.
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        "200":
+          description: BoB ticket returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTicket'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /bob/tickets/{bobTicketId}/token-bundles:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/bobTicketId'
+
+    get:
+      operationId: getBobTicketTokenBundles
+      summary: List token bundles for a ticket
+      description: >
+        Returns all token bundles that contain this ticket.
+        BoB equivalent: GET /ticketbundle (filtered by ticketId).
+      tags: [BoBTokenBundles]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Token bundles returned.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTokenBundle'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /bob/tickets/{bobTicketId}/revocations:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/bobTicketId'
+
+    post:
+      operationId: revokeBobTicket
+      summary: Revoke a BoB ticket
+      description: >
+        Permanently revokes (invalidates) a BoB ticket. The ticket is added
+        to the blacklist automatically. Revocation is irreversible.
+
+        Returns `201 Created` with the updated ticket resource in the body.
+
+        Transmodel: TRAVEL DOCUMENT revocation.
+        BoB equivalent: PUT /ticket/{ticketId}/revoke.
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+                  description: Human-readable reason for revocation.
+      responses:
+        "201":
+          description: Ticket revoked.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTicket'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          description: Ticket is already revoked.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /bob/tickets/{bobTicketId}/suspensions:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/bobTicketId'
+
+    post:
+      operationId: suspendBobTicket
+      summary: Suspend a BoB ticket
+      description: >
+        Suspends (deactivates) a BoB ticket. Suspended tickets cannot be
+        validated until unsuspended. Useful for temporary blocking (e.g. lost
+        device report while recovery is arranged).
+
+        Returns `201 Created`.
+
+        BoB equivalent: PUT /ticket/{ticketId}/active (active=false).
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      responses:
+        "201":
+          description: Ticket suspended.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTicket'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          description: Ticket is already suspended or revoked.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: unsuspendBobTicket
+      summary: Unsuspend a BoB ticket
+      description: >
+        Re-activates a previously suspended BoB ticket so it can be validated
+        again. Returns `204 No Content`.
+
+        BoB equivalent: PUT /ticket/{ticketId}/active (active=true).
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          description: Ticket is revoked and cannot be unsuspended.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /bob/tickets/{bobTicketId}/recoveries:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/bobTicketId'
+
+    post:
+      operationId: recoverBobTicket
+      summary: Recover a BoB ticket to a new device
+      description: >
+        Recovers a BoB ticket to a new device (e.g. after device loss or reset).
+        The original ticket is revoked and a new ticket with identical product
+        validity is issued to the new device.
+
+        Returns `201 Created` with the new ticket(s) in the body.
+
+        Transmodel: TRAVEL DOCUMENT re-issuance.
+        BoB equivalent: POST /ticket with `recoverTicketId` in the manifest call.
+      tags: [BoBTickets]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/recoverBobTicketRequest'
+      responses:
+        "201":
+          description: Ticket recovered. New ticket(s) returned.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    minItems: 1
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTicket'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          description: Ticket not recoverable (already revoked, already recovered, etc.).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # BoB Token Bundles
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/token-bundles:
+
+    post:
+      operationId: createBobTokenBundle
+      summary: Create a BoB token bundle
+      description: >
+        Bundles multiple tickets into a single token bundle for pre-loading
+        onto a device (e.g. NFC card or offline validator). The bundle binds
+        the tickets to a specific token and device.
+
+        Returns `201 Created` with a `Location` header.
+
+        BoB equivalent: POST /ticketbundle.
+      tags: [BoBTokenBundles]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createTokenBundleRequest'
+      responses:
+        "201":
+          description: Token bundle created.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTokenBundle'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    get:
+      operationId: listBobTokenBundles
+      summary: List BoB token bundles
+      description: >
+        Returns token bundles, optionally filtered by PACKAGE or token ID.
+        BoB equivalent: GET /ticketbundle.
+      tags: [BoBTokenBundles]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/filterPackageId'
+        - name: tokenId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by token identifier.
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Paginated list of token bundles.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/bobTokenBundle'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # BoB Validation Events
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/validation-events:
+
+    post:
+      operationId: submitBobValidationEvent
+      summary: Submit validation event(s)
+      description: >
+        Submits one or more BoB ticket validation or inspection events.
+
+        **Single online validation**: supply a single event without
+        `eventResult`; the server evaluates validity and returns result code
+        and passenger/inspector messages.
+
+        **Batch offline report**: supply an array of events (each with
+        `localEventId` and `eventResult`) accumulated during a connectivity
+        outage. The batch is all-or-nothing.
+
+        If the same `localEventId` is submitted twice the server returns
+        `303 See Other` pointing to the original event.
+
+        Transmodel: TRAVEL DOCUMENT validation.
+        BoB equivalent: POST /validation/{ticketId} (online) /
+        POST /validation (batch).
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - name: mtb
+          in: query
+          required: false
+          schema:
+            type: string
+            format: byte
+          description: >
+            Base64url-encoded MTB data, provided when the MTB is not stored
+            server-side against the ticket record.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/submitValidationEventsRequest'
+      responses:
+        "200":
+          description: >
+            Online validation result (single event submitted without
+            `eventResult`).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationEventResult'
+        "201":
+          description: Batch validation events recorded.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [recorded]
+                properties:
+                  recorded:
+                    type: integer
+                    description: Number of events successfully recorded.
+        "303":
+          description: >
+            Duplicate submission — this `localEventId` was already recorded.
+            The `Location` header points to the original event.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    get:
+      operationId: listBobValidationEvents
+      summary: List validation events
+      description: >
+        Returns validation and inspection events, filterable by ticket ID and
+        event type. Results are in reverse-chronological order.
+        BoB equivalent: GET /ticket/{ticketId}/event.
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - name: ticketId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by BoB ticket identifier.
+        - name: eventType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [validation, inspection]
+          description: Filter by event type.
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Paginated list of validation events.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/validationEvent'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Blacklist
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/blacklist:
+
+    get:
+      operationId: getBobBlacklist
+      summary: Get the revocation blacklist
+      description: >
+        Returns the BoB revocation blacklist. Validator devices download this
+        list periodically to enable offline revocation checking.
+        BoB equivalent: GET /blacklist.
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: >
+            Return only entries added or updated since this timestamp
+            (incremental sync).
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Blacklist entries returned.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/blacklistEntry'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    post:
+      operationId: addToBlacklist
+      summary: Add an entry to the blacklist
+      description: >
+        Adds a ticket, token, or traveller identifier to the BoB revocation
+        blacklist. At least one of `ticketId`, `travellerId`, or `tokenId`
+        must be supplied.
+
+        Returns `201 Created` with a `Location` header.
+
+        Transmodel: TRAVEL DOCUMENT revocation.
+        BoB extension: write counterpart to GET /blacklist.
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [write, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addToBlacklistRequest'
+      responses:
+        "201":
+          description: Blacklist entry created.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/blacklistEntry'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Whitelist
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/whitelist:
+
+    get:
+      operationId: getBobWhitelist
+      summary: Get the pre-authorization whitelist
+      description: >
+        Returns the BoB pre-authorization whitelist. Validator devices download
+        this list to authorise trusted tokens offline without an online lookup.
+        BoB equivalent: GET /whitelist.
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - name: since
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Return only entries added or updated since this timestamp.
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Whitelist entries returned.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/whitelistEntry'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    post:
+      operationId: addToWhitelist
+      summary: Add an entry to the whitelist
+      description: >
+        Adds a token (identified by JWK thumbprint `kid`) to the BoB whitelist
+        with an optional pre-loaded MTB.
+
+        Returns `201 Created` with a `Location` header.
+
+        BoB extension: write counterpart to GET /whitelist.
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [write, admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addToWhitelistRequest'
+      responses:
+        "201":
+          description: Whitelist entry created.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/whitelistEntry'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # TICKLE Macros
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/tickle-macros:
+
+    get:
+      operationId: listBobTickleMacros
+      summary: List TICKLE macro sets
+      description: >
+        Returns all available TICKLE macro sets. Validator devices download
+        these macro sets to evaluate ticket validity conditions offline.
+        BoB equivalent: GET /ticklemacros.
+      tags: [BoBMacros]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Paginated list of TICKLE macro sets.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/tickleMacroSet'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /bob/tickle-macros/{serial}:
+    parameters:
+      - name: serial
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: >
+          Version serial number of the TICKLE macro set. Devices request
+          macro sets by serial to apply the correct validity rules.
+
+    get:
+      operationId: getBobTickleMacroSet
+      summary: Get a TICKLE macro set by serial
+      description: >
+        Returns the TICKLE macro set identified by its serial number. Devices
+        use the serial to detect when a new macro set is available and
+        download only the updated version.
+        BoB equivalent: GET /ticklemacros/{serial}.
+      tags: [BoBMacros]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        "200":
+          description: TICKLE macro set returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tickleMacroSet'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Fraud Checks
+  # ─────────────────────────────────────────────────────────────────
+
+  /bob/fraud-checks:
+
+    post:
+      operationId: createBobFraudCheck
+      summary: Run a velocity-based fraud check
+      description: >
+        Performs a velocity-based fraud check. Computes the implied travel
+        speed (km/h) between the current location/time and the previous
+        validation event for the same MTB reference.
+
+        A physically impossible speed (e.g. >900 km/h) indicates potential
+        ticket cloning. The result is for operator fraud dashboards only and
+        is NOT shown to passengers.
+
+        A server MUST only respond once per validation event per client to
+        prevent information leakage.
+
+        Returns `201 Created` with the fraud check result.
+
+        BoB equivalent: GET /fraudcheck (with request body, per BoB spec).
+      tags: [BoBValidation]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/fraudCheckRequest'
+      responses:
+        "201":
+          description: Fraud check result computed.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fraudCheckResult'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+    OAuthPKI:
+      $ref: './components.yaml#/components/securitySchemes/OAuthPKI'
+
+  schemas:
+
+    pageInfo:
+      $ref: './components.yaml#/components/schemas/pageInfo'
+
+    # ── Request bodies ──────────────────────────────────────────────
+
+    issueBobTicketRequest:
+      type: object
+      description: >
+        Request body for issuing one or more BoB MTB tickets.
+        Transmodel: TRAVEL DOCUMENT issuance.
+        BoB equivalent: manifestCall request body (POST /ticket).
+      required: [packageId, manifest]
+      properties:
+        packageId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+          description: EUDIT PACKAGE that these tickets belong to.
+        manifest:
+          type: string
+          format: byte
+          description: >
+            Base64url-encoded BoB ticket manifest specifying product(s),
+            validity period, passenger category, zones, and operator references.
+        ticketHolder:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/ticketHolder'
+        deviceId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Identifier of the device that will store the ticket.
+        tokenIssuer:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/url'
+          description: URL of the token issuer service.
+        tokenId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Pre-assigned token identifier. If omitted, the server generates one.
+        tokenPublicKey:
+          $ref: '#/components/schemas/jwkPublicKey'
+          description: >
+            Public key of the device/holder for Holder-of-Key (HoK) binding.
+        issueMtb:
+          type: boolean
+          default: true
+          description: >
+            Whether to issue the MTB alongside the ticket record. `false`
+            issues the ticket record only.
+        requestId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Idempotency key.
+        startOfValidity:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+          description: Override start of validity.
+
+    recoverBobTicketRequest:
+      type: object
+      description: >
+        Request body for recovering a BoB ticket to a new device.
+      required: [tokenId, tokenIssuer]
+      properties:
+        tokenId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Token ID of the new device.
+        tokenIssuer:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/url'
+        tokenPublicKey:
+          $ref: '#/components/schemas/jwkPublicKey'
+        deviceId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    createTokenBundleRequest:
+      type: object
+      description: >
+        Request body for creating a BoB token bundle.
+        BoB equivalent: POST /ticketbundle.
+      required: [ticketIds, tokenId, tokenIssuer]
+      properties:
+        ticketIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: IDs of the tickets to include in the bundle.
+        tokenId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        tokenIssuer:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/url'
+        tokenPublicKey:
+          $ref: '#/components/schemas/jwkPublicKey'
+        deviceId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    submitValidationEventsRequest:
+      type: object
+      description: >
+        Request body for submitting one (online) or many (batch) validation events.
+      required: [events]
+      properties:
+        events:
+          type: array
+          minItems: 1
+          items:
+            $ref: './components.yaml#/components/schemas/validationEvent'
+
+    validationEventResult:
+      type: object
+      description: >
+        Server response to an online ticket validation event.
+        BoB equivalent: ticketEventResult schema.
+      properties:
+        ticketEventPassengerMessage:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Message shown to the passenger on the validator display.
+        ticketEventInspectMessage:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Message shown to the inspector.
+        ticketEventStatus:
+          type: integer
+          minimum: 0
+          maximum: 9
+          description: >
+            Result code (0 = valid; non-zero = failure). Mirrors the BoB
+            `eventResult` code convention.
+        ticketEvent:
+          $ref: './components.yaml#/components/schemas/validationEvent'
+
+    addToBlacklistRequest:
+      type: object
+      description: >
+        Request body for adding an entry to the BoB blacklist. At least one
+        of `ticketId`, `travellerId`, or `tokenId` must be supplied.
+      properties:
+        ticketId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        travellerId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        tokenId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        reason:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: Human-readable reason for blacklisting.
+        expire:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+          description: >
+            Optional expiry. If omitted the entry is permanent until manually
+            removed.
+
+    addToWhitelistRequest:
+      type: object
+      description: Request body for adding an entry to the BoB whitelist.
+      required: [kid]
+      properties:
+        kid:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: JWK thumbprint of the token to whitelist.
+        mtb:
+          type: string
+          format: byte
+          description: Pre-loaded MTB for offline validation.
+        priority:
+          type: integer
+        val:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: >
+            ISO 8601 time interval during which this whitelist entry is valid
+            (e.g. `2024-01-01/2025-01-01`).
+        ticketId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    fraudCheckRequest:
+      type: object
+      description: Request body for a velocity-based fraud check.
+      required: [geo, mtbReference, time]
+      properties:
+        geo:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/geoJsonPoint'
+        mtbReference:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        time:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+
+    fraudCheckResult:
+      type: object
+      description: >
+        Result of a fraud check. The `velocity` field (km/h) is the implied
+        speed between the two most recent validation events for this MTB. A
+        very high velocity indicates potential ticket cloning.
+        BoB equivalent: fraudcheckResponse.
+      required: [velocity]
+      properties:
+        velocity:
+          type: number
+          description: >
+            Implied travel speed in km/h. 0 indicates this is the first
+            recorded validation.
+        previousValidationTime:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        previousValidationGeo:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/geoJsonPoint'
+        suspiciousActivity:
+          type: boolean
+          description: >
+            `true` if velocity exceeds the configured fraud threshold
+            (implementation-defined).
+
+    # ── Supporting schemas ──────────────────────────────────────────
+
+    jwkPublicKey:
+      type: object
+      description: >
+        A JSON Web Key (RFC 7517) representing a device's public key used for
+        BoB Holder-of-Key (HoK) binding.
+      additionalProperties: true
+      properties:
+        kty:
+          type: string
+          description: Key type (e.g. `EC`, `RSA`, `OKP`).
+        kid:
+          type: string
+          description: Key ID — used as the JWK thumbprint in whitelist entries.
+        use:
+          type: string
+          description: Intended use (`sig` or `enc`).
+        crv:
+          type: string
+          description: Curve name for EC keys (e.g. `P-256`).
+        x:
+          type: string
+          description: Base64url-encoded x-coordinate (EC keys).
+        y:
+          type: string
+          description: Base64url-encoded y-coordinate (EC keys).
+
+    blacklistEntry:
+      type: object
+      description: >
+        A revoked/blocked identifier in the BoB blacklist.
+        BoB equivalent: blacklistEntry (GET /blacklist).
+        Transmodel: TRAVEL DOCUMENT revocation record.
+      required: [blacklistEntryId]
+      properties:
+        blacklistEntryId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        ticketId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        travellerId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        tokenId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        inception:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        expire:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+
+    whitelistEntry:
+      type: object
+      description: >
+        A pre-authorized token with a pre-loaded MTB.
+        BoB equivalent: whitelistEntry (GET /whitelist).
+      required: [id, kid]
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        kid:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: JWK thumbprint of the token's public key.
+        mtb:
+          type: string
+          format: byte
+          description: Base64url-encoded MTB pre-loaded for offline validation.
+        priority:
+          type: integer
+        val:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: ISO 8601 time interval of validity.
+        ticketId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    tickleMacro:
+      type: object
+      description: >
+        A TICKLE macro defining a validity condition rule.
+        BoB equivalent: tickleMacro schema.
+      required: [name, condition]
+      properties:
+        name:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        description:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/longString'
+        condition:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+          description: >
+            TICKLE DSL expression (e.g. `@R/2016W016/P1W/P2D`).
+
+    tickleMacroSet:
+      type: object
+      description: >
+        A versioned set of TICKLE macros distributed to validator devices.
+        BoB equivalent: tickleMacroset.
+      required: [serial, macros]
+      properties:
+        serial:
+          type: integer
+          description: Version serial number of this macro set.
+        macros:
+          type: array
+          items:
+            $ref: '#/components/schemas/tickleMacro'
+        validFrom:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        validUntil:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'

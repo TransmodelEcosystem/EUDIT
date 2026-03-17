@@ -1,0 +1,1123 @@
+# EUDIT REST API – Shared Components
+# REST-specific parameters, headers, responses and schemas.
+#
+# Domain schemas (offer, package, leg, travelDocument, etc.) live in
+# ../ogcapi-eudit/components.yaml and are cross-referenced from there.
+#
+# RESTful conventions applied throughout all module files:
+#   - Resources are plural nouns: /packages, /offers, /support-tickets
+#   - Sub-resources under parents: /packages/{packageId}/legs/{legId}
+#   - HTTP methods: GET=read, POST=create, PUT=replace, PATCH=partial-update,
+#     DELETE=remove
+#   - 200 OK for GET/PUT/PATCH, 201 Created for POST (+ Location header),
+#     204 No Content for DELETE
+#   - ETag + If-Match for optimistic concurrency on PUT/PATCH
+#   - Pagination: { data: [...], pageInfo: {...} } envelope + RFC 5988 Link header
+#   - Errors: application/problem+json (RFC 7807)
+
+components:
+
+  # ─────────────────────────────────────────────────────────────────
+  # Security Schemes
+  # ─────────────────────────────────────────────────────────────────
+  securitySchemes:
+
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        JWT bearer token obtained via POST /oauth/token.
+        Passed as `Authorization: Bearer <token>`.
+
+    OAuth:
+      type: oauth2
+      description: OAuth 2.0 flows.
+      flows:
+        clientCredentials:
+          tokenUrl: /oauth/token
+          scopes:
+            read: Read resources
+            write: Create and modify resources
+            admin: Administrative operations
+        authorizationCode:
+          authorizationUrl: /oauth/authorize
+          tokenUrl: /oauth/token
+          scopes:
+            read: Read resources
+            write: Create and modify resources
+
+    OAuthPKI:
+      type: mutualTLS
+      description: >
+        Mutual TLS certificate-based authentication. Client certificate
+        SHA-1 fingerprint embedded in JWT claim `bobHok`.
+
+    OpenData:
+      type: http
+      scheme: bearer
+      description: >
+        Unauthenticated access for public read endpoints (discovery,
+        static data). No token required.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Parameters
+  # ─────────────────────────────────────────────────────────────────
+  parameters:
+
+    # ── Path parameters ───────────────────────────────────────────
+
+    packageId:
+      name: packageId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of the PACKAGE (booking basket).
+
+    legId:
+      name: legId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of the LEG within a PACKAGE.
+
+    offerId:
+      name: offerId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of the OFFER (transient search result).
+
+    offerSearchId:
+      name: offerSearchId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of an offer search result set.
+
+    paymentId:
+      name: paymentId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a PAYMENT record.
+
+    ancillaryId:
+      name: ancillaryId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of an ANCILLARY item attached to a PACKAGE.
+
+    travelDocumentId:
+      name: travelDocumentId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a TRAVEL DOCUMENT.
+
+    refundId:
+      name: refundId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a REFUND claim.
+
+    exchangeId:
+      name: exchangeId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of an EXCHANGE request.
+
+    cancellationId:
+      name: cancellationId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a CANCELLATION record.
+
+    disruptionClaimId:
+      name: disruptionClaimId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a DISRUPTION COMPENSATION claim.
+
+    supportTicketId:
+      name: supportTicketId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a SUPPORT TICKET.
+
+    notificationId:
+      name: notificationId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a NOTIFICATION.
+
+    webhookId:
+      name: webhookId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a WEBHOOK registration.
+
+    customerId:
+      name: customerId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a TRANSPORT CUSTOMER.
+
+    cardId:
+      name: cardId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a CARD held by the customer.
+
+    sailingId:
+      name: sailingId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a SAILING.
+
+    manifestEntryId:
+      name: manifestEntryId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a manifest entry.
+
+    reservationId:
+      name: reservationId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of a SEAT RESERVATION.
+
+    onHoldId:
+      name: onHoldId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Unique identifier of an on-hold offer record.
+
+    serviceJourneyId:
+      name: serviceJourneyId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a SERVICE JOURNEY (for seat maps).
+
+    stopPlaceId:
+      name: stopPlaceId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a STOP PLACE.
+
+    operatorId:
+      name: operatorId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of an ORGANISATION (operator).
+
+    lineId:
+      name: lineId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a LINE.
+
+    cardTypeId:
+      name: cardTypeId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a CARD TYPE.
+
+    entitlementId:
+      name: entitlementId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of an ENTITLEMENT PRODUCT.
+
+    fareProductId:
+      name: fareProductId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a FARE PRODUCT.
+
+    zoneId:
+      name: zoneId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Unique identifier of a TARIFF ZONE.
+
+    bobTicketId:
+      name: bobTicketId
+      in: path
+      required: true
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: BoB ticket identifier.
+
+    # ── Query parameters (pagination) ─────────────────────────────
+
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number (1-based).
+
+    pageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 20
+      description: Number of items per page (max 200).
+
+    sort:
+      name: sort
+      in: query
+      required: false
+      schema:
+        type: string
+        example: "-createdAt,status"
+      description: >
+        Comma-separated sort fields. Prefix with `-` for descending.
+        Example: `-createdAt,status` sorts createdAt desc, then status asc.
+
+    filterStatus:
+      name: filter[status]
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter by resource status.
+
+    filterMode:
+      name: filter[mode]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/mode'
+      description: Filter by transport mode.
+
+    filterOrigin:
+      name: filter[origin]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Filter by origin stop/place identifier.
+
+    filterDestination:
+      name: filter[destination]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Filter by destination stop/place identifier.
+
+    filterDepartureAfter:
+      name: filter[departureAfter]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+      description: Filter to sailings/trips departing at or after this time.
+
+    filterDepartureBefore:
+      name: filter[departureBefore]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+      description: Filter to sailings/trips departing at or before this time.
+
+    filterOperator:
+      name: filter[operator]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+      description: Filter by operator identifier.
+
+    filterPackageId:
+      name: filter[packageId]
+      in: query
+      required: false
+      schema:
+        $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+      description: Filter results to a specific PACKAGE.
+
+    filterRead:
+      name: filter[read]
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: Filter notifications by read status.
+
+    # ── Conditional request headers ───────────────────────────────
+
+    acceptLanguage:
+      name: Accept-Language
+      in: header
+      required: false
+      schema:
+        type: string
+        example: en-GB, fr;q=0.9
+      description: Preferred response language(s) per RFC 7231.
+
+    ifMatch:
+      name: If-Match
+      in: header
+      required: false
+      schema:
+        type: string
+        example: '"abc123"'
+      description: >
+        ETag for optimistic concurrency. Include on PUT/PATCH.
+        Server returns 412 Precondition Failed if the resource was
+        modified since the ETag was issued.
+
+    ifNoneMatch:
+      name: If-None-Match
+      in: header
+      required: false
+      schema:
+        type: string
+        example: '"abc123"'
+      description: >
+        Conditional GET. Server returns 304 Not Modified if the
+        resource version matches the ETag provided.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Response Headers
+  # ─────────────────────────────────────────────────────────────────
+  headers:
+
+    ETag:
+      schema:
+        type: string
+        example: '"abc123"'
+      description: >
+        Opaque version identifier for the resource.
+        Include in If-Match on subsequent PUT/PATCH requests.
+
+    Location:
+      schema:
+        type: string
+        format: uri
+        example: /packages/550e8400-e29b-41d4-a716-446655440010
+      description: URL of the newly created resource.
+
+    Link:
+      schema:
+        type: string
+        example: >-
+          </packages?page=2&pageSize=20>; rel="next",
+          </packages?page=1&pageSize=20>; rel="first",
+          </packages?page=5&pageSize=20>; rel="last"
+      description: RFC 5988 pagination navigation links (next, prev, first, last).
+
+    X-Total-Count:
+      schema:
+        type: integer
+        example: 47
+      description: Total number of matching resources (for pagination).
+
+    Content-Language:
+      schema:
+        type: string
+        example: en-GB
+      description: Language of the response body.
+
+  # ─────────────────────────────────────────────────────────────────
+  # Common Responses
+  # ─────────────────────────────────────────────────────────────────
+  responses:
+
+    204NoContent:
+      description: Operation completed successfully; no response body.
+
+    304NotModified:
+      description: >
+        Resource has not changed. Use the cached version.
+        No response body is returned.
+
+    400BadRequest:
+      description: Bad request — malformed syntax or missing required field.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    401Unauthorized:
+      description: Authentication required or token invalid/expired.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    403Forbidden:
+      description: Authenticated but not authorised for this operation.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    404NotFound:
+      description: Resource not found.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    409Conflict:
+      description: >
+        Conflict with current resource state (e.g. duplicate, concurrent write).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    412PreconditionFailed:
+      description: >
+        If-Match ETag check failed. Re-fetch the resource, merge your
+        changes, and retry with the new ETag.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    422UnprocessableEntity:
+      description: >
+        Request is syntactically valid but semantically rejected
+        (e.g. offer expired, booking rule violation, insufficient balance).
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+    500InternalError:
+      description: Unexpected server error.
+      content:
+        application/problem+json:
+          schema:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+
+  # ─────────────────────────────────────────────────────────────────
+  # Schemas
+  # ─────────────────────────────────────────────────────────────────
+  schemas:
+
+    # ── Pagination ───────────────────────────────────────────────
+
+    pageInfo:
+      type: object
+      description: >
+        Pagination metadata included in every collection response.
+      required: [total, page, pageSize, pages]
+      example:
+        total: 47
+        page: 1
+        pageSize: 20
+        pages: 3
+      properties:
+        total:
+          type: integer
+          description: Total number of matching resources across all pages.
+        page:
+          type: integer
+          description: Current page number (1-based).
+        pageSize:
+          type: integer
+          description: Number of items per page as requested.
+        pages:
+          type: integer
+          description: Total page count (= ceil(total / pageSize)).
+
+    # ── Webhook ──────────────────────────────────────────────────
+
+    webhookRegistration:
+      type: object
+      description: >
+        Webhook endpoint registration. The server POSTs event payloads
+        to `url` for each matching `eventTypes` entry.
+        An HMAC-SHA256 `X-EUDIT-Signature` header is added to each
+        delivery using the `secret`.
+      required: [url, eventTypes]
+      example:
+        url: "https://client.example.com/webhooks/eudit"
+        eventTypes: [BOOKING_CONFIRMED, LEG_DISRUPTED, PAYMENT_RECEIVED]
+        secret: "s3cr3t-shared-key"
+      properties:
+        url:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/url'
+        eventTypes:
+          type: array
+          minItems: 1
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/notificationType'
+        secret:
+          type: string
+          description: >
+            HMAC-SHA256 signing secret. Keep private; rotate if compromised.
+        active:
+          type: boolean
+          default: true
+          description: Whether the webhook is currently receiving deliveries.
+
+    webhook:
+      allOf:
+        - $ref: '#/components/schemas/webhookRegistration'
+        - type: object
+          required: [id, createdAt]
+          properties:
+            id:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+            createdAt:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+            lastDeliveryAt:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+            failureCount:
+              type: integer
+              description: Consecutive delivery failures since last success.
+
+    webhookPatch:
+      type: object
+      description: JSON Merge Patch body for updating a webhook registration.
+      example:
+        active: false
+      properties:
+        url:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/url'
+        eventTypes:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/notificationType'
+        active:
+          type: boolean
+
+    # ── Offer search ──────────────────────────────────────────────
+
+    offerSearch:
+      type: object
+      description: >
+        Offer search request body. POSTing this to /offer-searches
+        creates a search record and returns the result set synchronously.
+      required: [travelSpecification]
+      example:
+        travelSpecification:
+          origin:
+            id: "NL:S:51110"
+            type: stopPlace
+            name: Amsterdam Centraal
+          destination:
+            id: "DE:S:8000105"
+            type: stopPlace
+            name: Frankfurt(Main)Hbf
+          departureTime: "2025-06-15T08:30:00Z"
+          isDepartureTime: true
+          modes: [RAIL]
+          classOfUse: SECOND_CLASS
+          currency: EUR
+          travelParty:
+            groupSize: 1
+            travellers:
+              - id: "550e8400-e29b-41d4-a716-446655440040"
+                firstName: Maria
+                lastName: Rossi
+                userProfile:
+                  id: adult
+                  name: Adult
+        maxResults: 10
+      properties:
+        travelSpecification:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelSpecification'
+        maxResults:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+        language:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/tinyString'
+
+    offerSearchResult:
+      type: object
+      description: Result set from an offer search.
+      required: [id, status, data, pageInfo]
+      example:
+        id: "550e8400-e29b-41d4-a716-446655441000"
+        status: complete
+        data: []
+        pageInfo:
+          total: 5
+          page: 1
+          pageSize: 10
+          pages: 1
+        expiresAt: "2025-06-15T09:00:00Z"
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        status:
+          type: string
+          enum: [pending, complete, failed]
+          description: >
+            `pending` means the server is still computing results (poll again).
+            `complete` means all results are available.
+        data:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/offer'
+        pageInfo:
+          $ref: '#/components/schemas/pageInfo'
+        expiresAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+          description: All returned offers expire at this time.
+
+    # ── PATCH request bodies ──────────────────────────────────────
+
+    legStatePatch:
+      type: object
+      description: >
+        JSON Merge Patch (RFC 7396) body for transitioning a LEG state.
+        Only the `state` field is accepted; use the LEG state machine
+        to determine valid transitions.
+      required: [state]
+      example:
+        state: in_use
+      properties:
+        state:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/legState'
+
+    packagePatch:
+      type: object
+      description: JSON Merge Patch body for updating mutable PACKAGE fields.
+      example:
+        expiresAt: "2025-06-16T10:00:00Z"
+      properties:
+        expiresAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        travelParty:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelParty'
+
+    notificationPatch:
+      type: object
+      description: JSON Merge Patch body for updating a NOTIFICATION.
+      example:
+        read: true
+      properties:
+        read:
+          type: boolean
+
+    supportTicketPatch:
+      type: object
+      description: JSON Merge Patch body for updating a SUPPORT TICKET.
+      example:
+        status: RESOLVED
+        resolution: "Replacement ticket issued via email."
+      properties:
+        status:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportStatus'
+        priority:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/supportPriority'
+        resolution:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/longString'
+        agentRef:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    # ── After-sales request/response bodies ──────────────────────
+
+    cancellationRequest:
+      type: object
+      description: Request body for cancelling a PACKAGE.
+      example:
+        reason: CUSTOMER_CANCELLATION
+        comment: "Changed travel plans."
+      properties:
+        reason:
+          type: string
+          enum:
+            - CUSTOMER_CANCELLATION
+            - OPERATOR_CANCELLATION
+            - SERVICE_DISRUPTION
+            - FORCE_MAJEURE
+            - OTHER
+        comment:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/longString'
+
+    cancellationResult:
+      type: object
+      description: Record of a PACKAGE cancellation.
+      required: [id, packageId, status, cancelledAt]
+      example:
+        id: "550e8400-e29b-41d4-a716-446655440050"
+        packageId: "550e8400-e29b-41d4-a716-446655440010"
+        status: cancelled
+        cancelledAt: "2025-06-14T12:00:00Z"
+        refundAmount:
+          amount: 42.50
+          currency: EUR
+        refundMethod: ORIGINAL_PAYMENT
+        processingTimeDays: 5
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        packageId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        status:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/packageStatus'
+        reason:
+          type: string
+        cancelledAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        refundAmount:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/amountOfMoney'
+        refundMethod:
+          type: string
+          enum: [ORIGINAL_PAYMENT, BANK_TRANSFER, VOUCHER, CASH, CREDIT_NOTE, OTHER]
+        processingTimeDays:
+          type: integer
+
+    exchangeRequest:
+      type: object
+      description: Request to exchange one or more legs on a PACKAGE.
+      required: [legIds, newTravelSpecification]
+      example:
+        legIds: ["550e8400-e29b-41d4-a716-446655440020"]
+        newTravelSpecification:
+          origin:
+            id: "NL:S:51110"
+            type: stopPlace
+            name: Amsterdam Centraal
+          destination:
+            id: "DE:S:8000105"
+            type: stopPlace
+            name: Frankfurt(Main)Hbf
+          departureTime: "2025-06-16T08:30:00Z"
+          isDepartureTime: true
+        reason: VOLUNTARY
+      properties:
+        legIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        newTravelSpecification:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelSpecification'
+        reason:
+          type: string
+          enum: [VOLUNTARY, DISRUPTION, FORCE_MAJEURE]
+        comment:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/longString'
+
+    exchangeResult:
+      type: object
+      description: Record of an EXCHANGE request.
+      required: [id, status]
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        status:
+          type: string
+          enum: [pending, approved, rejected, completed]
+        surcharge:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/amountOfMoney'
+        refundAmount:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/amountOfMoney'
+        newPackageId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        expiresAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        createdAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+
+    disruptionClaim:
+      type: object
+      description: Disruption compensation claim.
+      required: [disruptionType]
+      example:
+        disruptionType: DELAY
+        legId: "550e8400-e29b-41d4-a716-446655440020"
+        delayMinutes: 95
+        comment: "Missed onward connection due to delay."
+      properties:
+        legId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        disruptionType:
+          type: string
+          enum:
+            - DELAY
+            - CANCELLATION
+            - MISSED_CONNECTION
+            - DENIED_BOARDING
+            - ACCESSIBILITY_FAILURE
+            - OTHER
+        delayMinutes:
+          type: integer
+          minimum: 0
+        comment:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/longString'
+        evidence:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/evidenceItem'
+
+    disruptionClaimResult:
+      type: object
+      description: Status and outcome of a disruption compensation claim.
+      required: [id, status, createdAt]
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        status:
+          type: string
+          enum: [submitted, under_review, approved, rejected, paid]
+        guarantee:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/guarantee'
+        compensationAmount:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/amountOfMoney'
+        createdAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        resolvedAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+
+    # ── Payment ───────────────────────────────────────────────────
+
+    createPaymentRequest:
+      type: object
+      description: Initiate a payment for a PACKAGE.
+      required: [paymentInstruction]
+      example:
+        paymentInstruction:
+          method: CARD
+          token: "tok_visa_4242"
+        returnUrl: "https://client.example.com/payment/return"
+      properties:
+        paymentInstruction:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/paymentInstruction'
+        returnUrl:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/url'
+          description: >
+            Redirect URL after 3DS or external payment gateway completion.
+
+    paymentPatch:
+      type: object
+      description: >
+        JSON Merge Patch body to update a PAYMENT (e.g. confirm after 3DS).
+      example:
+        status: captured
+        externalReference: "ch_3MqLiJLkdIwHu7ix0Du5P7ZQ"
+      properties:
+        status:
+          type: string
+          enum: [authorised, captured, failed, voided]
+        externalReference:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    # ── BoB ───────────────────────────────────────────────────────
+
+    bobAuthRequest:
+      type: object
+      description: BoB authentication token request.
+      required: [organisationId]
+      properties:
+        organisationId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        deviceId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        scope:
+          type: string
+          enum: [inspect, issue, validate]
+          default: inspect
+
+    validationEvent:
+      type: object
+      description: BoB ticket validation event reported by an inspector device.
+      required: [ticketId, result, validatedAt]
+      example:
+        ticketId: "ABC123"
+        result: VALID
+        validatedAt: "2025-06-15T09:15:00Z"
+        location:
+          id: "NL:S:51110"
+          name: Amsterdam Centraal
+          type: stopPlace
+      properties:
+        ticketId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        result:
+          type: string
+          enum: [VALID, INVALID, EXPIRED, REVOKED, HINDERED, UNREADABLE]
+        location:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/placeReference'
+        validatedAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        inspectorId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        deviceId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+
+    # ── Ferry ─────────────────────────────────────────────────────
+
+    ferryDetailsPatch:
+      type: object
+      description: JSON Merge Patch body to update ferry-specific booking details.
+      properties:
+        cabins:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/cabinBooking'
+        meals:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/mealBooking'
+        onboardServices:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/onboardServiceBooking'
+        landServices:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/landServiceBooking'
+
+    manifestEntry:
+      type: object
+      description: A single passenger or vehicle entry on a ferry sailing manifest.
+      required: [type]
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        type:
+          type: string
+          enum: [PASSENGER, VEHICLE]
+        passenger:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/individualTraveller'
+        vehicle:
+          type: object
+          properties:
+            registrationNumber:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/shortString'
+            vehicleType:
+              type: string
+              enum: [CAR, MOTORCYCLE, CARAVAN, TRUCK, BUS, BICYCLE, OTHER]
+            length:
+              type: number
+              description: Vehicle length in metres.
+            height:
+              type: number
+              description: Vehicle height in metres.
+        packageId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+
+    # ── Rail ──────────────────────────────────────────────────────
+
+    seatReservationRequest:
+      type: object
+      description: Request body to reserve seats on a rail service.
+      example:
+        travellerIds: ["550e8400-e29b-41d4-a716-446655440040"]
+        preferences:
+          seatType: WINDOW
+          orientation: FORWARD
+      properties:
+        travellerIds:
+          type: array
+          minItems: 1
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        preferences:
+          type: object
+          properties:
+            seatType:
+              type: string
+              enum: [WINDOW, AISLE, MIDDLE, TABLE, WHEELCHAIR_SPACE, BICYCLE_SPACE]
+            deck:
+              type: string
+              enum: [LOWER, UPPER, SINGLE]
+            orientation:
+              type: string
+              enum: [FORWARD, BACKWARD, SIDEWAYS]
+            coachNumber:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/shortString'
+
+    onHoldRecord:
+      type: object
+      description: An OSDM on-hold record (offer pre-reserved, not yet purchased).
+      required: [id, offerId, expiresAt]
+      example:
+        id: "550e8400-e29b-41d4-a716-446655440060"
+        offerId: "550e8400-e29b-41d4-a716-446655440001"
+        expiresAt: "2025-06-15T09:00:00Z"
+      properties:
+        id:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        offerId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        packageId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+        expiresAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+        reservedSeats:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/seat'
+
+    travelAccountApplication:
+      type: object
+      description: Request to apply a travel account credit to a PACKAGE.
+      required: [accountId]
+      properties:
+        accountId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'
+        amount:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/amountOfMoney'

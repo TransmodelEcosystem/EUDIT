@@ -60,7 +60,7 @@ The JWT follows RFC 7519 and adds two BoB-specific claims: `bobHok` (holder-of-k
 A participant entity (identified by `entityId`) requests a JWT by presenting its registered TLS client certificate. The server returns the token in both compact JWS serialisation and as parsed header/payload objects to ease client-side parsing without JWT library dependencies.
 
 **Endpoint(s):** `GET /auth/{entityId}`
-**Unique to BoB:** Yes — TLS client certificate as the primary credential, with the SHA-1 fingerprint embedded in the JWT as a holder-of-key (`bobHok`) claim. No other standard in the EUDIT set uses mutual TLS as the authentication mechanism; OSDM, TOMP-API, and OMSA use OAuth 2.0 bearer tokens.
+**Unique to BoB:** Yes — TLS client certificate as the exclusive authentication mechanism, with the SHA-1 fingerprint embedded in the JWT as a holder-of-key (`bobHok`) claim. OMSA and TOMP-API also support mTLS as an optional variant alongside OAuth 2.0, but BoB has no OAuth path at all: the certificate is the only recognised credential, making it the only certificate-first (no-OAuth) standard in the EUDIT set.
 
 ---
 
@@ -110,7 +110,7 @@ A participant publishes, retrieves, updates (emergency only), or deletes the EC/
 A participant registers, retrieves, updates, or deletes the API endpoint URLs for each sub-API type they implement (e.g. `ticket`, `validation`, `traveller`). Other participants use these entries to discover where to call each API.
 
 **Endpoint(s):** `GET /participantMetadata/{pid}/interfaceEndpoint`, `POST /participantMetadata/{pid}/interfaceEndpoint`, `GET /participantMetadata/{pid}/interfaceEndpoint/{endpointId}`, `PUT /participantMetadata/{pid}/interfaceEndpoint/{endpointId}`, `DELETE /participantMetadata/{pid}/interfaceEndpoint/{endpointId}`
-**Unique to BoB:** Yes — the AB-hosted endpoint registry enabling cross-participant API discovery is unique to BoB.
+**Unique to BoB:** Yes — the AB-hosted central registry as the sole mechanism for cross-participant endpoint discovery is unique to BoB. TOMP-API and OMSA use the OGC API self-describing interface pattern (`GET /` landing page, `GET /api`, `GET /conformance`) for endpoint and capability discovery; BoB instead requires all participants to look up each other's endpoints exclusively from the AB-signed registry file.
 
 ### manage issuer signature constraints
 
@@ -139,28 +139,28 @@ Product search supports three spatial filter modes — **area** (geographic circ
 Submit a structured `productFilter` to retrieve FARE PRODUCTs matching the given spatial, temporal, categorical, and property constraints. Returns a list of `productSetAlternatives`, each a candidate set of products that together cover the requested journey.
 
 **Endpoint(s):** `POST /product`
-**Unique to BoB:** No — product/offer search by origin, destination, traveller category, and fare class is a core capability in OSDM and TOMP-API. The BoB-specific elements are the participant-scoped `pid` context and the binary MTB output downstream.
+**Unique to BoB:** Partially — product/offer search by origin, destination, traveller category, and fare class is a core capability in OSDM and TOMP-API; OMSA `search-offers/execute` is also functionally comparable. However, OMSA and TOMP-API require a TRAVEL SPECIFICATION (trip pattern) as input and do not expose a standalone product-catalogue search independent of a journey; BoB's Product API can be queried without a pre-planned itinerary. The BoB-specific elements are the participant-scoped `pid` context and the binary MTB output downstream.
 
 ### search products by query parameters (simplified)
 
 A simplified GET variant of the product filter for testing and simple TVM (Ticket Vending Machine) scenarios; accepts product, fare, and traveller category IDs and origin/destination stop area IDs as query parameters.
 
 **Endpoint(s):** `GET /product`
-**Unique to BoB:** No — simplified query-parameter product search is a common pattern.
+**Unique to BoB:** Yes — a simplified GET query-parameter product search independent of any trip specification or journey plan has no equivalent in OMSA or TOMP-API, which rely on external data sources (NeTEx, GBFS) and have no comparable in-spec standalone product query. OSDM's `GET /product-tags` and `POST /product-search` serve related but different purposes.
 
 ### get product by identifier
 
 Retrieve detailed information about a specific FARE PRODUCT by its `productId`, which may be a static well-known identifier or a dynamic identifier with expiry produced by a filter operation.
 
 **Endpoint(s):** `GET /product/{productId}`
-**Unique to BoB:** No — product detail retrieval by identifier is universal.
+**Unique to BoB:** Yes — a standalone endpoint to retrieve a single FARE PRODUCT by its identifier has no equivalent in TOMP-API or OMSA, neither of which exposes an in-spec product-retrieval endpoint independent of an offer-search or booking flow.
 
 ### get generic categories
 
 Retrieve all supported generic category names and their allowed values (e.g. `fareClass: [firstClass, secondClass]`, `transportMode: [bus, rail]`). Standardised category names are defined in the BoB schema repository; proprietary extensions are also permitted.
 
 **Endpoint(s):** `GET /productcat/generic`
-**Unique to BoB:** No — category enumeration is a common ancillary pattern.
+**Unique to BoB:** No — category enumeration is a common ancillary pattern. Comparable endpoints include OSDM `GET /product-tags` (product tag taxonomy), the OMSA process catalogue (`GET /processes`), and TOMP-API operator reference data.
 
 ### get product categories (deprecated)
 
@@ -181,21 +181,21 @@ Retrieve the list of fare categories (e.g. `night`, `1Class`). Deprecated in fav
 Retrieve the list of TRANSPORT CUSTOMER categories (e.g. `Adult`, `Youth`, `Family`) with their eligibility conditions (age ranges, required proof documents).
 
 **Endpoint(s):** `GET /productcat/traveller`
-**Unique to BoB:** No — traveller/passenger category enumeration exists in OSDM and OMSA.
+**Unique to BoB:** No — traveller/passenger category enumeration exists in OSDM (`GET /passenger-categories`) and OMSA. TOMP-API and OMSA use the term "user profile" for the equivalent concept of passenger type with eligibility conditions.
 
 ### create purchase manifest
 
 From a selected set of product identifiers (and optional product property overrides, discount codes, and recover-ticket references), generate a signed MTB manifest. The manifest encodes the SALES OFFER PACKAGE selection as a CBOR binary, signed by the issuing participant's MTB private key, and is the authoritative input to the Ticket API's issue operation. The response includes fare breakdown, a `manifestId`, expiry, and a flag indicating whether the manifest is `distinct` (single-use only).
 
 **Endpoint(s):** `POST /manifest`
-**Unique to BoB:** Yes — the MTB manifest as a signed binary produced during product selection, then submitted to a separate issuer for ticket issuance, is unique to BoB. OSDM and TOMP-API carry structured offer references through to booking without a separate signed binary artefact at the selection stage.
+**Unique to BoB:** Partially — the functional step of assembling selected products into a purchase-ready artefact has equivalents in OSDM (`POST /bookings` from offer IDs), OMSA (`purchase-package/execute` or `select-offers/execute`), and TOMP-API booking initiation. What is unique to BoB is the signed binary MTB manifest itself: a CBOR/COSE-encoded artefact carrying cryptographic issuer signature that serves as both the product selection record and the input to a separate issuer's ticket-issuance call.
 
 ### get previously created manifest
 
 Retrieve a previously created manifest by `manifestId`. Supports scenarios where the manifest was created by one system and needs to be retrieved by another before submission to the Ticket API.
 
 **Endpoint(s):** `GET /manifest/{manifestId}`
-**Unique to BoB:** Yes — same rationale as manifest creation.
+**Unique to BoB:** Partially — retrieval of a previously created purchase artefact by identifier is a universal pattern (OSDM bookings, OMSA packages, TOMP-API bookings all support retrieval). What is BoB-specific is the signed binary MTB manifest format being the retrievable artefact.
 
 ### get PDS list (product data set lookup)
 
@@ -215,7 +215,7 @@ The Ticket API is the central lifecycle API for issued tickets. A ticket is the 
 Submit a signed manifest to the operator's Ticket API to create one or more tickets. The `manifestCall` body includes the manifest, an idempotency `requestId`, optional ticket holder (TRANSPORT CUSTOMER identity), device binding parameters, token binding, and an optional `bookingId` linking to a Booking API reservation. On success the server returns ticket identifiers and a `settlementId`.
 
 **Endpoint(s):** `POST /ticket`
-**Unique to BoB:** Yes — ticket issuance from a signed MTB manifest, returning a `settlementId` for B2B billing, is unique to BoB.
+**Unique to BoB:** Partially — ticket/TRAVEL DOCUMENT issuance as the outcome of a confirmed purchase is a universal concept present in OSDM (`POST /bookings/{id}/fulfillments`), OMSA (`GET /collections/travel-documents/items` after `confirm-package`), and TOMP-API. What is unique to BoB is the use of a signed MTB manifest as the issuance input (rather than an offer reference or booking ID) and the return of a `settlementId` for B2B billing reconciliation between operator and distributor.
 
 ### list tickets
 
@@ -243,7 +243,7 @@ Update the device binding, device signature issuer, signature lifetime, or token
 Set a ticket's active status to `true` (activate) or `false` (deactivate). Activation starts the relative validity clock for time-limited FARE PRODUCTs.
 
 **Endpoint(s):** `GET /ticket/{ticketId}/active`, `PUT /ticket/{ticketId}/active`
-**Unique to BoB:** No — ticket activation is a lifecycle state that exists in OSDM (USAGE PARAMETER: ACTIVATING). The BoB implementation is particularly explicit as a separate sub-resource endpoint.
+**Unique to BoB:** No — ticket activation is a lifecycle state that exists in OSDM (USAGE PARAMETER: ACTIVATING) and TOMP-API (`activate-product` process). The BoB implementation is particularly explicit as a separate sub-resource endpoint; explicit deactivation (setting active to `false` after activation) is a more BoB-specific capability not present in OSDM or TOMP-API.
 
 ### get ticket activation status
 
@@ -264,7 +264,7 @@ Retrieve or record the suspension status of a ticket, including the suspension e
 Check whether a ticket is refundable and the refundable amount; then execute a refund operation that transitions the ticket to the refunded state.
 
 **Endpoint(s):** `GET /ticket/{ticketId}/refundableStatus`, `GET /ticket/{ticketId}/refundStatus`, `PUT /ticket/{ticketId}/refundStatus`
-**Unique to BoB:** No — refundability check and refund execution exist in OSDM after-sales use cases. The BoB version is structurally simpler (no partial refund offer, no exchange).
+**Unique to BoB:** No — refundability check and refund execution exist in OSDM after-sales use cases, OMSA (`GET /collections/refund-options/items` and `claim-refund-option/execute`), and TOMP-API (cancel/redress pattern). The BoB version is structurally simpler (no partial refund offer, no exchange).
 
 ### get and set ticket recoverable / recover status
 
@@ -381,14 +381,14 @@ Retrieve, fully replace, or delete the TRANSPORT CUSTOMER record for a given `tr
 Retrieve the payment means available in the TRANSPORT CUSTOMER's wallet (purse, payment card, mobile, invoice) including balance, transaction limits, and PIN requirements.
 
 **Endpoint(s):** `GET /traveller/{travellerId}/wallet`
-**Unique to BoB:** No — wallet retrieval exists conceptually in payment-aware standards.
+**Unique to BoB:** Yes — a structured traveller wallet resource exposing payment means, balances, transaction limits, and PIN requirements is unique to BoB among the in-scope EUDIT standards. OSDM, TOMP-API, OMSA, and FerryGateway do not expose an equivalent in-spec traveller wallet endpoint.
 
 ### perform and manage wallet transactions (traveller)
 
 Create a wallet transaction (immediate or reserve-then-commit) on a TRANSPORT CUSTOMER's wallet. Supports optional token proof for high-value transactions. A separate PATCH endpoint commits or cancels a pending reservation.
 
 **Endpoint(s):** `POST /traveller/{travellerId}/wallet/transaction`, `GET /traveller/{travellerId}/wallet/transaction/{transactionId}`, `PATCH /traveller/{travellerId}/wallet/transaction/{transactionId}`
-**Unique to BoB:** No — reserve-then-commit payment patterns exist in broader payment architectures. The integration with BoB token proofs is BoB-specific.
+**Unique to BoB:** Yes — wallet transaction management (create, retrieve, commit/cancel) on a TRANSPORT CUSTOMER's wallet is unique to BoB among the in-scope EUDIT standards. OSDM, TOMP-API, OMSA, and FerryGateway have no equivalent in-spec wallet transaction endpoints.
 
 ### send and retrieve traveller notifications
 
@@ -568,7 +568,7 @@ The Booking API handles B2B seat-reserved journey bookings. It is used when a FA
 A distributor backend submits a signed MTB manifest to an operator backend to create a preliminary booking. The `bookingCall` body carries the manifest (base64url-encoded MTB template encoding the FARE PRODUCT entitlements), an optional TRANSPORT CUSTOMER identifier and phone number, and a mandatory idempotency `requestId`. The operator returns a `booking` in `pending` status with a `confirmBefore` deadline.
 
 **Endpoint(s):** `POST /booking`
-**Unique to BoB:** Yes — the signed MTB manifest as the primary payload of a booking call is unique to BoB. OSDM and TOMP-API carry structured offer or product references.
+**Unique to BoB:** Partially — preliminary booking / reservation creation exists in OSDM (`POST /bookings` with offer IDs), OMSA (`select-offers/execute` or `2-phase-purchase-package/execute`), and TOMP-API booking initiation. What is unique to BoB is the use of a signed MTB manifest as the primary booking payload: the distributor backend must submit a cryptographically signed binary artefact rather than a structured offer reference.
 
 ### list bookings
 
@@ -589,7 +589,7 @@ Retrieve the current state of a single booking by `bookingId`. Returns the full 
 Transition an existing `pending` booking to `confirmed` or `cancelled` by submitting a `statusChangeRequest`. The request must include the signed MTB container as proof of purchase and the target status. On confirmation a CUSTOMER PURCHASE PACKAGE is finalised; on cancellation a CUSTOMER RESERVATION CANCELLATION ENTRY is produced.
 
 **Endpoint(s):** `PATCH /booking/{bookingId}`
-**Unique to BoB:** Yes — the requirement to supply a signed MTB as proof-of-purchase in the confirmation request is unique to BoB. OSDM and TOMP-API carry offer references or payment tokens in the confirmation step.
+**Unique to BoB:** Partially — booking confirmation/cancellation state transitions exist in OSDM (`PATCH /bookings/{bookingId}`), OMSA (`confirm-package/execute` or `cancel-package/execute`), and TOMP-API. What is unique to BoB is the requirement to supply a signed MTB container as proof-of-purchase in the confirmation request body, rather than a structured offer reference or payment token.
 
 ---
 

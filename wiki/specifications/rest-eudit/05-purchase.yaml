@@ -1,0 +1,262 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Purchase / Payment
+  description: >
+    Payment initiation, confirmation, and guarantee retrieval for a PACKAGE.
+
+    Resources:
+    - `POST   /packages/{packageId}/payments` — initiate payment
+    - `GET    /packages/{packageId}/payments` — list all payments for a PACKAGE
+    - `GET    /packages/{packageId}/payments/{paymentId}` — payment detail
+    - `PATCH  /packages/{packageId}/payments/{paymentId}` — update payment (e.g. confirm 3DS)
+    - `GET    /packages/{packageId}/guarantees` — guarantees issued on confirmation
+
+    A successful payment transitions the PACKAGE from `OPEN` to `CONFIRMED`.
+    Async payment methods (redirect, 3DS) require the client to supply a
+    `returnUrl` and patch the payment with the gateway result.
+
+    Transmodel concepts: FARE CONTRACT ENTRY (payment record).
+  version: 0.1.0
+  contact:
+    name: EUDIT Working Group (CEN TC278)
+  license:
+    name: European Union Public Licence (EUPL) 1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Payments
+    description: Payment initiation and status
+  - name: Guarantees
+    description: Guarantees issued on booking confirmation
+
+paths:
+
+  /packages/{packageId}/payments:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    get:
+      operationId: listPayments
+      summary: List payments for a PACKAGE
+      description: Returns all PAYMENT records associated with the PACKAGE.
+      tags: [Payments]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/page'
+        - $ref: './components.yaml#/components/parameters/pageSize'
+      responses:
+        "200":
+          description: Payments returned.
+          headers:
+            X-Total-Count:
+              $ref: './components.yaml#/components/headers/X-Total-Count'
+            Link:
+              $ref: './components.yaml#/components/headers/Link'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, pageInfo]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/payment'
+                  pageInfo:
+                    $ref: './components.yaml#/components/schemas/pageInfo'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    post:
+      operationId: initiatePayment
+      summary: Initiate a payment for a PACKAGE
+      description: >
+        Creates a PAYMENT record and initiates the payment flow for the PACKAGE.
+
+        Depending on the payment method:
+        - `CARD` (no 3DS): payment is captured synchronously; PACKAGE transitions to `CONFIRMED`.
+        - `CARD` (3DS) / `REDIRECT`: response includes a `redirectUrl`; the customer
+          is redirected and returns to `returnUrl`; the client then PATCHes the payment
+          with the gateway result.
+        - `ACCOUNT`: deducted from a pre-funded account; synchronous.
+        - `INVOICE` / `CASH`: deferred; PACKAGE confirms immediately but payment
+          is pending settlement.
+
+        Returns `201 Created` with a `Location` header.
+      tags: [Payments]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './components.yaml#/components/schemas/createPaymentRequest'
+      responses:
+        "201":
+          description: Payment initiated.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/payment'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          description: >
+            PACKAGE already paid or in a state that does not allow new payments.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/payments/{paymentId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+      - $ref: './components.yaml#/components/parameters/paymentId'
+
+    get:
+      operationId: getPayment
+      summary: Get a payment
+      description: Returns the current state of a PAYMENT record.
+      tags: [Payments]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+      responses:
+        "200":
+          description: Payment returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/payment'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    patch:
+      operationId: patchPayment
+      summary: Update a payment (e.g. confirm after 3DS)
+      description: >
+        Updates a PAYMENT record after an external gateway step completes
+        (3DS authentication, redirect return). Provide the gateway result
+        in the request body. Use `If-Match` for optimistic concurrency.
+      tags: [Payments]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: './components.yaml#/components/schemas/paymentPatch'
+            example:
+              status: captured
+              externalReference: "ch_3MqLiJLkdIwHu7ix0Du5P7ZQ"
+      responses:
+        "200":
+          description: Payment updated.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/payment'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/guarantees:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    get:
+      operationId: listGuarantees
+      summary: List guarantees for a PACKAGE
+      description: >
+        Returns the GUARANTEE records issued when the PACKAGE was confirmed.
+        Guarantees define operator obligations in case of service disruption
+        (e.g. right to care, right to reimbursement).
+      tags: [Guarantees]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      responses:
+        "200":
+          description: Guarantees returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/guarantee'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'

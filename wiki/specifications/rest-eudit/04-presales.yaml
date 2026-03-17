@@ -1,0 +1,682 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Pre-Sales (Package Building)
+  description: >
+    PACKAGE lifecycle management: creation, leg management, ancillary
+    attachment, travel party management, and promotional code application.
+
+    A PACKAGE is the booking basket. It starts empty and legs are added to
+    it by selecting offers from a search result. The PACKAGE is confirmed
+    (purchased) via the Purchase module (`05-purchase.yaml`).
+
+    Resources:
+    - `POST   /packages` — create a PACKAGE
+    - `GET    /packages/{packageId}` — get PACKAGE detail
+    - `PATCH  /packages/{packageId}` — update mutable fields (expiry, travel party)
+    - `DELETE /packages/{packageId}` — abandon an unconfirmed PACKAGE
+    - `GET/POST/DELETE /packages/{packageId}/legs` — manage legs
+    - `GET/PUT /packages/{packageId}/legs/{legId}` — leg detail and offer selection
+    - `GET/POST/DELETE /packages/{packageId}/ancillaries` — ancillary items
+    - `GET/PUT /packages/{packageId}/travel-party` — travel party
+    - `POST    /packages/{packageId}/promotions` — apply a promo code
+
+    Transmodel concepts: PACKAGE (booking basket), LEG (DATED SERVICE JOURNEY
+    or ACCESS leg), ANCILLARY (supplementary product).
+  version: 0.1.0
+  contact:
+    name: EUDIT Working Group (CEN TC278)
+  license:
+    name: European Union Public Licence (EUPL) 1.2
+    url: https://joinup.ec.europa.eu/collection/eupl/eupl-text-eupl-12
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Packages
+    description: PACKAGE (booking basket) lifecycle
+  - name: Legs
+    description: LEG management within a PACKAGE
+  - name: Ancillaries
+    description: ANCILLARY products attached to a PACKAGE
+  - name: TravelParty
+    description: TRAVEL PARTY (travellers) on a PACKAGE
+  - name: Promotions
+    description: Promotional code application
+
+paths:
+
+  /packages:
+    post:
+      operationId: createPackage
+      summary: Create a PACKAGE
+      description: >
+        Creates a new PACKAGE (booking basket). The PACKAGE starts in
+        `OPEN` state and holds a list of legs and ancillaries. It must be
+        confirmed via `POST /packages/{packageId}/payments` before it
+        becomes a binding booking.
+
+        Returns `201 Created` with a `Location` header.
+      tags: [Packages]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createPackageRequest'
+            example:
+              travelParty:
+                groupSize: 1
+                travellers:
+                  - id: "550e8400-e29b-41d4-a716-446655440040"
+                    firstName: Maria
+                    lastName: Rossi
+                    userProfile:
+                      id: adult
+                      name: Adult
+              currency: EUR
+      responses:
+        "201":
+          description: PACKAGE created.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    get:
+      operationId: getPackage
+      summary: Get a PACKAGE
+      description: Returns the full detail of a PACKAGE, including all legs and ancillaries.
+      tags: [Packages]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifNoneMatch'
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+      responses:
+        "200":
+          description: PACKAGE returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/package'
+        "304":
+          $ref: './components.yaml#/components/responses/304NotModified'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    patch:
+      operationId: patchPackage
+      summary: Update mutable PACKAGE fields (JSON Merge Patch)
+      description: >
+        Partially updates a PACKAGE. Only `expiresAt` and `travelParty`
+        are mutable. Use `If-Match` for optimistic concurrency.
+      tags: [Packages]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: './components.yaml#/components/schemas/packagePatch'
+      responses:
+        "200":
+          description: PACKAGE updated.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: abandonPackage
+      summary: Abandon an unconfirmed PACKAGE
+      description: >
+        Abandons the PACKAGE if it is still in `OPEN` state. Releases any
+        tentative seat holds. Returns `204 No Content`.
+        Use the After-Sales cancellation resource for confirmed bookings.
+      tags: [Packages]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          description: >
+            PACKAGE is already confirmed or cancelled and cannot be abandoned.
+            Use `POST /packages/{packageId}/cancellations` instead.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/errorResponse'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/legs:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    get:
+      operationId: listLegs
+      summary: List legs in a PACKAGE
+      description: Returns all LEGs belonging to the PACKAGE.
+      tags: [Legs]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      responses:
+        "200":
+          description: Legs returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/leg'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    post:
+      operationId: addLeg
+      summary: Add a leg to a PACKAGE
+      description: >
+        Adds a new LEG to the PACKAGE by specifying an `offerId`. The leg
+        is created in `OFFER_SELECTED` state. Returns `201 Created` with
+        a `Location` header.
+      tags: [Legs]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addLegRequest'
+            example:
+              offerId: "550e8400-e29b-41d4-a716-446655440001"
+      responses:
+        "201":
+          description: Leg added.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/leg'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/legs/{legId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+      - $ref: './components.yaml#/components/parameters/legId'
+
+    get:
+      operationId: getLeg
+      summary: Get a leg
+      description: Returns the full detail of a single LEG within a PACKAGE.
+      tags: [Legs]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      responses:
+        "200":
+          description: Leg returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/leg'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    patch:
+      operationId: patchLeg
+      summary: Update a leg (offer selection, JSON Merge Patch)
+      description: >
+        Updates the offer selection on a LEG (e.g. upgrade from second to
+        first class). Only allowed while the PACKAGE is in `OPEN` state.
+        Use `If-Match` for optimistic concurrency.
+      tags: [Legs]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: '#/components/schemas/patchLegRequest'
+      responses:
+        "200":
+          description: Leg updated.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/leg'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    delete:
+      operationId: removeLeg
+      summary: Remove a leg
+      description: >
+        Removes the LEG from the PACKAGE. Only allowed while the PACKAGE
+        is in `OPEN` state.
+      tags: [Legs]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/ancillaries:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    get:
+      operationId: listAncillaries
+      summary: List ancillaries on a PACKAGE
+      description: Returns all ANCILLARY items attached to the PACKAGE.
+      tags: [Ancillaries]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      responses:
+        "200":
+          description: Ancillaries returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '../ogcapi-eudit/components.yaml#/components/schemas/ancillary'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    post:
+      operationId: addAncillary
+      summary: Add an ancillary to a PACKAGE
+      description: >
+        Adds an ANCILLARY product (seat upgrade, luggage, meal, bicycle, etc.)
+        to the PACKAGE. Returns `201 Created` with a `Location` header.
+      tags: [Ancillaries]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/addAncillaryRequest'
+            example:
+              ancillaryId: "550e8400-e29b-41d4-a716-000000000010"
+              quantity: 1
+              travellerIds: ["550e8400-e29b-41d4-a716-446655440040"]
+      responses:
+        "201":
+          description: Ancillary added.
+          headers:
+            Location:
+              $ref: './components.yaml#/components/headers/Location'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/ancillary'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/ancillaries/{ancillaryId}:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+      - $ref: './components.yaml#/components/parameters/ancillaryId'
+
+    delete:
+      operationId: removeAncillary
+      summary: Remove an ancillary from a PACKAGE
+      description: Removes the ANCILLARY from the PACKAGE (only while in `OPEN` state).
+      tags: [Ancillaries]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      responses:
+        "204":
+          $ref: './components.yaml#/components/responses/204NoContent'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/travel-party:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    get:
+      operationId: getTravelParty
+      summary: Get the TRAVEL PARTY for a PACKAGE
+      description: Returns the TRAVEL PARTY (list of travellers) assigned to the PACKAGE.
+      tags: [TravelParty]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      responses:
+        "200":
+          description: Travel party returned.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelParty'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+    put:
+      operationId: replaceTravelParty
+      summary: Replace the TRAVEL PARTY for a PACKAGE
+      description: >
+        Fully replaces the TRAVEL PARTY (all travellers) on the PACKAGE.
+        Use `If-Match` for optimistic concurrency.
+      tags: [TravelParty]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelParty'
+      responses:
+        "200":
+          description: Travel party replaced.
+          headers:
+            ETag:
+              $ref: './components.yaml#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelParty'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "412":
+          $ref: './components.yaml#/components/responses/412PreconditionFailed'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /packages/{packageId}/promotions:
+    parameters:
+      - $ref: './components.yaml#/components/parameters/packageId'
+
+    post:
+      operationId: applyPromotion
+      summary: Apply a promotional code to a PACKAGE
+      description: >
+        Applies a promotional or discount code to the PACKAGE. If valid,
+        the PACKAGE price is recalculated and the updated PACKAGE is returned.
+        Returns `422` if the code is invalid, expired, or already applied.
+      tags: [Promotions]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/promotionRequest'
+            example:
+              promoCode: "SUMMER25"
+      responses:
+        "200":
+          description: Promotion applied; PACKAGE price recalculated.
+          content:
+            application/json:
+              schema:
+                $ref: '../ogcapi-eudit/components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "403":
+          $ref: './components.yaml#/components/responses/403Forbidden'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "422":
+          $ref: './components.yaml#/components/responses/422UnprocessableEntity'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+
+  schemas:
+
+    createPackageRequest:
+      type: object
+      description: Fields for creating a new PACKAGE.
+      properties:
+        travelParty:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/travelParty'
+        currency:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/currencyCode'
+        language:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/tinyString'
+        expiresAt:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/dateTime'
+          description: >
+            Requested PACKAGE expiry. The server may enforce a shorter
+            expiry based on the operator's reservation window.
+
+    addLegRequest:
+      type: object
+      description: Request to add a leg to a PACKAGE by offer selection.
+      required: [offerId]
+      properties:
+        offerId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+          description: ID of the OFFER from a previous offer search.
+        travellerIds:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+          description: >
+            Subset of TRAVEL PARTY traveller IDs this leg applies to.
+            If omitted, the leg applies to all travellers in the PACKAGE.
+
+    patchLegRequest:
+      type: object
+      description: JSON Merge Patch to change the offer selection on a leg.
+      properties:
+        offerId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+          description: New OFFER ID (e.g. to upgrade class or change operator).
+
+    addAncillaryRequest:
+      type: object
+      description: Request to add an ANCILLARY product to a PACKAGE.
+      required: [ancillaryId]
+      properties:
+        ancillaryId:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+          description: ID of the ANCILLARY as returned by `GET /offers/{offerId}/ancillaries`.
+        quantity:
+          type: integer
+          minimum: 1
+          default: 1
+        travellerIds:
+          type: array
+          items:
+            $ref: '../ogcapi-eudit/components.yaml#/components/schemas/uuid'
+          description: Traveller IDs this ancillary applies to.
+
+    promotionRequest:
+      type: object
+      description: Request body for applying a promotional code.
+      required: [promoCode]
+      properties:
+        promoCode:
+          $ref: '../ogcapi-eudit/components.yaml#/components/schemas/normalString'

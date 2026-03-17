@@ -109,7 +109,7 @@ The TRANSPORT CUSTOMER (or a MaaS Platform acting on their behalf) searches for 
 After receiving an offer collection, the TRANSPORT CUSTOMER (or MaaS Platform) selects one or more specific SALES OFFER PACKAGEs by their IDs to be assembled into a CUSTOMER PURCHASE PACKAGE. The server creates or updates a `package` object in `selected` status containing the chosen offers and their legs. This is a prerequisite step before purchase.
 
 **Endpoint(s):** `POST /processes/select-offers/execute`
-**Unique to OMSA:** No — equivalent to the OSDM pre-booking / offer selection step and the TOMP-API planning booking call.
+**Unique to OMSA:** No — equivalent to the OSDM pre-booking / offer selection step and the TOMP-API two-phase booking initiation / planning confirmation step with offer reference.
 
 ---
 

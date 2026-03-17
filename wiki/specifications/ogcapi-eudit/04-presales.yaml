@@ -1,0 +1,881 @@
+openapi: 3.0.3
+info:
+  title: EUDIT Unified Mobility API – Pre-Sales / Package Building
+  description: >
+    Processes and collections for pre-sales (basket management) — the stage
+    between offer search and payment. A PACKAGE is created when offers are
+    selected, and is then enriched with traveller details, ancillaries, seat
+    reservations, and travel specifications before purchase.
+
+    Processes:
+    - `select-offers` — select offers into a PACKAGE (creates basket)
+    - `release-package` — release/abandon a PACKAGE without purchasing
+    - `add-traveller` — add a traveller to a PACKAGE
+    - `remove-traveller` — remove a traveller from a PACKAGE
+    - `update-traveller` — update a traveller's details
+    - `add-ancillary` — add a SUPPLEMENT PRODUCT to a LEG
+    - `remove-ancillary` — remove an ancillary from a LEG
+    - `assign-asset` — assign a specific vehicle/asset to a LEG
+    - `assign-seat` — assign a seat reservation to a traveller/leg
+    - `change-travel-spec` — change the travel specification of a LEG
+    - `extend-expiry-time` — extend the basket hold time
+    - `fulfillment-check` — check fulfilment conditions before payment
+
+    Collections:
+    - `assets` — available vehicles/assets for assignment
+    - `ancillaries` — available ancillary products for a package
+  version: 0.1.0
+
+servers:
+  - url: https://api.eudit.example.com/v1
+
+tags:
+  - name: Pre-Sales
+    description: Basket management — offer selection, travellers, seats, ancillaries
+
+paths:
+
+  /processes/select-offers/execute:
+    post:
+      operationId: executeSelectOffers
+      summary: Select Offers
+      description: >
+        Selects one or more offers into a PACKAGE (the booking basket).
+        Creates a new PACKAGE if `packageId` is not supplied, or adds
+        offers to an existing one.
+
+        Transmodel: PACKAGE creation / SALES OFFER PACKAGE selection.
+        OSDM equivalent: POST /bookings.
+        TOMP-API equivalent: POST /processes/select-offers/execution.
+        OMSA equivalent: POST /processes/select-offers/execute.
+
+        The returned PACKAGE has status `selected`. It is held for the
+        duration indicated in `expiresAt`. Call `purchase-package` or
+        `purchase-offers` to confirm.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/acceptLanguage'
+        - $ref: './components.yaml#/components/parameters/authorization'
+        - name: Prefer
+          in: header
+          required: false
+          schema:
+            type: string
+            enum: [respond-sync, respond-async]
+            default: respond-sync
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [offerIds]
+                  properties:
+                    offerIds:
+                      type: array
+                      minItems: 1
+                      items:
+                        $ref: './components.yaml#/components/schemas/offerReference'
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                      description: >
+                        Existing PACKAGE to add offers to. If omitted, a new
+                        PACKAGE is created.
+                    travelParty:
+                      $ref: './components.yaml#/components/schemas/travelParty'
+                    currency:
+                      $ref: './components.yaml#/components/schemas/currencyCode'
+                    externalReference:
+                      $ref: './components.yaml#/components/schemas/externalReference'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      callbacks:
+        jobCompleted:
+          '{$request.body#/subscriber/successUri}':
+            post:
+              summary: Select-offers result callback
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: './components.yaml#/components/schemas/package'
+              responses:
+                "200":
+                  description: Callback acknowledged.
+      responses:
+        "200":
+          description: PACKAGE returned with selected offers.
+          headers:
+            Version:
+              $ref: './components.yaml#/components/headers/Version'
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "201":
+          description: Async job accepted.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/jobStatus'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/release-package/execute:
+    post:
+      operationId: executeReleasePackage
+      summary: Release Package
+      description: >
+        Releases (abandons) a PACKAGE that is in `selected` or `pending`
+        state without completing the purchase. The PACKAGE transitions to
+        `released`. Held capacity/inventory is freed immediately.
+
+        Transmodel: PACKAGE cancellation (pre-purchase).
+        OSDM equivalent: DELETE /bookings/{bookingId}.
+        OMSA equivalent: POST /processes/release-package/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    reason:
+                      $ref: './components.yaml#/components/schemas/normalString'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Package released.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/add-traveller/execute:
+    post:
+      operationId: executeAddTraveller
+      summary: Add Traveller
+      description: >
+        Adds an individual traveller to a PACKAGE, providing the personal
+        details required for ticketing and passenger manifest purposes.
+
+        Transmodel: TRANSPORT CUSTOMER added to PACKAGE.
+        OSDM equivalent: POST /bookings/{id}/passengers.
+        TOMP-API equivalent: POST /processes/add-traveller/execution.
+        OMSA equivalent: POST /processes/add-traveller/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, traveller]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                      description: >
+                        If provided, the traveller is added only to this LEG.
+                        Otherwise, the traveller is added to all legs.
+                    traveller:
+                      $ref: './components.yaml#/components/schemas/individualTraveller'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Traveller added; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/remove-traveller/execute:
+    post:
+      operationId: executeRemoveTraveller
+      summary: Remove Traveller
+      description: >
+        Removes an individual traveller from a PACKAGE (or a specific LEG).
+
+        Transmodel: TRANSPORT CUSTOMER removed from PACKAGE.
+        OSDM equivalent: DELETE /bookings/{id}/passengers/{passengerId}.
+        OMSA equivalent: POST /processes/remove-traveller/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, travellerId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    travellerId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Traveller removed; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/update-traveller/execute:
+    post:
+      operationId: executeUpdateTraveller
+      summary: Update Traveller
+      description: >
+        Updates the personal details of a traveller already added to a
+        PACKAGE. Partial updates are supported (only the provided fields
+        are changed).
+
+        Transmodel: TRANSPORT CUSTOMER data amendment.
+        OSDM equivalent: PATCH /bookings/{id}/passengers/{passengerId}.
+        TOMP-API equivalent: POST /processes/update-traveller/execution.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, travellerId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    travellerId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    updates:
+                      $ref: './components.yaml#/components/schemas/individualTraveller'
+                      description: >
+                        Fields to update. Only provided fields are changed;
+                        omitted fields retain their current values.
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Traveller updated; PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/add-ancillary/execute:
+    post:
+      operationId: executeAddAncillary
+      summary: Add Ancillary
+      description: >
+        Adds a SUPPLEMENT PRODUCT (ancillary) to a LEG within a PACKAGE.
+        Examples: extra luggage, bicycle, meal, pet, seat upgrade, cabin.
+
+        Transmodel: SUPPLEMENT PRODUCT added to FARE LEG.
+        OSDM equivalent: POST /bookings/{id}/ancillaries.
+        TOMP-API equivalent: POST /processes/add-ancillary/execution.
+        OMSA equivalent: POST /processes/add-ancillary/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, ancillaryId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    ancillaryId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    quantity:
+                      type: integer
+                      minimum: 1
+                      default: 1
+                    travellerIds:
+                      type: array
+                      items:
+                        $ref: './components.yaml#/components/schemas/uuid'
+                      description: >
+                        Travellers this ancillary applies to. If omitted,
+                        applies to all travellers.
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Ancillary added; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/remove-ancillary/execute:
+    post:
+      operationId: executeRemoveAncillary
+      summary: Remove Ancillary
+      description: >
+        Removes a SUPPLEMENT PRODUCT from a LEG within a PACKAGE.
+
+        Transmodel: SUPPLEMENT PRODUCT removed from FARE LEG.
+        OSDM equivalent: DELETE /bookings/{id}/ancillaries/{ancillaryId}.
+        OMSA equivalent: POST /processes/remove-ancillary/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, ancillaryId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    ancillaryId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Ancillary removed; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/assign-asset/execute:
+    post:
+      operationId: executeAssignAsset
+      summary: Assign Asset
+      description: >
+        Assigns a specific VEHICLE or EQUIPMENT ELEMENT (shared asset)
+        to a LEG within a PACKAGE. Applicable to shared-mobility modes
+        (bicycle, scooter, car) where the customer or backend must allocate
+        a specific vehicle.
+
+        Transmodel: VEHICLE assigned to FARE LEG.
+        TOMP-API equivalent: POST /processes/assign-asset/execution.
+        OMSA equivalent: POST /processes/assign-asset/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, legId, assetId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    assetId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Asset assigned; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/assign-seat/execute:
+    post:
+      operationId: executeAssignSeat
+      summary: Assign Seat
+      description: >
+        Assigns a specific seat reservation to a traveller on a LEG.
+        Used for rail and ferry services with numbered seating.
+
+        Transmodel: SEAT assigned to TRANSPORT CUSTOMER on SERVICE JOURNEY.
+        OSDM equivalent: seat reservation in offer/booking.
+        OMSA equivalent: POST /processes/assign-seat/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, legId, travellerId, seat]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    travellerId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    seat:
+                      $ref: './components.yaml#/components/schemas/seat'
+                    preferenceOnly:
+                      type: boolean
+                      default: false
+                      description: >
+                        If `true`, treat the seat assignment as a preference
+                        (system may override). If `false`, the exact seat
+                        must be available or the request fails.
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Seat assigned; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/change-travel-spec/execute:
+    post:
+      operationId: executeChangeTravelSpec
+      summary: Change Travel Specification
+      description: >
+        Updates the travel specification of a LEG (origin, destination,
+        date/time) before purchase, e.g. to change a travel date or
+        reroute a leg.
+
+        Transmodel: TRAVEL SPECIFICATION amendment.
+        TOMP-API equivalent: POST /processes/update-travel-specification/execution.
+        OMSA equivalent: POST /processes/change-travel-spec/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId, legId, newTravelSpec]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    legId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    newTravelSpec:
+                      $ref: './components.yaml#/components/schemas/travelSpecification'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Travel specification updated; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/extend-expiry-time/execute:
+    post:
+      operationId: executeExtendExpiryTime
+      summary: Extend Expiry Time
+      description: >
+        Extends the hold/expiry time of a PACKAGE that is about to expire.
+        This keeps the inventory reservation alive while the customer
+        completes traveller data entry or payment.
+
+        Transmodel: PACKAGE hold extension.
+        OMSA equivalent: POST /processes/extend-expiry-time/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [write]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                    requestedExpiryMinutes:
+                      type: integer
+                      minimum: 1
+                      maximum: 60
+                      default: 15
+                      description: >
+                        Requested extension duration in minutes. The server
+                        may grant a shorter extension.
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Expiry time extended; updated PACKAGE returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/package'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "409":
+          $ref: './components.yaml#/components/responses/409Conflict'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /processes/fulfillment-check/execute:
+    post:
+      operationId: executeFulfillmentCheck
+      summary: Fulfillment Check
+      description: >
+        Performs a pre-purchase validation that all required information
+        is present and fulfilment can proceed. Returns a list of
+        blocking and non-blocking issues.
+
+        Transmodel: PRE-PURCHASE VALIDATION.
+        TOMP-API: fulfillment readiness check.
+        OMSA equivalent: POST /processes/fulfillment-check/execute.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inputs]
+              properties:
+                inputs:
+                  type: object
+                  required: [packageId]
+                  properties:
+                    packageId:
+                      $ref: './components.yaml#/components/schemas/uuid'
+                subscriber:
+                  $ref: './components.yaml#/components/schemas/subscriber'
+      responses:
+        "200":
+          description: Fulfillment check completed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fulfillmentCheckResult'
+        "400":
+          $ref: './components.yaml#/components/responses/400BadRequest'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/assets/items:
+    get:
+      operationId: getAvailableAssets
+      summary: Get available assets
+      description: >
+        Returns VEHICLEs / assets available for assignment to a LEG.
+        Filtered by mode, location, and operational status.
+        Transmodel: VEHICLE.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/packageId'
+        - $ref: './components.yaml#/components/parameters/legId'
+        - $ref: './components.yaml#/components/parameters/bbox'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: mode
+          in: query
+          required: false
+          schema:
+            $ref: './components.yaml#/components/schemas/mode'
+      responses:
+        "200":
+          description: Available assets returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/asset'
+                  numberMatched:
+                    type: integer
+                  numberReturned:
+                    type: integer
+                  links:
+                    type: array
+                    items:
+                      $ref: './components.yaml#/components/schemas/link'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+  /collections/ancillaries/items:
+    get:
+      operationId: getAvailableAncillaries
+      summary: Get available ancillaries
+      description: >
+        Returns SUPPLEMENT PRODUCTs available for a specific PACKAGE and
+        optional LEG. Prices and availability are live at time of request.
+        Transmodel: SUPPLEMENT PRODUCT.
+      tags: [Pre-Sales]
+      security:
+        - BearerAuth: []
+        - OAuth: [read]
+      parameters:
+        - $ref: './components.yaml#/components/parameters/packageId'
+        - $ref: './components.yaml#/components/parameters/legId'
+        - $ref: './components.yaml#/components/parameters/limit'
+        - $ref: './components.yaml#/components/parameters/offset'
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [LUGGAGE, MEAL, BICYCLE, PET, SEAT_UPGRADE, CABIN, LOUNGE_ACCESS, VEHICLE, WIFI, INSURANCE, ASSISTANCE, PARKING, OTHER]
+      responses:
+        "200":
+          description: Available ancillaries returned.
+          content:
+            application/json:
+              schema:
+                $ref: './components.yaml#/components/schemas/ancillaryCollection'
+        "401":
+          $ref: './components.yaml#/components/responses/401Unauthorized'
+        "404":
+          $ref: './components.yaml#/components/responses/404NotFound'
+        "500":
+          $ref: './components.yaml#/components/responses/500InternalError'
+
+components:
+
+  securitySchemes:
+    BearerAuth:
+      $ref: './components.yaml#/components/securitySchemes/BearerAuth'
+    OAuth:
+      $ref: './components.yaml#/components/securitySchemes/OAuth'
+
+  schemas:
+
+    fulfillmentCheckResult:
+      type: object
+      description: Result of the pre-purchase fulfillment readiness check.
+      required: [packageId, ready]
+      properties:
+        packageId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        ready:
+          type: boolean
+          description: True if all blocking issues are resolved.
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/fulfillmentIssue'
+
+    fulfillmentIssue:
+      type: object
+      description: An issue identified during the fulfillment check.
+      required: [code, severity, message]
+      properties:
+        code:
+          type: string
+          enum:
+            - MISSING_TRAVELLER_DATA
+            - MISSING_SEAT_ASSIGNMENT
+            - ASSET_UNAVAILABLE
+            - OFFER_EXPIRED
+            - PRICE_CHANGED
+            - CAPACITY_EXHAUSTED
+            - IDENTITY_VERIFICATION_REQUIRED
+            - PAYMENT_METHOD_REQUIRED
+            - OTHER
+        severity:
+          type: string
+          enum: [BLOCKING, WARNING, INFO]
+        message:
+          $ref: './components.yaml#/components/schemas/normalString'
+        field:
+          $ref: './components.yaml#/components/schemas/normalString'
+          description: The field or entity this issue relates to.
+        legId:
+          $ref: './components.yaml#/components/schemas/uuid'
+        travellerId:
+          $ref: './components.yaml#/components/schemas/uuid'
