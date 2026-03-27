@@ -25,3 +25,4 @@ J. **After trip** *(aftersales + claim + receipt)*
 K. **Settlement** *(repartition between actors)* & **Reporting**
 
 > To be cross-checked with EUDIT perimeter compliance.
+> Each point on one page
