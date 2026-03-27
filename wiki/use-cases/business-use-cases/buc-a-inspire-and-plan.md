@@ -18,7 +18,7 @@
   - The catalogue and related pricing/guarantee information are available (online service or accessible dataset).
   - The customer can provide the additional information required to compute/confirm the best offer.
 
-- **Diagram:** :
+- **Diagram:** : ??? 
 
 <img width="987" height="400" alt="image" src="https://github.com/user-attachments/assets/59f36248-1e43-40c0-ba61-2cbc91e01d4a" />
 
@@ -45,19 +45,22 @@
 
 ---
 
-## Part 2 : Scenario
+## Scenarii
 
 ### Main 
 
-1. The Retailer starts the catalogue consultation on behalf of the Transport Customer, and the Retailer System performs **Browse catalogue** to retrieve an initial set of candidate Fare Product(s) and Sales Offer Package(s).
-2. The Transport Customer reviews the initial results and may perform **Filter / refine catalogue** to narrow the displayed Fare Product(s) and Sales Offer Package(s) according to the consultation context.
-3. The Transport Customer selects one candidate and performs **View product / package details** so that the Retailer can present the detailed content, conditions, guarantees, and optional parts of the selected Fare Product or Sales Offer Package.
-4. If the selected Fare Product or Sales Offer Package is not yet fully defined, the Transport Customer performs **Enter customer parameters** by providing the required information, such as traveller profile, eligibility, class, date, zone, quantity, or extras.
-5. Once the required information is available, the Retailer System performs **Check indicative price** and returns the indicative price together with the applicable commercial and travel conditions for the selected Fare Product or Sales Offer Package.
-6. If needed, the Transport Customer performs **Check availability / start reservation**, and the Retailer System verifies availability or starts a temporary hold for the selected Fare Product or Sales Offer Package.
-7. If availability is confirmed, the Retailer System performs **Get final price** and returns the final price and final conditions for the selected Fare Product or Sales Offer Package.
-8. Before making a final choice, the Transport Customer may perform **Change options** to modify class, extras, or other defining elements, and the Retailer System refreshes the offer and recalculates the corresponding conditions and price.
-9. The Transport Customer chooses the preferred solution, and the Retailer System performs **Keep selected option** so that the chosen Fare Product or Sales Offer Package is ready for the next booking or purchase step.
+1. The TRANSPORT CUSTOMER is planning his TRAVEL, that can be composed by one or many TRIPS, each by one or many LEGs. He wants to go to his DESTINATION using public transport means. And, optionally, come back to departure point.
+2. If the TRAVEL is complex (multi legs, multi trips) and/or if the TRANSPORT CUSTOMER does not know how do his travel, he can use a trip planner. It gives one or many answers with detailled TRIP PATTERNs : schedudle, transport mode, lines, stops, connexions.
+3. The TRIP PLANNER can associated with a fare calculator : the TRANSPORT CUSTOMER gives required details on travellers (date od birth, name, reduction cards) and the 
+4. Retailer starts the catalogue consultation on behalf of the Transport Customer, and the Retailer System performs **Browse catalogue** to retrieve an initial set of candidate Fare Product(s) and Sales Offer Package(s).
+5. The Transport Customer reviews the initial results and may perform **Filter / refine catalogue** to narrow the displayed Fare Product(s) and Sales Offer Package(s) according to the consultation context.
+6. The Transport Customer selects one candidate and performs **View product / package details** so that the Retailer can present the detailed content, conditions, guarantees, and optional parts of the selected Fare Product or Sales Offer Package.
+7. If the selected Fare Product or Sales Offer Package is not yet fully defined, the Transport Customer performs **Enter customer parameters** by providing the required information, such as traveller profile, eligibility, class, date, zone, quantity, or extras.
+8. Once the required information is available, the Retailer System performs **Check indicative price** and returns the indicative price together with the applicable commercial and travel conditions for the selected Fare Product or Sales Offer Package.
+9. If needed, the Transport Customer performs **Check availability / start reservation**, and the Retailer System verifies availability or starts a temporary hold for the selected Fare Product or Sales Offer Package.
+10. If availability is confirmed, the Retailer System performs **Get final price** and returns the final price and final conditions for the selected Fare Product or Sales Offer Package.
+11. Before making a final choice, the Transport Customer may perform **Change options** to modify class, extras, or other defining elements, and the Retailer System refreshes the offer and recalculates the corresponding conditions and price.
+12. The Transport Customer chooses the preferred solution, and the Retailer System performs **Keep selected option** so that the chosen Fare Product or Sales Offer Package is ready for the next booking or purchase step.
 
 ### Alternatives
 
@@ -74,4 +77,5 @@ From 1. :
 
 
 ### Links with use cases
+
 Link to (https://github.com/TransmodelEcosystem/EUDIT/discussions/36#discussioncomment-16183779)
