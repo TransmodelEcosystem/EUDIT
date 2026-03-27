@@ -61,6 +61,16 @@
 
 ### Alternatives
 
+#### rail
 From 1. : 
-1. The TRANSPORT CUSTOMER chooses on the ticket vending machine his origin station and his destination station.
-2. The TRANSPORT CUSTOMER enters required data (customer accout...)
+1. The TRANSPORT CUSTOMER chooses on the ticket vending machine his origin station and his destination station. 
+2. The TRANSPORT CUSTOMER enters required data (customer account...)
+
+#### anonymous travel
+
+
+
+### Diagramm 
+
+
+### Links with use cases
