@@ -18,10 +18,6 @@
   - The catalogue and related pricing/guarantee information are available (online service or accessible dataset).
   - The customer can provide the additional information required to compute/confirm the best offer.
 
-- **Diagram:** : ??? 
-
-<img width="987" height="400" alt="image" src="https://github.com/user-attachments/assets/59f36248-1e43-40c0-ba61-2cbc91e01d4a" />
-
 ---
 
 ## Part 3 : Preconditions & Postconditions
@@ -51,8 +47,10 @@
 
 1. The TRANSPORT CUSTOMER is planning his TRAVEL, that can be composed by one or many TRIPS, each by one or many LEGs. He wants to go to his DESTINATION using public transport means. And, optionally, come back to departure point.
 2. If the TRAVEL is complex (multi legs, multi trips) and/or if the TRANSPORT CUSTOMER does not know how do his travel, he can use a trip planner. It gives one or many answers with detailled TRIP PATTERNs : schedudle, transport mode, lines, stops, connexions.
-3. The TRIP PLANNER can associated with a fare calculator : the TRANSPORT CUSTOMER gives required details on travellers (date od birth, name, reduction cards) and the 
-4. Retailer starts the catalogue consultation on behalf of the Transport Customer, and the Retailer System performs **Browse catalogue** to retrieve an initial set of candidate Fare Product(s) and Sales Offer Package(s).
+3. The TRIP PLANNER can associated with a fare calculator : the TRANSPORT CUSTOMER can give required details on travellers (date od birth, name, reduction cards, disabilities). The fare calculator can give FARE PRODUCTs that fit with the trip, from one basic solution (for today, anonymous single trip ticket on the network et on the origin-destination) to many elaborated solutions (for the travel day, combined ticket, with reduction and guarantees).
+4.If the TRAVEL is easy to plan, the TRANSPORT CUSTOMER can come in a travel agency, at an operator desk or on a ticket vending machine in a station to choose his mobility tickets.
+-----------------
+ Retailer starts the catalogue consultation on behalf of the Transport Customer, and the Retailer System performs **Browse catalogue** to retrieve an initial set of candidate Fare Product(s) and Sales Offer Package(s).
 5. The Transport Customer reviews the initial results and may perform **Filter / refine catalogue** to narrow the displayed Fare Product(s) and Sales Offer Package(s) according to the consultation context.
 6. The Transport Customer selects one candidate and performs **View product / package details** so that the Retailer can present the detailed content, conditions, guarantees, and optional parts of the selected Fare Product or Sales Offer Package.
 7. If the selected Fare Product or Sales Offer Package is not yet fully defined, the Transport Customer performs **Enter customer parameters** by providing the required information, such as traveller profile, eligibility, class, date, zone, quantity, or extras.
