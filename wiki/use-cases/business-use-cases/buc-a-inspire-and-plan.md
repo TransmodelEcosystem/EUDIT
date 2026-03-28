@@ -3,12 +3,12 @@
 
 - **Business Use Case ID & Name:** BUC-A — Plan your trip and choose your means to travel
 - **Goal (Objective):** Enable the Transport Customer to select the most suitable mobility solution (transport mode, product, package, price and guarantees) for his TRAVEL.
-- **Scope:** Offer discovery / catalogue consultation (FARE PRODUCT catalogue) / price calculation
+- **Scope:** Offer discovery (TRIP PLANNER proposals) / catalogue consultation (FARE PRODUCT catalogue) / PRICE calculation / CUSTOMER OFFER PACKAGE constitution
 ---
 
 ## Actors & Context
 
-- **Primary Actor:** TRANSPORT CUSTOMER (represented by the retailer (FARE PRODUCT RETAILER role))
+- **Primary Actor:** TRANSPORT CUSTOMER (represented by the RETAILER (FARE PRODUCT RETAILER role))
 - **Supporting Actors / Stakeholders:**
   - **Retailer (FARE PRODUCT RETAILER role(API consumer)):** supports the customer and initiates catalogue consultation
   - **Operator (FARE PRODUCT DISTRIBUTOR role):** provides the FARE PRODUCT catalogue, prices, availability and guarantees
@@ -23,7 +23,7 @@
 ## Preconditions & Postconditions
 
 - **Preconditions (must be true before start):**
-  - Access to the operator’s FARE PRODUCT catalogue is available to the reseller.
+  - Access to the operator’s FARE PRODUCT catalogues is available to the RETAILER and/or TRANSPORt CUSTOMER.
   - The relevant catalogue (for the operator/network/area) is identified.
   - Basic travel intent is known (at minimum: the customer wants to travel; optionally: zone/route/date/passenger profile).
 
@@ -31,7 +31,7 @@
   - One or more candidate offers are identified, including:
     - selected **FARE PRODUCT(s)** and **SALES OFFER PACKAGE(s)** (if applicable)
     - the associated **Price**
-    - applicable **Travel Guarantees / conditions**
+    - applicable **TRAVEL GUARANTEEs and aftersales conditions**
     - **availability** information (where applicable)
   - The selected option (or shortlist) is available for the next step (e.g., purchase/booking).
 
@@ -45,35 +45,16 @@
 
 ### Main 
 
-1. The TRANSPORT CUSTOMER is planning his TRAVEL, that can be composed by one or many TRIPS, each by one or many LEGs. He wants to go to his DESTINATION using public transport means. And, optionally, come back to departure point.
-2. a.If the TRAVEL is complex (multi legs, multi trips) and/or if the TRANSPORT CUSTOMER does not know how do his travel, he can use a trip planner. It gives one or many answers with detailled TRIP PATTERNs : schedudle, transport mode, lines, stops, connexions.
-  b.The TRIP PLANNER can be associated with a fare calculator : the TRANSPORT CUSTOMER can give required details on travellers (date od birth, name, reduction cards, disabilities) or remain on, by default, with a basic COMMERCIAL PROFILE (anonymous adult without reduction for one trip).
-  c.The fare calculator can give FARE PRODUCTs that fit with the trip, from one basic solution (for today, anonymous single trip ticket on the network et on the origin-destination) to many elaborated solutions (for the travel day, combined ticket, with reduction and guarantees, including already brought passes). The availaibility on some asset or on mandatory reservation can be displayed. 
-
-3.a.If the TRAVEL is easy to plan, the TRANSPORT CUSTOMER can browse a numeric platform, come in a travel agency, at an operator desk or on a ticket vending machine in a station to choose his mobility tickets. He wants to choose himself between tickets, making himself the composition between transport means and price they cost. 
-  b.Either the TRANSPORT CUSTOMER or the RETAILER starts the catalogue consultation on behalf of the TRANSPORT CUSTOMER. The RETAILER browse the catalogue to retrieve an initial set of candidate FARE PRODUCT(s) and SALES OFFER PACKAGE(s) in its. This catalogue can be statically build with an aggregation/rework of one or many distributor catalogues, themseleves build based on fare owner's ones.
-  c.The TRANSPORT CUSTOMER reviews the initial results and may filter, order the results. If he cannot finalise his selection, he can refine the catalogue to narrow the displayed FARE PRODUCT(s) and SALES OFFER PACKAGE(s) according to the consultation context and data he provides (new/mofified ones and/or coming from TRIP PLANNER requirements).
-  d.One or many times, the TRANSPORT CUSTOMER selects one candidate SALES OFFER PACKAGE and requests details so that he can consult the detailed content, conditions, guarantees, and optional parts of the selected SALES OFFER PACKAGE. This consultation can be done for more than one SALES OFFER PACKAGE at the same time, so far that they can be displayed on the same screeen, at the same time. 
-  
-4. If the selected SALES OFFER PACKAGE is not yet fully defined,again, the TRANSPORT CUSTOMER enters additional customer parameters by providing the required information, such as traveller profile, eligibility, class, date, zone, quantity, or extras. Once the required information is filled, the RETAILER checks and give a price with the applicable commercial and travel conditions for the selected SALES OFFER PACKAGE.
-
-5. a.If this PRICE is an indicative price depending on mandatory reservation (seat by example) or if the TRANSPORT CUSTOMER desires (and the systme can) to check, the TRANSPORT CUSTOMER check availability and start reservation process : the RETAILER verifies availability or starts a temporary hold for the selected SALES OFFER PACKAGE.
-  b. If availability is confirmed, the RETAILER retrieves the final price and returns it with final conditions for the selected SALES OFFER PACKAGE.
-
-6. Before making a final choice, the TRANSPORT CUSTOMER may change options to modify class, extras, or other defining elements, and the RETAILER refreshes the offer and recalculates the corresponding conditions and price.
-7. The TRANSPORT CUSTOMER chooses the preferred solution, and the RETAILER can perform a keep of selected option so that the CUSTOMER OFFER PACKAGE is ready for the next reservation and purchase step.
-
-=> reformaté en .md à vérifier
 1. The TRANSPORT CUSTOMER is planning his TRAVEL, which can be composed of one or many TRIPs, each consisting of one or many LEGs. He wants to go to his DESTINATION using public transport means and, optionally, come back to the departure point.
 
 2.  
    a. If the TRAVEL is complex (multi-LEGs, multi-TRIPs), and/or if the TRANSPORT CUSTOMER does not know how to make his travel, he can use a TRIP PLANNER. It gives one or many answers with detailed TRIP PATTERNs: schedule, transport mode, lines, stops, and connections.  
-   b. The TRIP PLANNER can be associated with a fare calculator: the TRANSPORT CUSTOMER can provide required details on travellers (date of birth, name, reduction cards, disabilities) or remain, by default, with a basic COMMERCIAL PROFILE (anonymous adult without reduction for one trip).  
-   c. The fare calculator can provide FARE PRODUCTs that fit the trip, from one basic solution (for today, anonymous single-trip ticket on the network and on the origin-destination) to many elaborated solutions (for the travel day, combined ticket, with reduction and guarantees, including already bought passes). The availability of some assets or mandatory reservation can also be displayed.
+   b. The TRIP PLANNER can be associated with a fare calculator: the TRANSPORT CUSTOMER can provide required details on travellers (date of birth, name, reduction cards, disabilities) or remain, by default, with a basic COMMERCIAL PROFILE (anonymous adult without reduction for only one trip).  
+   c. The fare calculator can provide FARE PRODUCTs that fit the trip, from one basic solution (for today, anonymous single-trip ticket on the network and on the origin-destination) to many elaborated solutions (for the travel day, combined ticket, with reduction and guarantees, including already bought passes). The availability of some assets or mandatory reservations can also be displayed.
 
 3.  
-   a. If the TRAVEL is easy to plan, the TRANSPORT CUSTOMER can browse a digital platform, go to a travel agency, an operator desk, or a ticket vending machine in a station to choose mobility tickets. He wants to choose by himself between tickets, composing the transport means and the prices they cost.  
-   b. Either the TRANSPORT CUSTOMER or the RETAILER starts the catalogue consultation on behalf of the TRANSPORT CUSTOMER. The RETAILER browses the catalogue to retrieve an initial set of candidate FARE PRODUCT(s) and SALES OFFER PACKAGE(s). This catalogue can be statically built with an aggregation or rework of one or many distributor catalogues, themselves built based on fare owner catalogues.  
+   a. If the TRAVEL is easy to plan, the TRANSPORT CUSTOMER can browse a digital platform, go to a travel agency, an operator desk, or a ticket vending machine in a station to choose mobility tickets. He wants to choose by himself between tickets, composing himself the transport means and the prices they cost.  
+   b. Either the TRANSPORT CUSTOMER or the RETAILER on behalf of the TRANSPORT CUSTOMER starts the catalogue consultation. The RETAILER browses the catalogue to retrieve an initial set of candidate FARE PRODUCT(s) and SALES OFFER PACKAGE(s). This catalogue can be statically built with an aggregation and rework of one or many distributor catalogues, themselves built based on fare owner catalogues.  
    c. The TRANSPORT CUSTOMER reviews the initial results and may filter or order the results. If he cannot finalise his selection, he can refine the catalogue to narrow the displayed FARE PRODUCT(s) and SALES OFFER PACKAGE(s) according to the consultation context and the data he provides (new or modified data and/or data coming from TRIP PLANNER requirements).  
    d. One or many times, the TRANSPORT CUSTOMER selects one candidate SALES OFFER PACKAGE and requests details so that he can consult the detailed content, conditions, guarantees, and optional parts of the selected SALES OFFER PACKAGE. This consultation can be done for more than one SALES OFFER PACKAGE at the same time, as long as they can be displayed on the same screen at the same time.
 
@@ -90,13 +71,13 @@
 ### Alternatives
 
 #### rail
-1. The TRANSPORT CUSTOMER chooses on the ticket vending machine his origin station and his destination station. 
+1. The TRANSPORT CUSTOMER chooses his origin station and his destination station on the ticket vending machine. 
 2. The TRANSPORT CUSTOMER enters required data (customer account, reduction card)
-3. The TRANSPORT CUSTOMER chooses between few SALES OFFER PACKAGEs dispplayed with their PRICE 
+3. The TRANSPORT CUSTOMER chooses between a few SALES OFFER PACKAGEs dispplayed with their PRICE 
 
 #### single anonymous travel
-1. The TRANSPORT CUSTOMER starts his mobile application; the comming page displays a shortcut to single trip purchase in one action.
-2. He chooses single trip anonymous ticket by clicing on this shortcut.
+1. The TRANSPORT CUSTOMER starts his mobile application; the home page displays a shortcut for single-trip purchase in one action.
+2. He chooses a anonymous single-trip ticket by clicing on this shortcut.
 
 
 
