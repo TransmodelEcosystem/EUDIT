@@ -67,11 +67,15 @@
 ### Alternatives
 
 #### rail
-From 1. : 
 1. The TRANSPORT CUSTOMER chooses on the ticket vending machine his origin station and his destination station. 
-2. The TRANSPORT CUSTOMER enters required data (customer account...)
+2. The TRANSPORT CUSTOMER enters required data (customer account, reduction card)
+3. The TRANSPORT CUSTOMER chooses between few SALES OFFER PACKAGEs dispplayed with their PRICE 
 
-#### anonymous travel
+#### single anonymous travel
+1. The TRANSPORT CUSTOMER starts his mobile application; the comming page displays a shortcut to single trip purchase in one action.
+2. He chooses single trip anonymous ticket by clicing on this shortcut.
+
+
 
 
 
