@@ -84,6 +84,8 @@
 
 
 ### Diagramm 
+<img width="989" height="972" alt="image" src="https://github.com/user-attachments/assets/be52d6c1-97bd-4ed7-ad41-8c0a3a6f6642" />
+
 
 
 ### Links with use cases
