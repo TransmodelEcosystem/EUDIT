@@ -1,6 +1,7 @@
 # Place for the Business Use Cases
 
-Our high-level use cases written with UML description and Transmodel vocabulary.
+EUDIT high-level use cases written with UML activity diagram and Transmodel vocabulary. 
+Formatting with pattern : [format definition](https://github.com/TransmodelEcosystem/EUDIT/blob/main/wiki/use-cases/business-use-cases/business_use-case_format.md) 
 
 ## EUDIT Business Use Case Categories
 
