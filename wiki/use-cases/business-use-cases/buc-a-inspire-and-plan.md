@@ -45,7 +45,7 @@
 
 ### Main 
 
-1. The TRANSPORT CUSTOMER is planning his TRAVEL, which can be composed of one or many TRIPs, each consisting of one or many LEGs. He wants to go to his DESTINATION using public transport means and, optionally, come back to the departure point.
+1. The TRANSPORT CUSTOMER is planning his TRAVEL, which can be composed of one or many TRIPs, each consisting of one or many LEGs. He wants to go to his DESTINATION using public transport means and, optionally, come back to the departure point. The TRANSPORT CUSTOMER can connect or not to a customer account on a digital platform.
 
 2.  
    a. If the TRAVEL is complex (multi-LEGs, multi-TRIPs), and/or if the TRANSPORT CUSTOMER does not know how to make his travel, he can use a TRIP PLANNER. It gives one or many answers with detailed TRIP PATTERNs: schedule, transport mode, lines, stops, and connections.  
@@ -70,7 +70,7 @@
    
 ### Alternatives
 
-#### rail
+#### specific trip
 1. The TRANSPORT CUSTOMER chooses his origin station and his destination station on the ticket vending machine. 
 2. The TRANSPORT CUSTOMER enters required data (customer account, reduction card)
 3. The TRANSPORT CUSTOMER chooses between a few SALES OFFER PACKAGEs dispplayed with their PRICE 
