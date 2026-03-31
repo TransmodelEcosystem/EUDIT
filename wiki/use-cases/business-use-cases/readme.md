@@ -6,6 +6,9 @@ Formatting with pattern : [format definition](https://github.com/TransmodelEcosy
 ## EUDIT Business Use Case Categories
 
 A. **Inspire & Plan**
+- retrieving product list and product detail
+- asking for product-based offers (including optional disponibility check)
+- selection of offers (including pre-reservation).
 
 B. **Shop & Price**
 
