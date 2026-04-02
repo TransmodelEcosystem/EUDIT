@@ -1,8 +1,8 @@
 
 ## Use Case Overview
 
-- **Business Use Case ID & Name:** BUC-A — Plan your trip and choose your means to travel
-- **Goal (Objective):** Enable the Transport Customer to select the most suitable mobility solution (transport mode, product, package, price and guarantees) for his TRAVEL.
+- **Business Use Case ID & Name:** BUC-A — Plan your trip and choose your means to travel and/or your FARE PRODUCT
+- **Goal (Objective):** Enable the Transport Customer to select the most suitable mobility offer (transport mode, product, package, price and guarantees) for his TRAVEL.
 - **Scope:** Offer discovery (TRIP PLANNER proposals) / catalogue consultation (FARE PRODUCT catalogue) / PRICE calculation / CUSTOMER OFFER PACKAGE constitution
 ---
 
