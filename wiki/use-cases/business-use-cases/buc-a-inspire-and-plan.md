@@ -75,7 +75,7 @@
 
 8. Before making a final choice, the TRANSPORT CUSTOMER may change options to modify class, extras, or other defining elements, and if needed the retailer refreshes the offer and recalculates the corresponding conditions and price.
 9. One by one, the TRANSPORT CUSTOMER can consult, select or discard FARE PRODUCT(s) to build a final complete solution. At each step, on each selected product with reservation, the retailer can start the resevation process with the distributor in order to ensure conherent multiple reservations. 
-10. The TRANSPORT CUSTOMER chooses the preferred solution, and the retailer can keep the selected option in a "whish list" so that the CUSTOMER OFFER PACKAGE is ready for the next reservation and purchase step.
+10. The TRANSPORT CUSTOMER chooses the preferred solution, and the retailer can keep the selected option in a "whish list" so that the CUSTOMER OFFER PACKAGE is ready for the next reservation and purchase step. The retailer can inform the TRANSPORT CUSTOMER that a part or all the proposition is expired and propose a new price and availabiltiy calculation.  
    
 ### Alternatives
 
