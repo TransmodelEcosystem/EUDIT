@@ -47,6 +47,8 @@
 
 1. The TRANSPORT CUSTOMER is planning his TRAVEL, which can be composed of one or many TRIPs, each consisting of one or many LEGs. He wants to go to his DESTINATION using public transport means and, optionally, come back to the departure point. The TRANSPORT CUSTOMER can connect or not to a customer account on a digital platform.
 
+=> ajout USER PROFILE
+
 2.  
    a. If the TRAVEL is complex (multi-LEGs, multi-TRIPs), and/or if the TRANSPORT CUSTOMER does not know how to make his travel, he can use a TRIP PLANNER. It gives one or many answers with detailed TRIP PATTERNs: schedule, transport mode, lines, stops, and connections.  
    b. The TRIP PLANNER can be associated with a fare calculator: the TRANSPORT CUSTOMER can provide required details on travellers (date of birth, name, reduction cards, disabilities) or remain, by default, with a basic COMMERCIAL PROFILE (anonymous adult without reduction for only one trip).  
@@ -84,6 +86,8 @@
 
 
 ### Diagramm 
+UML activity diagram
+
 <img width="989" height="972" alt="image" src="https://github.com/user-attachments/assets/be52d6c1-97bd-4ed7-ad41-8c0a3a6f6642" />
 
 
