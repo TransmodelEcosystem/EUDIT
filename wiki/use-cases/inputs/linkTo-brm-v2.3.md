@@ -1,0 +1,1 @@
+Link to [BRM v2.3](https://maasallianceeu.sharepoint.com/:x:/r/sites/europeandigitalticketinginterfaces/_layouts/15/Doc.aspx?sourcedoc=%7BBF81ED7C-D1A9-4E29-8960-FC852C1D5C62%7D&file=BRM_EUDIT_V2.3.xlsx&action=default&mobileredirect=true)
