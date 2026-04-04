@@ -47,7 +47,7 @@
 - **Retreiving product list**
 1. The TRANSPORT CUSTOMER is planning his TRAVEL, which can be composed of one or many TRIPs, each consisting of one or many LEGs. He wants to go from TRIP ORIGIN PLACE to his TRIP DESTINATION PLACE using public transport means and, optionally, come back to the departure PLACE (can be a POINT, a SECTION or a ZONE). 
 
-2.  The TRANSPORT CUSTOMER can connect or not to a CUSTOMER ACCOUNT on a digital platform. The TRANSPORT CUSTOMER may (if he wants) prove a particular USER PROFILE (under 25 years old, PRM indications, corporate participation). The TRANSPORT CUSTOMER can candidate to a particular COMMERCIAL PROFILE. He can have his USER PROFILE(s) and /or COMMERCIAL PROFILE(s) already registred with his CUSTOMER ACCOUNT. He may wish to use specific features of his CUSTOMER ACCOUNT (TRAVEL DOCUMENTs, reduction cards, entitlements).
+2.  The TRANSPORT CUSTOMER can connect or not to a CUSTOMER ACCOUNT on a digital platform. The TRANSPORT CUSTOMER may (if he wants) prove a particular USER PROFILE (under 25 years old, PRM indications, corporate participation). The TRANSPORT CUSTOMER can candidate to a particular COMMERCIAL PROFILE. He can have his USER PROFILE(s) and /or COMMERCIAL PROFILE(s) already registred with his CUSTOMER ACCOUNT. He may wish to use specific features of his CUSTOMER ACCOUNT (TRAVEL DOCUMENTs, reduction cards, entitlements, vehicle plate, driving licence).
 
 3.  
    a. **If the TRAVEL is complex** (multi-LEGs, multi-TRIPs), and/or if the TRANSPORT CUSTOMER does not know how to make his travel, he can use a journey planner feeded or not with the information from CUSTOMER ACCOUNT. It gives one or many answers with detailed TRIP PATTERNs: schedule, transport mode, lines, stops, and connections.  
@@ -74,7 +74,7 @@
 - **Selection of offers**
 
 8. Before making a final choice, the TRANSPORT CUSTOMER may change options to modify class, extras, or other defining elements, and if needed the retailer refreshes the offer and recalculates the corresponding conditions and price.
-9. One by one, the TRANSPORT CUSTOMER can consult, select or discard FARE PRODUCT(s) to build a final complete solution. At each step, on each selected product with reservation, the retailer can start the resevation process with the distributor in order to ensure conherent multiple reservations. 
+9. One by one, the TRANSPORT CUSTOMER can consult, select or discard FARE PRODUCT(s) to build a final complete solution. At each step, on each selected product with reservation, the retailer can start the resevation process with the distributor in order to ensure coherent multiple reservations (transaction managment with multiple distributors). 
 10. The TRANSPORT CUSTOMER chooses the preferred solution, and the retailer can keep the selected option in a "whish list" so that the CUSTOMER OFFER PACKAGE is ready for the next reservation and purchase step. The retailer can inform the TRANSPORT CUSTOMER that a part or all the proposition is expired and propose a new price and availabiltiy calculation.  
    
 ### Alternatives
