@@ -6,7 +6,7 @@ Formatting with pattern : [format definition](https://github.com/TransmodelEcosy
 ## EUDIT Business Use Case Categories
 
 A. **Inspire & Plan**
-- retrieving product list and product detail
+- retrieving product list and product detail (fare product discovery)
 - asking for product-based offers (including optional disponibility check)
 - selection of offers (including pre-reservation)
 
@@ -14,9 +14,9 @@ B. **Shop & Price**
 - manage your products (add/remove/modify your cart)
 - calulate the price (final pricing)
 
-C. **Order & Book** *(+ begin of reservation)*
+C. **Order & Book** *(+ first stage of reservation)*
 - fix your purchase (checkout)
-- begin reservation process
+- begin reservation process (seat / bike / cabin / PRM / mandatory or optional)
   
 D. **Pay** *(CHARGING MOMENT (complete or not))*
 - enter your payment method
@@ -24,11 +24,11 @@ D. **Pay** *(CHARGING MOMENT (complete or not))*
 - order a payment between banks/ pay with monney
 - receives a receipt / bill
 
-E. **Ticketing & Fulfilment** *(FARE CONTRACT creation + Travel doc distribution + end of reservation)*
+E. **Ticketing & Fulfilment** *(FARE CONTRACT creation + Travel doc distribution + last stage of reservation)*
 - creation of travel access rights (contracts)
 - managment of orders (create, consult, modify, delete)
 - receive TRAVEL DOCUMENT(s)
-- acheive reservation 
+- acheive reservation process
 
 F. **Pre-trip** *(service and aftersales)*
 - inform traveler
@@ -37,23 +37,27 @@ F. **Pre-trip** *(service and aftersales)*
 G. **Validation – inspection / In-trip** *(services and aftersales)*
 - sale/pay on tap
 - inspection durng travel
-- trip modification
+- trip modification (traveler request or operator disruption)
   
 I. **Post-trip** *(+ end of payment (CHARGING MOMENT))*
 - pay your trips
-  
-J. **After trip** *(aftersales + claim + receipt)*
 - receive the final price
 - automatic purchase (renew your contract)
-- request for an after-sale operation
-- operator after-sale operations
+  
+J. **After trip** *(aftersales + claim + receipt)*
+- traveler request for an after-sale operation
+- operator after-sale operations (refund, complaint)
   
 K. **Settlement** *(repartition between actors)* & **Reporting**
-- invoices
+- invoices,
+- VAT reporting, clearing, reconciliation
 - in EUDIT scope ?
 
 L. **Governance** *(technical ?)*
+- cutomer authentification
 - give the versions and the errors
 
 > To be cross-checked with EUDIT perimeter compliance.
-> Each point on one page
+> Each point in one Business Use Case **on one page**
+
+
