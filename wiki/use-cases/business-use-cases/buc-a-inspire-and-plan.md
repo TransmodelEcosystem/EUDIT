@@ -3,7 +3,7 @@
 
 - **Business Use Case ID & Name:** BUC-A — Plan your trip and choose your means to travel and/or your FARE PRODUCT
 - **Goal (Objective):** Enable the Transport Customer to select the most suitable mobility offer (transport mode, product, package, price and guarantees) for his TRAVEL.
-- **Scope:** Offer discovery (TRIP PLANNER proposals) / catalogue consultation (FARE PRODUCT catalogue) / PRICE calculation / CUSTOMER OFFER PACKAGE constitution
+- **Scope:** Offer discovery (journey planner proposals) / catalogue consultation (FARE PRODUCT catalogue) / PRICE calculation / CUSTOMER OFFER PACKAGE constitution
 ---
 
 ## Actors & Context
@@ -50,16 +50,16 @@
 2.  The TRANSPORT CUSTOMER can connect or not to a CUSTOMER ACCOUNT on a digital platform. The TRANSPORT CUSTOMER may (if he wants) prove a particular USER PROFILE (under 25 years old, PRM indications, corporate participation). The TRANSPORT CUSTOMER can candidate to a particular COMMERCIAL PROFILE. He can have his USER PROFILE(s) and /or COMMERCIAL PROFILE(s) already registred with his CUSTOMER ACCOUNT, including reduction cards,entitlements.
 
 3.  
-   a. **If the TRAVEL is complex** (multi-LEGs, multi-TRIPs), and/or if the TRANSPORT CUSTOMER does not know how to make his travel, he can use a TRIP PLANNER feeded or not with the information from CUSTOMER ACCOUNT. It gives one or many answers with detailed TRIP PATTERNs: schedule, transport mode, lines, stops, and connections.  
-   b. The TRIP PLANNER can be associated with a fare calculator: the TRANSPORT CUSTOMER can provide required details on travellers (date of birth, name, reduction cards, disabilities, PRM services needed, companion) or remain, by default, with a basic COMMERCIAL PROFILE (anonymous adult - for only one trip - without reduction). The TRANSPORT CUSTOMER can indicate that he wants to include THIRD-PARTY PRODUCT in the solution (example : museum entry) 
+   a. **If the TRAVEL is complex** (multi-LEGs, multi-TRIPs), and/or if the TRANSPORT CUSTOMER does not know how to make his travel, he can use a journey planner feeded or not with the information from CUSTOMER ACCOUNT. It gives one or many answers with detailed TRIP PATTERNs: schedule, transport mode, lines, stops, and connections.  
+   b. The journey planner can be associated with a fare calculator: the TRANSPORT CUSTOMER can provide required details on travellers (date of birth, name, reduction cards, disabilities, PRM services needed, companion) or remain, by default, with a basic COMMERCIAL PROFILE (anonymous adult - for only one trip - without reduction). The TRANSPORT CUSTOMER can indicate that he wants to include THIRD-PARTY PRODUCT in the solution (example : museum entry) 
    c. At least, the TRANSPORT CUSTOMER has a web-link towards website of each distributor on each LEG/JOURNEY to browse their catalogue (equivalent to the following step).
    d. If available, a fare calculator can provide FARE PRODUCTs that fit the TRIP(s), from one basic solution on each origin-destination LEG (defaults values used like : "for today", "anonymous" "single-trip ticket on the network") to many elaborated solutions (for the travel specified day, combined ticket, multimodal offers, with reduction and guarantees, including already brought passes). The availability of some assets or mandatory reservations can also be displayed.
-    e. The retailer can manage the result display with additional indicators, ranking, filtering, comparing : price, duration, number of interchanges, mode mix, GHG/CO₂ impact, comfort, accessibility or operator.
+    e. The retailer can manage the result displayed with additional indicators, ranking, filtering (operator, line, categories, product name), comparing : price, duration, number of interchanges, mode mix, GHG/CO₂ impact, comfort, accessibility or operator.
 
 5.  
    a. **If the TRAVEL is easy to plan**, the TRANSPORT CUSTOMER can browse a digital platform, go to a travel agency, an distributor desk, or a ticket vending machine in a station to choose mobility tickets. He wants to choose by himself between tickets, composing himself the transport means and the prices they cost. He can also include THIRD-PARTY PRODUCTs in his search. 
    b. Either the TRANSPORT CUSTOMER or the retailer on behalf of the TRANSPORT CUSTOMER starts the catalogue consultation. The retailer browses the catalogue to retrieve an initial set of candidate FARE PRODUCT(s) and SALES OFFER PACKAGE(s). This catalogue can be statically built with an aggregation and rework of one or many distributor catalogues, themselves built based on fare owner catalogues. This catalogue can be partialy or totally dynamically build using real-time requests to distributors. 
-   c. The TRANSPORT CUSTOMER reviews the initial results and may filter or order the results. If he cannot finalise his selection, he can refine the catalogue to narrow the displayed FARE PRODUCT(s) and SALES OFFER PACKAGE(s) according to the consultation context and the data he provides (new or modified data and/or data coming from TRIP PLANNER requirements).
+   c. The TRANSPORT CUSTOMER reviews the initial results and may filter or order the results. If he cannot finalise his selection, he can refine the catalogue to narrow the displayed FARE PRODUCT(s) and SALES OFFER PACKAGE(s) according to the consultation context and the data he provides (new or modified data and/or data coming from journey planner requirements).
 
 - **Asking for product-based offers**
 5. One or many times, the TRANSPORT CUSTOMER selects one candidate SALES OFFER PACKAGE of one or many distributors (multiple transport modes, multiple operators). He requests details so that he can consult the detailed content, conditions, guarantees, and optional parts of the selected SALES OFFER PACKAGE. This consultation can be done for more than one SALES OFFER PACKAGE at the same time, as long as they can be displayed on the same screen at the same time. 
@@ -78,17 +78,21 @@
 10. The TRANSPORT CUSTOMER chooses the preferred solution, and the retailer can keep the selected option in a "whish list" so that the CUSTOMER OFFER PACKAGE is ready for the next reservation and purchase step. The retailer can inform the TRANSPORT CUSTOMER that a part or all the proposition is expired and propose a new price and availabiltiy calculation.  
    
 ### Alternatives
+Alternative scenarii **full compatible** with the main scenario; unsing shortcuts or very detailed specific point of the main scenario.
 
-#### specific trip
+- **Specific trip**
 1. The TRANSPORT CUSTOMER chooses his origin station and his destination station on the ticket vending machine with the option "around the stations : x kilometers". 
 2. The TRANSPORT CUSTOMER enters required data (customer account, reduction card).
-3. The TRANSPORT CUSTOMER chooses between a few SALES OFFER PACKAGEs dispplayed with their PRICE, on different JOURNEYs with different stations. 
+3. The TRANSPORT CUSTOMER chooses between a few SALES OFFER PACKAGEs dispplayed with their PRICE, on different JOURNEYs with different stations (radius-baseed). 
 
-#### single anonymous travel
+- **Single anonymous travel**
 1. The TRANSPORT CUSTOMER starts his mobile application; the home page displays a shortcut for single-trip purchase in one action.
 2. He chooses a anonymous single-trip ticket by clicking on this shortcut.
 
-
+- **PRM journey**
+1. The TRANSPORT CUSTOMER has specific needs that must be guaranted to be filled during his TRAVEL (on the LEG and between LEGs). The journey planner gives solutions to TRAVEL SPECIFICATION with mobility services even on first LEG (from house/postal adress to first STOP POINT), during interchange and on last LEG (from last STOP POINT to final destination).
+2. If the journey planner is associated with a fare calculator, the TRANSPORT CUSTOMER receives a fare offer compliant with USER PROFILE and with TRAVEL SPECIFICATION, including continuous additional services and travel guaranteees from house to destination.
+3. If the journey planner only proposes basic mobility solutions, the TRANSPORT CUSTOMER must browse the catalogue to select one by one the tickets, services and guaranteees he needs. When his selection fulfills his complete TRAVEL, he has a satisfactory solution.
 
 
 
