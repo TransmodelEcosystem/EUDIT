@@ -8,7 +8,7 @@
 
 ## Actors & Context
 
-- **Primary Actor:** **TRANSPORT CUSTOMER (TRANSPORT USER ROLE including TRANSPORT CUSTOMER ROLE and PURCHASER ROLE (represented by the retailer)):** needs to purchase products suited to his travel needs
+- **Primary Actor:** **TRANSPORT CUSTOMER (TRANSPORT USER ROLE including TRANSPORT CUSTOMER ROLE and PURCHASER ROLE (represented by the retailer)):** needs to purchase products suited to his travel needs. He can be the manager of a group, a PRM, the purschaser for a minor traveler or other with specific needs or not.
 - **Supporting Actors / Stakeholders:**
   - **Retailer (FARE PRODUCT RETAILER ROLE (API consumer)):** supports the customer and initiates catalogue consultation
   - **Distributor (FARE PRODUCT DISTRIBUTOR ROLE (API provider)):** provides the FARE PRODUCT catalogue, prices, availability and guarantees
