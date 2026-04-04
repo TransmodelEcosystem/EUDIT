@@ -94,7 +94,11 @@ Alternative scenarii **full compatible** with the main scenario; unsing shortcut
 2. If the journey planner is associated with a fare calculator, the TRANSPORT CUSTOMER receives a fare offer compliant with USER PROFILE and with TRAVEL SPECIFICATION, including continuous additional services and travel guaranteees from house to destination.
 3. If the journey planner only proposes basic mobility solutions, the TRANSPORT CUSTOMER must browse the catalogue to select one by one the tickets, services and guaranteees he needs. When his selection fulfills his complete TRAVEL, he has a satisfactory solution.
 
-
+- **Return trip**
+1 . The TRANSPORT CUSTOMER plans a TRAVEL composed of an outward journey and the corresponding return journey. The journey planner can manage the full TRAVEL, requesting only minimal criteria for the return trip (return time and reversing origin-destination).
+2. If the journey planner is associated with a fare calculator, the TRANSPORT CUSTOMER can receive a fare offer that takes into account the whole TRAVEL (for example, a daily pass less expensive than two separate tickets).
+3. If the journey planner only proposes basic mobility solutions, the TRANSPORT CUSTOMER must browse the catalogue to select one by one the tickets, looking for solution that includes the two TRIPs.
+  
 
 ### Diagramm 
 UML activity diagram
