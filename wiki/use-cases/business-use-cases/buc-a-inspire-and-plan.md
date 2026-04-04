@@ -101,7 +101,7 @@ Alternative scenarii **full compatible** with the main scenario; unsing shortcut
   
 - **Bank card as TRAVEL DOCUMENT** 
 1. The TRANSPORT CUSTOMER plans a TRAVEL and consult the catalogue : he checks that his bank card is accepted as a TRAVEL DOCUMENT on the selected JOURNEYs. The validity conditions, guarantees and PRICEs (including fees and VAT rates) are displayed. The TRANSPORT CUSTOMER is fully informed.
-2. The TRANSPORT CUSTOMER do not need to select a product himself : the FARE PRODUCT selection is done by the system when the traveller taps on the validator equipment.
+2. The TRANSPORT CUSTOMER do not need to select a product himself : the FARE PRODUCT selection is done by the system when the traveller taps on the validator equipment (date and time, place, line, stop, operator, bank contract and answer, customer account).
 
  
 ### Diagramm 
