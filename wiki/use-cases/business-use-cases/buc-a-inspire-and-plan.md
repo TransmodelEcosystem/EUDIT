@@ -89,7 +89,7 @@ Alternative scenarii **full compatible** with the main scenario; unsing shortcut
 1. The TRANSPORT CUSTOMER starts his mobile application; the home page displays a shortcut for single-trip purchase in one action.
 2. He chooses a anonymous single-trip ticket by clicking on this shortcut.
 
-- **PRM journey**
+- **PRM journey** 
 1. The TRANSPORT CUSTOMER has specific needs that must be guaranted to be filled during his TRAVEL (on the LEG and between LEGs). The journey planner gives solutions to TRAVEL SPECIFICATION with mobility services even on first LEG (from house/postal adress to first STOP POINT), during interchange and on last LEG (from last STOP POINT to final destination).
 2. If the journey planner is associated with a fare calculator, the TRANSPORT CUSTOMER receives a fare offer compliant with USER PROFILE and with TRAVEL SPECIFICATION, including continuous additional services and travel guaranteees from house to destination.
 3. If the journey planner only proposes basic mobility solutions, the TRANSPORT CUSTOMER must browse the catalogue to select one by one the tickets, services and guaranteees he needs. When his selection fulfills his complete TRAVEL, he has a satisfactory solution.
