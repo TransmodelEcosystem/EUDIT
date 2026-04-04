@@ -71,7 +71,7 @@
    b. If the final price is a yield price, at this moment, the retailer requests for a final price (valid for a duration)
    c. If availability is also confirmed, the retailer retrieves the final price and returns it with the final conditions for the selected SALES OFFER PACKAGE.
 
-**Selection of offers**
+- **Selection of offers**
 
 8. Before making a final choice, the TRANSPORT CUSTOMER may change options to modify class, extras, or other defining elements, and if needed the retailer refreshes the offer and recalculates the corresponding conditions and price.
 9. One by one, the TRANSPORT CUSTOMER can consult, select or discard FARE PRODUCT(s) to build a final complete solution. At each step, on each selected product with reservation, the retailer can start the resevation process with the distributor in order to ensure conherent multiple reservations. 
@@ -80,9 +80,9 @@
 ### Alternatives
 
 #### specific trip
-1. The TRANSPORT CUSTOMER chooses his origin station and his destination station on the ticket vending machine. 
-2. The TRANSPORT CUSTOMER enters required data (customer account, reduction card)
-3. The TRANSPORT CUSTOMER chooses between a few SALES OFFER PACKAGEs dispplayed with their PRICE 
+1. The TRANSPORT CUSTOMER chooses his origin station and his destination station on the ticket vending machine with the option "around the stations : x kilometers". 
+2. The TRANSPORT CUSTOMER enters required data (customer account, reduction card).
+3. The TRANSPORT CUSTOMER chooses between a few SALES OFFER PACKAGEs dispplayed with their PRICE, on different JOURNEYs with different stations. 
 
 #### single anonymous travel
 1. The TRANSPORT CUSTOMER starts his mobile application; the home page displays a shortcut for single-trip purchase in one action.
