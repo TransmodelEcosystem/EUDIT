@@ -107,10 +107,11 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 ### Diagram 
 UML activity diagram
 
-<img width="989" height="972" alt="image" src="https://github.com/user-attachments/assets/be52d6c1-97bd-4ed7-ad41-8c0a3a6f6642" />
-
+<img width="1216" height="2992" alt="image" src="https://github.com/user-attachments/assets/c4af476d-d53f-4c44-b935-bb02687333c9" />
 
 
 ### Links with use cases
 
 Link to (https://github.com/TransmodelEcosystem/EUDIT/discussions/36#discussioncomment-16183779)
+To be completed
+
