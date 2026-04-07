@@ -6,13 +6,13 @@ This repository contains the documentation and work products for harmonizing var
 
 ---
 
-## [Issues](https://github.com/TransmodelEcosystem/EUDIT/issues)
+<!-- ## [Issues](https://github.com/TransmodelEcosystem/EUDIT/issues)
 
 This tab contains remarks/request related to the technical specification(s). It will be used in the `anvil` phase.
 
 ## [Pull request](https://github.com/TransmodelEcosystem/EUDIT/pulls)
 
-Most likely, we will not use this, unless we decide during the process to have a process to make changes that requires pull requests.
+Most likely, we will not use this, unless we decide during the process to have a process to make changes that requires pull requests. -->
 
 ## [Discussions](https://github.com/TransmodelEcosystem/EUDIT/discussions)
 
@@ -22,7 +22,7 @@ This is the main page for functional discussions. We will prepare discussion ite
 
 ## [Code](https://github.com/TransmodelEcosystem/EUDIT) (Repository Structure)
 
-Contains most work-in-progress documentation, including documents we can use or have to build on.
+Contains most work-in-progress documentation, including documents we can use or have to build on. `PLEASE DON'T MODIFY!!!` Use the discussions, so we can analyse the requested changes before they're applied to this part!
 
 ### 📚 Wiki
 
