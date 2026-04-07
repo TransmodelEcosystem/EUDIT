@@ -7,4 +7,6 @@ claude.md
 *.json
 nul
 *.py
-
+requirements/
+dummies-guides/
+dont-include/

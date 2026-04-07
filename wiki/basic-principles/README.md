@@ -32,16 +32,20 @@ This principle must be split into these 2:
 
 ## Tech 'ilities'
 
-During the Kidling phase, we'll complete these 'ilities', to facilitate the Forge phase, to give it a clear framework to build on.
+The 'ilities' are used to verify the outcome of the specification. They were discussed and scoped in Plenary Meeting #3 (26 March 2026, Team 2: Architecture).
 
-* **Consistency**:
-* **Discoverability**:
-* **Security**:
-* **Extensibility**:
-* **Accessibility**:
-* **Efficiency**:
-* **Flexibility**:
-* **Simplicity**:
-* **Modularity**:
-* **Compatibility**:
-* **Readability**:
+### In scope for the specification
+
+* **Security**: [TO DISCUSS / COMPLETE]
+* **Interoperability**: [TO DISCUSS / COMPLETE]
+* **Extensibility**: [TO DISCUSS / COMPLETE]
+* **Predictability / Consistency of behaviour**: [TO DISCUSS / COMPLETE]
+
+### Deferred to SLAs / implementation (not in spec scope)
+
+* **Reliability**
+* **Availability**
+* **Scalability**
+* **Performance**
+* **Observability**
+* **Deployability**
