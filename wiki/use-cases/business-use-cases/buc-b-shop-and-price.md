@@ -1,21 +1,24 @@
 ## Use Case Overview
 
-- **Business Use Case ID & Name:** BUC-B — Shop your FARE PRODUCT(s) with PRICE information
-- **Goal (Objective):** Enable the Transport Customer to select for purchase the most suitable mobility offer (transport mode, product, package, price, and guarantees) for his TRAVEL.
-- **Scope:** Offer purchasing (basket management) / final PRICE information / CUSTOMER OFFER PACKAGE(s) in TRAVEL BASKET
+- **Business Use Case ID & Name:** BUC-B — Shop your FARE PRODUCT(s) and manage your TRAVEL BASKET with PRICE calculation at any time
+- **Goal (Objective):** Enable the TRANSPORT CUSTOMER to create, build, review, modify and validate a TRAVEL BASKET containing one or more CUSTOMER OFFER PACKAGE(s), with updated PRICE information available at any time before the next step of reservation initiation and payment.
+- **Scope:** TRAVEL BASKET creation and management / offer completion / PRICE calculation and recalculation / dependency management between basket elements / preparation of a basket ready for the next use case
 ---
 
 ## Actors & Context
 
-- **Primary Actor:** **TRANSPORT CUSTOMER (TRANSPORT USER ROLE including TRANSPORT CUSTOMER ROLE and PURCHASER ROLE (represented by the retailer)):** needs to purchase products suited to his travel needs. He can be the manager of a group, a PRM, the purchaser for a minor traveler or other with specific needs or none.
+- **Primary Actor:** **TRANSPORT CUSTOMER (TRANSPORT USER ROLE including TRANSPORT CUSTOMER ROLE and PURCHASER ROLE (represented by the retailer)):** wants to purchase offers suited to his TRAVEL, for himself and/or for other travellers. He can be the manager of a group, a PRM, the purchaser for a minor traveler or other with specific needs or none.
+
 - **Supporting Actors / Stakeholders:**
-  - **Retailer (FARE PRODUCT RETAILER ROLE (API consumer)):** supports the customer in purchase process, provide final price information.
-  - **Distributor (FARE PRODUCT DISTRIBUTOR ROLE (API provider)):** provides the 
+  - **Retailer (FARE PRODUCT RETAILER ROLE (API consumer)):** manages the shopping flow, the TRAVEL BASKET, customer interaction, basket consistency, and the requests sent to one or more distributors.
+  - **Distributor (FARE PRODUCT DISTRIBUTOR ROLE (API provider)):** provides offer completion rules, PRICE information, commercial conditions, after-sales conditions, guarantees, and dependency rules affecting basket elements. 
 
 - **Assumptions (context at start):**
   - The retailer is authorised to request the distributor’s selling system.
-  - The distributor’s selling system and related pricing/guarantee information are available (online service or accessible dataset).
-  - The TRANSPORT CUSTOMER can provide the additional information required to compute/confirm his purchase.
+  - The distributor’s selling system and related pricing, guarantee, after-sales and dependency information are available (online service or accessible dataset).
+  - The TRANSPORT CUSTOMER can provide the additional information required to complete and price the selected offer(s).
+  - The TRANSPORT CUSTOMER has already selected one or more candidate CUSTOMER OFFER PACKAGE(s) in the previous use case.
+  - This use case ends when the TRAVEL BASKET is complete and ready for the next step; reservation initiation and payment are out of scope and belong to the following use case.
 
 ---
 
@@ -23,20 +26,28 @@
 
 - **Preconditions (must be true before start):**
   - Access to the distributor’s selling system is available to the retailer and/or TRANSPORT CUSTOMER.
-  - The relevant distributor of each FARE PRODUCT is identified.
-  - At least one FARE PRODUCT is selected by the CUSTOMER (at minimum: the customer wants to purchase one FARE PRODUCT; optionally: many).
+  - The relevant distributor(s) of the selected offer elements are identified.
+  - At least one FARE PRODUCT is selected by the CUSTOMER (at minimum: the customer wants to purchase one FARE PRODUCT; optionally: many CUSTOMER OFFER PACKAGEs).
+  - The TRANSPORT CUSTOMER context needed to continue the purchase is available or can be entered, including traveller data, rights, options, delivery data, invoicing data or VAT context where required.
 
 - **Postconditions — Success guarantees:**
-  - One or more candidate offers are ready to be purchased, including:
-    - selected **CUSTOMER OFFER PACKAGE(s)**
-    - the associated **final PRICE**
-    - applicable **TRAVEL GUARANTEEs and aftersales conditions**
-    - with **identified reservations** (where applicable)
-  - The selected option (or shortlist) is available for the next step (e.g., reservation/payment).
+  - A TRAVEL BASKET exists and contains one or more completed and consistent TRAVEL BASKET ELEMENTs according to the TRANSPORT CUSTOMER’s actions.
+  - Each TRAVEL BASKET ELEMENT is associated with::
+    - selected **CUSTOMER OFFER PACKAGE(s)**, including quantity
+    - the associated current **PRICE**
+    - applicable **reductions, TRAVEL GUARANTEEs and aftersales conditions**
+    - any dependency information linking it to other basket elements
+    - all customer selections and parameters needed for the next step (**identified reservations** (where applicable))
+  - The whole TRAVEL BASKET has a calculated total **PRICE** (can be zero).
+  - The selected basket is in a consistent state and is ready for the next use case (reservation initiation and payment).
 
 - **Postconditions — Minimal guarantees:**
   - If no suitable solution is found, the TRAVEL BASKET of customer remains empty.
   - The customer actions can be logged/audited (if required by the system).
+  - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  - If the customer abandons the process or no valid purchasable solution is found, no confirmed purchase is created.
+  - The basket state remains consistent even if one element must be repriced, becomes invalid, or causes dependency changes on other elements.
+  - Any creation, addition, modification, deletion or clearing operation can be logged or audited if required.
 
 ---
 
