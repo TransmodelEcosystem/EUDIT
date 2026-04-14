@@ -32,8 +32,8 @@ A TRANSPORT CUSTOMER can consult his/her CUSTOMER ACCOUNT and perform some actio
 # EUDIT Use cases
 
 ## to do
-## [BUC1 Catalogue Consultation](business-use-cases/buc1-catalogue-consultation.md)
-
+## [BUC-A-Inspire-and-Plan](business-use-cases/buc-a-inspire-and-plan.md)
+## [BUC-B-Shop-and-Price](business-use-cases/buc-b-shop-and-price.md)
 
 ## Ticketing Specific Steps
 
