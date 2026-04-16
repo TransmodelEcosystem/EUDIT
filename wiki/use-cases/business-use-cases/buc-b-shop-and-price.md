@@ -78,8 +78,14 @@ Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PAC
    - modify one or several in successive actions TRAVEL BASKET ELEMENT(s),
    - remove one or several in one action TRAVEKL BASKET ELEMENT(s),
    - clear the whole TRAVEL BASKET in a single operation.
-6. At each step, the TRANSPORT CUSTOMER can see a representation/summary of what he is purchasing and, on demand, the details of the TRAVEL BASKET ELEMENT.
-7. On addition or modification, the retailer shall require, and the TRANSPORT CUSTOMER shall provide, all data necessary to build or update the CUSTOMER OFFER PACKAGE, including, where applicable:
+6. At each step, the TRANSPORT CUSTOMER can see a representation/summary of what he is purchasing (current state of TRAVEL BASKET) including the details :
+   - the list of TRAVEL BASKET ELEMENTs;
+   - the CUSTOMER OFFER PACKAGE contained in each TRAVEL BASKET ELEMENT;
+   - the detailed PRICE of each TRAVEL BASKET ELEMENT;
+   - the total PRICE of the TRAVEL BASKET;
+   - the quotation validity period applicable to each concerned CUSTOMER OFFER PACKAGE; and
+   - the main conditions attached to each TRAVEL BASKET ELEMENT and to the basket as a whole.
+8. On addition or modification, the retailer shall require, and the TRANSPORT CUSTOMER shall provide, all data necessary to build or update the CUSTOMER OFFER PACKAGE, including, where applicable:
    - traveller assignment;
    - quantity;
    - eligibility data;
@@ -93,9 +99,11 @@ Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PAC
    - invoicing order;
    - VAT context; and
    - any other mandatory parameter required by the distributor.
-8. On modification operation, the TRANSPORT CUSTOMER can modify one or many elements in the TRAVEL BASKET : he can modify the quantity, the invoice order, the VAT rate,
+9. On modification operation, the TRANSPORT CUSTOMER can modify one or many elements in the TRAVEL BASKET : he can modify the quantity, the invoice order, the VAT rate,
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 3. On remove operation, the TRANSPORT CUSTOMER can delete one or many elements in the TRAVEL BASKET  
+
+
 
 - **Final price calculation**
 4. The TRANSPORT CUSTOMER receives the information of the PRICE on each element, on the reduction amount,
