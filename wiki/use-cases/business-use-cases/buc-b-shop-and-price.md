@@ -36,17 +36,15 @@
     - selected **CUSTOMER OFFER PACKAGE(s)**, including quantity
     - the associated current **PRICE**
     - applicable **reductions, TRAVEL GUARANTEEs and aftersales conditions**
-    - any dependency information linking it to other basket elements
+    - any dependency information linking it to other TRAVEL BASKET ELEMENTs
     - all customer selections and parameters needed for the next step (**identified reservations** (where applicable))
   - The whole TRAVEL BASKET has a calculated total **PRICE** (can be zero).
   - The selected basket is in a consistent state and is ready for the next use case (reservation initiation and payment).
 
 - **Postconditions — Minimal guarantees:**
-  - If no suitable solution is found, the TRAVEL BASKET of customer remains empty.
-  - The customer actions can be logged/audited (if required by the system).
-  - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  - If the customer abandons the process or no valid purchasable solution is found, no confirmed purchase is created.
-  - The basket state remains consistent even if one element must be repriced, becomes invalid, or causes dependency changes on other elements.
+  - If the TRANSPORT CUSTOMER abandons the process or no suitable solution is found, the TRAVEL BASKET remains empty. The purchase process is suspended or ended.
+  - The TRANSPORT CUSTOMER actions can be logged/audited (if required by the system).
+  - After any TRAVEL BASKET operation, the retailer and/or distributor shall ensure that no TRAVEL BASKET ELEMENT remains with an outdated PRICE, an invalid status, or an unresolved dependency with another TRAVEL BASKET ELEMENT. The TRAVEL BASKET shall remain internally consistent after any operation.
   - Any creation, addition, modification, deletion or clearing operation can be logged or audited if required.
 
 ---
@@ -56,7 +54,9 @@
 ### Main scenario
 
 - **TRAVEL BASKET management**
-1. The TRANSPORT CUSTOMER has selected and fulfilled a CUSTOMER OFFER PACKAGE (previous use case) : he adds it in his TRAVEL BASKET as a TRAVEL BASKET ELEMENT.
+1. The TRANSPORT CUSTOMER shall start this use case after having selected one or more candidate FARE PRODUCT(s) and their corresponding SALES OFFER PACKAGE(s); fulfilled at least one CUSTOMER OFFER PACKAGE in the previous use case.
+has selected and  (previous use case) : he adds it in his TRAVEL BASKET as a TRAVEL BASKET ELEMENT.
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 2. The TRANSPORT CUSTOMER can modify one or many elements in the TRAVEL BASKET : he can modify the quantity, the invoice order, the VAT rate,
 3. The TRANSPORT CUSTOMER can delete one or many elements in the TRAVEL BASKET  
 
