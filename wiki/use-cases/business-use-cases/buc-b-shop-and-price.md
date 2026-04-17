@@ -64,7 +64,7 @@ Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PAC
 - **TRAVEL BASKET management**
 1. The TRANSPORT CUSTOMER shall start this use case after having selected one or more candidate FARE PRODUCT(s) and their corresponding SALES OFFER PACKAGE(s); fulfilling at least one CUSTOMER OFFER PACKAGE in the previous use case.
 2. The retailer shall open, identify or initialise to the TRANSPORT CUSTOMER a logical TRAVEL BASKET, regardless of whether the underlying technical basket is managed by the retailer, by one or more distributor(s), or by both. The logical TRAVEL BASKET may be created explicitly at the TRANSPORT CUSTOMER’s request or implicitly when the first CUSTOMER OFFER PACKAGE is added associated with the current shopping session. This TRAVEL BASKET can be transparent for the TRANSPORT CUSTOMER and not requested for a basic purchase.
-***Display TRAVEL BASKET***  
+-***Display TRAVEL BASKET***  
 3. At each step, the retailer shall present to the TRANSPORT CUSTOMER the current shopping context and so, the TRANSPORT CUSTOMER can see a representation/summary of what he is purchasing (current state of TRAVEL BASKET if already exists) including the details of each operation:
    - the list of TRAVEL BASKET ELEMENTs;
    - the CUSTOMER OFFER PACKAGE contained in each TRAVEL BASKET ELEMENT;
@@ -72,9 +72,9 @@ Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PAC
    - the total PRICE of the TRAVEL BASKET;
    - the quotation validity period applicable to each concerned CUSTOMER OFFER PACKAGE; and
    - the main conditions attached to each TRAVEL BASKET ELEMENT and to the basket as a whole.
-***Creation of an empty TRAVEL BASKET (optional)***
+-***Creation of an empty TRAVEL BASKET (optional)***
 4. If the TRANSPORT CUSTOMER requests the creation of an empty TRAVEL BASKET, the retailer shall create or request creation of the corresponding basket state in the relevant basket implementation(s), retrieve the resulting basket state where applicable, and present the empty logical TRAVEL BASKET to the TRANSPORT CUSTOMER.
-***Addition of one TRAVEL BASKET ELEMENT***  
+-***Addition of one TRAVEL BASKET ELEMENT***  
 5. The TRANSPORT CUSTOMER may add a CUSTOMER OFFER PACKAGE (selected and defined in previous use case) to his TRAVEL BASKET as a TRAVEL BASKET ELEMENT either :
    - one selected CUSTOMER OFFER PACKAGE in a single action; or
    - several selected CUSTOMER OFFER PACKAGE(s) in one action, including for a multimodal, multi-leg or multi-operator TRAVEL.
@@ -88,7 +88,7 @@ The addition is the only operation that the TRANSPORT CUSTOMER can start the pro
    - retrieve the resulting PRICE, validity period and applicable conditions for presentation to the TRANSPORT CUSTOMER.
 Severeal additions in one step for the TRANSPORT CUSTOMER can be managed as only one operation or recursively, one by one in order to manage element's dependencies.
 Pre-reservation step can be started at this moment. This process is managed in next use case.
-***Modification of one existing TRAVEL BASKET ELEMENT***  
+-***Modification of one existing TRAVEL BASKET ELEMENT***  
 7. The TRANSPORT CUSTOMER may request modification of one existing TRAVEL BASKET ELEMENT. It can be on, when applicable : quantity, date and time, validity options, eligibility data, traveller assignment, customer account context (including fare contracts and travel documents), reduction rights, class or comfort option (seat preference), ancillary selections, delivery preferences, invoicing order, VAT context. It can be on any other mandatory parameter required by the distributor.
 8. On a modification request, the retailer shall :
    - identify the TRAVEL BASKET ELEMENT concerned and the permitted characteristics that may be changed;
@@ -97,7 +97,7 @@ Pre-reservation step can be started at this moment. This process is managed in n
    - retrieve the updated CUSTOMER OFFER PACKAGE, PRICE, validity period and other applicable conditions; and
    - (if required) evaluate dependencies between TRAVEL BASKET ELEMENT to assure the consistency of the TRAVEL BASKET and inform the TRANSPORT CUSTOMER of the consequences; and
    - retrieve the resulting PRICE, validity period and applicable conditions for presentation to the TRANSPORT CUSTOMER.
-***Removal of one existing TRAVEL BASKET ELEMENT*** 
+-***Removal of one existing TRAVEL BASKET ELEMENT*** 
 9. The TRANSPORT CUSTOMER may request removal of one existing TRAVEL BASKET ELEMENT. He may do it by selecting it in the TRAVEL BASKET display or down the quantity to zero or with any other displayed option.
 10. For each removal, the retailer shall :
    - identify the TRAVEL BASKET ELEMENT concerned;
@@ -106,7 +106,7 @@ Pre-reservation step can be started at this moment. This process is managed in n
    - determine whether the removal affects any other TRAVEL BASKET ELEMENT, any combined pricing rule, any pass condition, any ancillary condition, or any other basket dependency; and
    - retrieve the resulting TRAVEL BASKET state for presentation to the TRANSPORT CUSTOMER.
 Severeal removals in one step for the TRANSPORT CUSTOMER can be managed as only one operation or recursively, one by one in order to manage element's dependencies.
-***Clearing the whole TRAVEL BASKET***  
+-***Clearing the whole TRAVEL BASKET***  
 11. The TRANSPORT CUSTOMER may request clearing of the whole TRAVEL BAKSET. He may do it by selecting the TRAVEL BASKET or, on some systems, downing the last element quantity to zero or with any other displayed option. A additional confirmation can be required. 
 12. To execute this demand, the retailer shall :
    - request deletion or resetting of all TRAVEL BASKET content in the relevant basket implementation(s);
@@ -115,6 +115,7 @@ Severeal removals in one step for the TRANSPORT CUSTOMER can be managed as only 
 On some systems, this operation is managed as a TRAVEL BASKET removeal.
 
 - **Final price calculation**
+-***Change management***  
 13. If required, after any operation listed above and before displaying the operation result, the retailer and/or the concerned distributor(s) in interaction with the TRANSPORT CUSTOMER shall evaluate the impact of the operation on:
    - the affected TRAVEL BASKET ELEMENT;
    - any other TRAVEL BASKET ELEMENT;
@@ -145,31 +146,22 @@ If the requested operation has consequences on one or more other TRAVEL BASKET E
    - the PRICE of each element, reduction amount, VAT;
    - the total PRICE of the TRAVEL BASKET, reduction amount, VATs; and
    - the main applicable conditions and validity constraints.    
-
-
-5. The TRANSPORT CUSTOMER can enter a promotion code. The retailer requests each distributor with the promotion code on the relevant FARE PRODUCTs. The reduction amount and final price for the element is returned and dispyed to the TRANSPORT CUSTOMER.
-6. The Retailer calculates the final price of the whole TRAVEL BASKET with reduction code (if applicable).  
-
-20. The TRANSPORT CUSTOMER may also provide a promotion code, discount code, entitlement reference, reduction right, corporate identifier or pass-related information applicable to one or more basket elements.
-
-21. The retailer shall send the relevant pricing or validation request to the concerned distributor(s), and/or apply the relevant retailer-side rules, in order to update the affected CUSTOMER OFFER PACKAGE(s), TRAVEL BASKET ELEMENT(s), PRICE(s) and basket conditions. 
-
-22. The distributor(s) shall return the updated pricing and conditions, and the retailer shall present the resulting updated logical TRAVEL BASKET to the TRANSPORT CUSTOMER.
-
-23. After each accepted operation, the retailer shall ensure that the logical TRAVEL BASKET remains consistent and up to date, so that no TRAVEL BASKET ELEMENT remains with:
+-***Pricing***  
+17. The TRANSPORT CUSTOMER may also provide a promotion code, discount code, entitlement reference, reduction right, corporate identifier or pass-related information applicable to one or more basket elements.
+18. The retailer shall send the relevant pricing or validation request to the concerned distributor(s), and/or apply the relevant retailer-side rules, in order to update the affected CUSTOMER OFFER PACKAGE(s), TRAVEL BASKET ELEMENT(s), PRICE(s) and basket conditions. The distributor(s) shall return the updated pricing and conditions
+19. The retailer shall present the resulting updated logical TRAVEL BASKET to the TRANSPORT CUSTOMER and ensure that the logical TRAVEL BASKET remains consistent and up to date, so that no TRAVEL BASKET ELEMENT remains with:
    - an outdated PRICE;
    - an expired quotation without being identified as such;
    - an invalid CUSTOMER OFFER PACKAGE;
    - an unresolved dependency; or
    - incomplete data required for the next use case.
-
-24. The TRANSPORT CUSTOMER may repeat any basket operation until he decides to stop modifying the TRAVEL BASKET.
+20. The TRANSPORT CUSTOMER may repeat any basket operation until he decides to stop modifying the TRAVEL BASKET.
 
 - **TRAVEL BASKET finalization** 
-7. The retailer calculates the final price of the whole TRAVEL BASKET with reduction code (if applicable).
-11. The retailer shall present the final shopping state of the TRAVEL BASKET to the TRANSPORT CUSTOMER, including the current contents, the applicable conditions, the current total PRICE, and any remaining validity constraints relevant for continuation.
-12. When the TRANSPORT CUSTOMER decides to stop modifying the basket, the TRANSPORT CUSTOMER shall validate the selected TRAVEL BASKET as the intended purchase solution. The use case shall end when the TRAVEL BASKET is complete, consistent and ready for the next use case dealing with reservation initiation (if not started yet) and payment.
-13. On validation, the retailer shall :
+21. The retailer calculates the final price of the whole TRAVEL BASKET with reduction code (if applicable).
+22. The retailer shall present the final shopping state of the TRAVEL BASKET to the TRANSPORT CUSTOMER, including the current contents, the applicable conditions, the current total PRICE, and any remaining validity constraints relevant for continuation.
+23. When the TRANSPORT CUSTOMER decides to stop modifying the basket, the TRANSPORT CUSTOMER shall validate the selected TRAVEL BASKET as the intended purchase solution. The use case shall end when the TRAVEL BASKET is complete, consistent and ready for the next use case dealing with reservation initiation (if not started yet) and payment.
+24. On validation, the retailer shall :
   - on some systems, lock the TRAVEL BASKET
   - mark the TRAVEL BASKET as complete. 
   
