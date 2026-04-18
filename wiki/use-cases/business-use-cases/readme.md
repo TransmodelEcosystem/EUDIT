@@ -15,7 +15,7 @@ B. **Shop & Price**
 - calulate the price (final pricing)
 
 C. **Order & Book** *(+ first stage of reservation)*
-- fix your purchase (checkout)
+- fix your purchase (checkout) => To move in UC B ?
 - begin reservation process (seat / bike / cabin / PRM / mandatory or optional)
   
 D. **Pay** *(CHARGING MOMENT (complete or not))*
