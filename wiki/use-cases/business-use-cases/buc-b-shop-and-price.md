@@ -36,9 +36,7 @@
 
 - **Postconditions — Success guarantees:**
   - A TRAVEL BASKET exists and contains one or more completed and consistent TRAVEL BASKET ELEMENTs according to the TRANSPORT CUSTOMER’s actions.
-  - Each TRAVEL BASKET ELEMENT contains one CUSTOMER OFFER PACKAGE and the information needed for continuation.
-OR ?
-  - Each TRAVEL BASKET ELEMENT is associated with::
+  - Each TRAVEL BASKET ELEMENT contains one CUSTOMER OFFER PACKAGE and the information needed for continuation : 
     - selected **CUSTOMER OFFER PACKAGE(s)**, including quantity
     - the associated current **PRICE**
     - applicable **reductions, TRAVEL GUARANTEEs and aftersales conditions**
@@ -61,7 +59,7 @@ OR ?
 ### Main scenario
 Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PACKAGE is created when a SALES OFFER PACKAGE has been selected and parameterised for a specific customer context; it is then inserted into the TRAVEL BASKET as part of a TRAVEL BASKET ELEMENT.
 
-####**TRAVEL BASKET management**
+#### TRAVEL BASKET management
 1. The TRANSPORT CUSTOMER shall start this use case after having selected one or more candidate FARE PRODUCT(s) and their corresponding SALES OFFER PACKAGE(s); fulfilling at least one CUSTOMER OFFER PACKAGE in the previous use case.
 2. The retailer shall open, identify or initialise to the TRANSPORT CUSTOMER a logical TRAVEL BASKET, regardless of whether the underlying technical basket is managed by the retailer, by one or more distributor(s), or by both. The logical TRAVEL BASKET may be created explicitly at the TRANSPORT CUSTOMER’s request or implicitly when the first CUSTOMER OFFER PACKAGE is added associated with the current shopping session. This TRAVEL BASKET can be transparent for the TRANSPORT CUSTOMER and not requested for a basic purchase.
 - **Display TRAVEL BASKET**  
@@ -74,7 +72,7 @@ Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PAC
    - the main conditions attached to each TRAVEL BASKET ELEMENT and to the basket as a whole.
 - **Creation of an empty TRAVEL BASKET (optional)**
 4. If the TRANSPORT CUSTOMER requests the creation of an empty TRAVEL BASKET, the retailer shall create or request creation of the corresponding basket state in the relevant basket implementation(s), retrieve the resulting basket state where applicable, and present the empty logical TRAVEL BASKET to the TRANSPORT CUSTOMER.
-- **Addition of one TRAVEL BASKET ELEMENT**
+- **Addition of oneor many TRAVEL BASKET ELEMENT(s)**
 5. The TRANSPORT CUSTOMER may add a CUSTOMER OFFER PACKAGE (selected and defined in previous use case) to his TRAVEL BASKET as a TRAVEL BASKET ELEMENT either :
    - one selected CUSTOMER OFFER PACKAGE in a single action; or
    - several selected CUSTOMER OFFER PACKAGE(s) in one action, including for a multimodal, multi-leg or multi-operator TRAVEL.
@@ -97,7 +95,7 @@ Pre-reservation step can be started at this moment. This process is managed in n
    - retrieve the updated CUSTOMER OFFER PACKAGE, PRICE, validity period and other applicable conditions; and
    - (if required) evaluate dependencies between TRAVEL BASKET ELEMENT to assure the consistency of the TRAVEL BASKET and inform the TRANSPORT CUSTOMER of the consequences; and
    - retrieve the resulting PRICE, validity period and applicable conditions for presentation to the TRANSPORT CUSTOMER.
-- **Removal of one existing TRAVEL BASKET ELEMENT** 
+- **Removal of one or many existing TRAVEL BASKET ELEMENT(s)** 
 9. The TRANSPORT CUSTOMER may request removal of one existing TRAVEL BASKET ELEMENT. He may do it by selecting it in the TRAVEL BASKET display or down the quantity to zero or with any other displayed option.
 10. For each removal, the retailer shall :
    - identify the TRAVEL BASKET ELEMENT concerned;
@@ -106,7 +104,7 @@ Pre-reservation step can be started at this moment. This process is managed in n
    - determine whether the removal affects any other TRAVEL BASKET ELEMENT, any combined pricing rule, any pass condition, any ancillary condition, or any other basket dependency; and
    - retrieve the resulting TRAVEL BASKET state for presentation to the TRANSPORT CUSTOMER.
 Severeal removals in one step for the TRANSPORT CUSTOMER can be managed as only one operation or recursively, one by one in order to manage element's dependencies.
--**Clearing the whole TRAVEL BASKET**  
+- **Clearing the whole TRAVEL BASKET**  
 11. The TRANSPORT CUSTOMER may request clearing of the whole TRAVEL BAKSET. He may do it by selecting the TRAVEL BASKET or, on some systems, downing the last element quantity to zero or with any other displayed option. A additional confirmation can be required. 
 12. To execute this demand, the retailer shall :
    - request deletion or resetting of all TRAVEL BASKET content in the relevant basket implementation(s);
@@ -160,7 +158,7 @@ If the requested operation has consequences on one or more other TRAVEL BASKET E
 #### TRAVEL BASKET finalization
 21. The retailer calculates the final price of the whole TRAVEL BASKET and shall present the final shopping state of the TRAVEL BASKET to the TRANSPORT CUSTOMER, including the current contents, the applicable conditions, the current total PRICE, and any remaining validity constraints relevant for continuation.
 23. When the TRANSPORT CUSTOMER decides to stop modifying the basket, the TRANSPORT CUSTOMER shall validate the selected TRAVEL BASKET as the intended purchase solution and request continuation to the next step. The use case shall end when the TRAVEL BASKET is complete, consistent and ready for the next use case dealing with reservation initiation (if not started yet) and payment.
-24. Upon this validation, the retailer and/or the relevant distributor(s) shall ensure that the TRAVEL BASKET enters a locked state (frozen) in which no shopping operation may alter the TRAVEL BASKET content, the CUSTOMER OFFER PACKAGE(s), the applicable PRICE(s), or the associated conditions (fozen maximal duration) and dependencies.
+24. Upon this validation, the retailer and/or the relevant distributor(s) shall ensure that the TRAVEL BASKET enters a locked state (frozen) in which no operation may alter the TRAVEL BASKET content, the CUSTOMER OFFER PACKAGE(s), the applicable PRICE(s), or the associated conditions (fozen maximal duration) and dependencies.
 25. The locked TRAVEL BASKET shall constitute the stable input for the next use case dealing with reservation initiation and payment.  
   
 
@@ -172,7 +170,7 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 2. The TRANSPORT CUSTOEMR does not see the TRAVEL BASKET : he directly arrives on payment interface.
 
 - **Offer hold for approval**
-1. The TRANSPORT CUSTOMER
+1. The TRANSPORT CUSTOMER is welling to purchase for a group of travellers, more numerous than what it is proposed. He does a specific group offer request.   
 
 - **Group quotation with dedicated group process**
 1. The TRANSPORT CUSTOMER
