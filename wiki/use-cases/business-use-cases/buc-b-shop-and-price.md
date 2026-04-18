@@ -156,7 +156,7 @@ If the requested operation has consequences on one or more other TRAVEL BASKET E
 20. The TRANSPORT CUSTOMER may repeat any basket operation until he decides to stop modifying the TRAVEL BASKET.
 
 #### TRAVEL BASKET finalization
-21. The retailer calculates the final price of the whole TRAVEL BASKET and shall present the final shopping state of the TRAVEL BASKET to the TRANSPORT CUSTOMER, including the current contents, the applicable conditions, the current total PRICE, and any remaining validity constraints relevant for continuation.
+21. The retailer calculates the final price of the whole TRAVEL BASKET and shall present the final state of the TRAVEL BASKET to the TRANSPORT CUSTOMER, including the current contents, the applicable conditions, the current total PRICE, and any remaining validity constraints relevant for continuation.
 23. When the TRANSPORT CUSTOMER decides to stop modifying the basket, the TRANSPORT CUSTOMER shall validate the selected TRAVEL BASKET as the intended purchase solution and request continuation to the next step. The use case shall end when the TRAVEL BASKET is complete, consistent and ready for the next use case dealing with reservation initiation (if not started yet) and payment.
 24. Upon this validation, the retailer and/or the relevant distributor(s) shall ensure that the TRAVEL BASKET enters a locked state (frozen) in which no operation may alter the TRAVEL BASKET content, the CUSTOMER OFFER PACKAGE(s), the applicable PRICE(s), or the associated conditions (fozen maximal duration) and dependencies.
 25. The locked TRAVEL BASKET shall constitute the stable input for the next use case dealing with reservation initiation and payment.  
@@ -170,7 +170,9 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 2. The TRANSPORT CUSTOEMR does not see the TRAVEL BASKET : he directly arrives on payment interface.
 
 - **Offer hold for approval**
-1. The TRANSPORT CUSTOMER is welling to purchase for a group of travellers, more numerous than what it is proposed. He does a specific group offer request.   
+1. The TRANSPORT CUSTOMER is welling to purchase for a group of travellers, more numerous than what it is proposed in the catalogue. He does a specific group offer request by e-mail for a group quotation.
+2. The retailer does the request to relevant distributor(s) with group-related contraints. The pruchase process is put in stand-by.
+3. An agent/ maany agents do the qutotation and reply by e-mail.     
 
 - **Group quotation with dedicated group process**
 1. The TRANSPORT CUSTOMER
