@@ -126,8 +126,8 @@ On some systems, this operation is managed as a TRAVEL BASKET removeal.
    - pass validity conditions;
    - bundle conditions; and
    - any other dependency between TRAVEL BASKET ELEMENTs.
-During each operation, the retailer shall send to the relevant request to the concerned distributor and each of them shall return the updated shopping result for the relevant CUSTOMER OFFER PACKAGE(s), including the applicable PRICE, validity period, conditions, restrictions and any detected consequence affecting other TRAVEL BASKET ELEMENTs.
-14. The retailer shall consolidate all relevant distributor responses, together with any retailer-side basket processing result, into one updated logical TRAVEL BASKET state.
+During each evaluation, the retailer shall send to the relevant request to the concerned distributor and each of them shall return the updated shopping result for the relevant CUSTOMER OFFER PACKAGE(s), including the applicable PRICE, validity period, conditions, restrictions and any detected consequence affecting other TRAVEL BASKET ELEMENTs.
+14. The retailer shall consolidate all relevant distributor responses, together with any retailer-side basket processing result, into one updated logical TRAVEL BASKET state. If one or more quotations cannot continue without recalculation (expired), the retailer shall request a mandatory refresh of the CUSTOMER OFFER PACKAGE(s) before the logical TRAVEL BASKET can continue unchanged.
 If the requested operation has consequences on one or more other TRAVEL BASKET ELEMENTs, the retailer shall present those consequences to the TRANSPORT CUSTOMER before finalising the TRAVEL BASKET state : 
    - repricing of one or more TRAVEL BASKET ELEMENTs;
    - refresh or expiry of a quotation;
@@ -165,23 +165,34 @@ If the requested operation has consequences on one or more other TRAVEL BASKET E
 ### Alternatives scenarios
 Alternative scenarios **fully compatible** with the main scenario; using shortcuts or very detailed specific points of the main scenario.
 
-- **Direct one-click purchase**
+- **Direct purchase**
 1. The TRANSPORT CUSTOMER has selected a basic FARE PRODUCT which is immedialtly a CUSTOMER OFFER PACKAGE. He selects the "Purchase in one-clic" option.
-2. The TRANSPORT CUSTOEMR does not see the TRAVEL BASKET : he directly arrives on payment interface.
+2. The TRANSPORT CUSTOEMR does not see the TRAVEL BASKET : he directly arrives on payment interface. This scenario is a shortcut to main scenario.
 
 - **Offer hold for approval**
-1. The TRANSPORT CUSTOMER is welling to purchase for a group of travellers, more numerous than what it is proposed in the catalogue. He does a specific group offer request by e-mail for a group quotation.
-2. The retailer does the request to relevant distributor(s) with group-related contraints. The pruchase process is put in stand-by.
-3. An agent/ maany agents do the qutotation and reply by e-mail.     
+1. The TRANSPORT CUSTOMER, or a corporate booker acting on his behalf, is willing to keep the TRAVEL BASKET stable for a period (longer than the automatic system does) before validating it, because an internal approval is required.
+2. The retailer sends a request to the relevant distributor(s) to maintain the quotation or the basket content valid for a defined period, according to the applicable conditions. The purchase process is put on hold during this approval period.
+3. The distributor(s) return the validity period and the applicable holding conditions. The retailer informs the TRANSPORT CUSTOMER of the approval deadline and of any constraint linked to this temporary hold.
+4. If the approval is obtained in time, the purchase process continues with the validated TRAVEL BASKET. If the approval is not obtained in time, the TRAVEL BASKET must be refreshed, repriced, or abandoned.
 
 - **Group quotation with dedicated group process**
-1. The TRANSPORT CUSTOMER
+1. The TRANSPORT CUSTOMER is welling to purchase for a group of travellers, larger than what it is proposed in the catalogue. He submits a specific group offer request, for example, by email for a group quotation (specific channel).
+2. The retailer sends the request to relevant distributor(s), including group-related contraints. The purchase process is put on hold while awaiting the quotation (step 6).
+3. An agent or several agents prepare the quotation and reply, for example, by email to the request. The purchase process then continues.     
 
-- **Effective seat reservation**
-1. The TRANSPORT CUSTOMER
+- **Effective reservation during pricing**
+1. The TRANSPORT CUSTOMER adds in his TRAVEL BASKET a CUSTOMER OFFER PACKAGE with a reservation. For this reservation a reservation-related process must be started in order to continue shopping on a consistent basis.
+2. The retailer temporary leaves the the current use case and start reservation process as described in next use case with the relevant distribtor(s) using the current state of the affected CUSTOMER OFFER PACKAGE(s).
+3. When the reservation is executed; only to secure the TRAVEL BASKET content for continuation of the shopping process, the retailer returns to the shopping process and updates the logical TRAVEL BASKET accordingly.
+7. The retailer presents the updated TRAVEL BASKET state to the TRANSPORT CUSTOMER, including the consequences of the reservation-related process on the concerned TRAVEL BASKET ELEMENT(s) and on the basket as a whole.
+8. The TRANSPORT CUSTOMER may then continue the shopping process, following presetn use case.
 
-- **Order and payment**
-1. The TRANSPORT CUSTOMER
+- **Mandatory Co-sale**
+1. The TRANSPORT CUSTOMER adds, modifies or removes one TRAVEL BASKET ELEMENT, but this operation affects another TRAVEL BASKET ELEMENT because of a dependency rule, a bundle rule, or a mandatory co-sale condition.
+2. The retailer sends the relevant update request to the concerned distributor(s) and asks for the consequences of this operation on the other TRAVEL BASKET ELEMENT(s). The purchase process is temporarily blocked while awaiting the dependency evaluation.
+3. The distributor(s) return the consequences of the operation, for example repricing, invalidation, deletion, replacement or the need to add another element.The retailer informs the TRANSPORT CUSTOMER of these consequences and asks for confirmation.
+5. If the TRANSPORT CUSTOMER accepts the consequences, the basket is updated and the purchase process continues. If he rejects them, the previous basket state is preserved.
+
 
 ### Diagram 
 UML activity diagram
