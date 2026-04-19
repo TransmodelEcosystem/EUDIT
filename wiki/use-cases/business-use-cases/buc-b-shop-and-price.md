@@ -72,7 +72,7 @@ Note : In Transmodel improved with COROM project proposals, a CUSTOMER OFFER PAC
    - the main conditions attached to each TRAVEL BASKET ELEMENT and to the basket as a whole.
 - **Creation of an empty TRAVEL BASKET (optional)**
 4. If the TRANSPORT CUSTOMER requests the creation of an empty TRAVEL BASKET, the retailer shall create or request creation of the corresponding basket state in the relevant basket implementation(s), retrieve the resulting basket state where applicable, and present the empty logical TRAVEL BASKET to the TRANSPORT CUSTOMER.
-- **Addition of oneor many TRAVEL BASKET ELEMENT(s)**
+- **Addition of one or many TRAVEL BASKET ELEMENT(s)**
 5. The TRANSPORT CUSTOMER may add a CUSTOMER OFFER PACKAGE (selected and defined in previous use case) to his TRAVEL BASKET as a TRAVEL BASKET ELEMENT either :
    - one selected CUSTOMER OFFER PACKAGE in a single action; or
    - several selected CUSTOMER OFFER PACKAGE(s) in one action, including for a multimodal, multi-leg or multi-operator TRAVEL.
@@ -199,9 +199,11 @@ UML activity diagram
 
 
 
-### Links with use cases
+### Links with inputs
 
-Link to
+BRM_EUDIT_V2.3.xlsx
+-  
+
 To be completed
 
 
