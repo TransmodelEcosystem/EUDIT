@@ -201,10 +201,11 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 ### Diagram 
 UML activity diagram
 
+<img width="1174" height="2229" alt="image" src="https://github.com/user-attachments/assets/2bf8febb-ab93-4cb5-b988-f7c577a1d94d" />
 
 ### Links with inputs
-BRM_EUDIT_V2.3.xlsx
--  
+wiki/use-cases/inputs/EUDIT.use.cases_20260324_shared.docx
+wiki/use-cases/inputs/BRM_EUDIT_V2.3.xlsx
 
 To be completed
 
