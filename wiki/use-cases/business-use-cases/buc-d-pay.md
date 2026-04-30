@@ -30,29 +30,19 @@
 - **Preconditions (must be true before start):**
   - Access to the distributor’s payment system is available/authorized to the retailer and/or TRANSPORT CUSTOMER.
   - The relevant payment processing system(s) of the selected offer elements are identified.
-  - The distributor’s selling system and related pricing rules with dependency information (PAYMENT METHOD) are available (online service or accessible dataset).
+  - The distributor’s selling system and related pricing rules with dependency information are available (online service or accessible dataset).
   - At least one payment is to be done (amount different from 0).
   - The TRANSPORT CUSTOMER context needed to continue the purchase is available or can be entered, including traveller data, rights, options, delivery data, invoicing data or VAT context where required.
 
 - **Postconditions — Success guarantees:**
-  - A TRAVEL BASKET exists and contains one or more completed and consistent TRAVEL BASKET ELEMENTs according to the TRANSPORT CUSTOMER’s actions.
-  - Each TRAVEL BASKET ELEMENT contains one CUSTOMER OFFER PACKAGE and the information needed for continuation : 
-    - selected **CUSTOMER OFFER PACKAGE(s)**, including quantity
-    - the associated current **PRICE**
-    - applicable **reductions, TRAVEL GUARANTEEs and aftersales conditions**
-    - any dependency information linking it to other TRAVEL BASKET ELEMENTs
-    - optional protection or guarantee services selected during shopping, where applicable
-    - group-specific quotation results, where applicable
-    - approval-hold status, where applicable
-    - identified reservation-related constraints or intermediate reservation results, where applicable
-  - The whole TRAVEL BASKET has a calculated total **PRICE** (can be zero or less).
+  - A TRAVEL BASKET exists and has been paid according to the TRANSPORT CUSTOMER’s actions.
   - The basket state presented to the customer is consistent, regardless of whether the underlying implementation relies on a retailer basket, a distributor basket, or coordinated baskets across both.
-  - This use case ends when the TRAVEL BASKET is ready for the next step; reservation initiation and payment are out of scope and belong to the following use case.
+  - This use case ends when the TRAVEL BASKET is ready for the next step; payment is done.
 
 - **Postconditions — Minimal guarantees:**
-  - If the TRANSPORT CUSTOMER abandons the process or no suitable solution is found, the TRAVEL BASKET remains empty. The purchase process is suspended or ended.
-  - After any TRAVEL BASKET operation, the retailer and/or distributor shall ensure that no TRAVEL BASKET ELEMENT remains with an outdated PRICE, an invalid status, or an unresolved dependency with another TRAVEL BASKET ELEMENT. The TRAVEL BASKET shall remain internally consistent after any operation.
-  - If synchronisation between retailer-side and distributor-side basket states is required, the system detects any divergence and prevents continuation until the customer basket state is made consistent again.
+  - If the TRANSPORT CUSTOMER abandons the process or no suitable payment solution is found, the TRAVEL BASKET remains as it is for a delay. The purchase process is suspended or ended.
+  - If reversement, financiers, use case K
+  - 
   - The TRANSPORT CUSTOMER actions can be logged/audited (if required by the system).
 
 ---
@@ -72,7 +62,7 @@ Payment method fees
 - **Display options**  
 
 - **Final price calculation**
-
+VAT on each fees, each amount
 
 #### PAYMENT METHODs
 - **add payment method**
@@ -93,8 +83,10 @@ installment management with unpaid invoices management
 
 #### Proofs of payment
 21. The re  
-  Receipt
+  Receipt with legal data following rule of each state
+
   Invoice
+
 Payment terms and instalements
 
 ### Alternatives scenarios
