@@ -21,8 +21,9 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 
 ## Actors & Context
 
-- **Primary Actor:** **TRANSPORT CUSTOMER (TRANSPORT USER ROLE including TRANSPORT CUSTOMER ROLE and PURCHASER ROLE (represented by the retailer)):** wants to pay with his chosen PAYMENT METHOD(s) a consistent basket suited to his TRAVEL, for himself and/or for other travellers and receive all proofs of payment.
- - **Payment Service Provider (PSP) (PAYMENT PROVIDER ROLE (API not managed by EUDIT project)):** Executes or supports the payment transaction. The PSP :
+- **Primary Actors:**
+   - **TRANSPORT CUSTOMER (TRANSPORT USER ROLE including TRANSPORT CUSTOMER ROLE and PURCHASER ROLE (represented by the retailer)):** wants to pay with his chosen PAYMENT METHOD(s) a consistent basket suited to his TRAVEL, for himself and/or for other travellers and receive all proofs of payment.
+   - **Payment Service Provider (PSP) (PAYMENT PROVIDER ROLE (API not managed by EUDIT project)):** Executes or supports the payment transaction. The PSP :
     - authorises, captures, rejects, secures, schedules or confirms payment;
     - may manage card payment, account debit, voucher, wallet, loyalty redemption, travel account debit or other payment instruments;
     - returns the payment transaction result to the responsible Retailer and/or Distributor.
@@ -77,24 +78,128 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 ## Scenarios
 
 ### Main scenario
-1. The TRANSPORT CUSTOMER shall start this use case after preceding use case : the travel basket is fixed but shipping costs and payment method fees have not yet been calculated. CHARGING MOMENT and operation fees (by example : after-sales fees) are validated by the TRANSPORt CUSTOMER
+1. The TRANSPORT CUSTOMER shall start this use case after the preceding shopping, reservation and order-related use case(s), when one or more CUSTOMER PURCHASE PACKAGE(s) have been selected, parameterised, inserted into a TRAVEL BASKET or ORDER and locked or stabilized for payment.At this moment, it may remain elements that modify the final payment : shipping costs, payment method fees, CHARGING MOMENT, Retailer platform feees or  promotions and operation fees (by example : after-sales fees).
 
-#### Options choice
-Shipping costs
-Platform feees and promotions
-Payment method fees
+- **Payment options choice**
+2. The Retailer presents to the TRANSPORT CUSTOMER a summarized payable view :
+   - CUSTOMER PURCHASE PACKAGE(s) to be paid;
+   - PRICE of each and total amount for the current options;
+   - selected or available PAYMENT METHOD(s);
+   - CHARGING MOMENT(s);
+   - payment deadline(s) or milestones for group purchase;
+   - fees, taxes and currency(s) information including available shipping possibilities and operation fees;
+   - any deferred amount or future instalment amount, where applicable;
+   - main conditions attached to payment, linked to deferred payment, B2B invoicing or corporate approval;
+   - main consequences of payment failure or expiry.
 
+3. The TRANSPORT CUSTOMER selects and/or confirms the PAYMENT METHOD(s) and options. 
+4. If required, the Retailer and/or Distributor shall refresh the final payable PRICE before payment confirmation and present the updated state to TRANSPORT CUSTOMER, especially if:
+   - the locked validity period is close to expiry or one or more component deadlines are close to expiry;
+   - one or many options changes the final amount to pay. (PAYMENT METHOD, taxes, invoicing, delivery, corporate rules or currency conversion affect the payable amount).
 
-2. 
-- **Display options**  
+- **Distributor's contraints**  
+5. For each concerned Distributor, the Retailer verifies and confirms:
+   - CUSTOMER PURCHASE PACKAGE identifier;
+   - final PRICE;
+   - currency;
+   - taxes and invoicing constraints;
+   - CHARGING MOMENT(s);
+   - accepted PAYMENT METHOD(s);
+   - payment time limit;
+   - holding or reservation status;
+   - rule in case of payment success;
+   - rule in case of payment pending, failure or expiry;
+   - whether the Distributor requires payment execution by a specific Payment Provider.
 
-- **Final price calculation**
-VAT on each fees, each amount
+6. Each Distributor returns the payable state and any payment-related constraints.
+7. The Retailer consolidates all Distributor responses into one coherent payment proposal for the TRANSPORt CUSTOMER. The Retailer also determines and manages the payment architecture : he identifies, for each CUSTOMER PURCHASE PACKAGE, which entity performs the PAYMENT PROVIDER ROLE:
+   - Retailer-side Payment Provider;
+   - Distributor-side Payment Provider;
+   - third-party Payment Provider;
+   - shared or mixed architecture.
+     
+8. The TRANSPORT CUSTOMER may select one or mixed PAYMENT METHOD(s) that may include, when applicable :
+   - bank card or other card-based payment;
+   - SEPA direct debit or similar mandate-based debit;
+   - wallet or account-based payment (can be on Retailer's system);
+   - travel account debit;
+   - voucher or travel credit;
+   - miles, points or loyalty redemption;
+   - corporate account or B2B invoicing arrangement;
+   - cash or point-of-sale payment;
+   - split payment across several means of payment; or
+   - scheduled payment for deferred charging or instalments.
 
-#### PAYMENT METHODs
-- **add payment method**
-On his account
-add SEPA mandate / CB direct debit
+9. The retailer shall verify, with the relevant PSP, that the selected PAYMENT METHOD(s) are accepted for:
+   - the concerned CUSTOMER PURCHASE PACKAGE(s);
+   - the concerned distributor(s);
+   - the TRANSPORt CUSTOMER context;
+   - the country, currency and tax context;
+   - the amount and charging rule;
+   - the requested CHARGING MOMENT; and
+   - the applicable payment deadline.
+   And request to TRANSPORT CUSTOMER additional information (payer identity, billing address, invoice data, VAT number or corporate identifier, travel account identifier, voucher or travel credit reference, loyalty identifier, mandate consent, card or account credentials, strong customer authentication data, instalment acceptance conditions).
+
+## 4. Architecture Retailer-side payment
+
+10. The Retailer, acting directly or through its Payment Provider, initiates payment for one or more CUSTOMER PURCHASE PACKAGE(s) and receivess the transaction result.
+
+11. The Retailer sends each concerned Distributor a payment confirmation or payment status notification including:
+   - paid amount;
+   - payment status, timestamp and reference;
+   - CUSTOMER PURCHASE PACKAGE(s);
+   - allocation amount and currency;
+   - payment instrument type where required for audit, invoicing or after-sales.
+
+12. Each Distributor verifies that the payment status satisfies its business rule and returns the component result (confirmed / pending / rejected / expired / revalidation required).
+
+13. The Retailer consolidates Distributor responses and updates the customer-facing purchase status.
+
+## 5. Architecture Distributor-side payment
+
+14. The Distributor indicates that payment must be executed through its own Payment Provider or delegated payment process. The Retailer sends or redirects the required payment initiation context to the Distributor.
+15. The Distributor, acting with its Payment Provider, initiates payment, receives the transaction result from the Payment Provider.
+
+16. The Distributor returns the payment result and component status to the Retailer:
+   - paid and confirmed;
+   - paid but fulfilment pending;
+   - payment pending / refused / expired / cancelled;
+   - revalidation required.
+
+17. The Retailer consolidates this result with the other components of the TRAVEL BASKET.
+
+## 6. Architecture C — Shared Retailer / Distributor payment
+
+20. Some components are paid through the Retailer Payment Provider and others through one or more Distributor Payment Provider(s).
+
+21. The Retailer and Distributor(s) agree on:
+   - which CUSTOMER PURCHASE PACKAGE(s) are paid by which Payment Provider;
+   - whether the customer sees one payment step or several coordinated payment steps;
+   - how mixed payment instruments are allocated;
+   - how partial success is handled;
+   - how payment deadlines are enforced.
+
+22. Each Payment Provider returns the transaction result to its orchestrating party.
+
+23. Each Distributor returns the business status of its component to the Retailer.
+
+24. The Retailer consolidates all results and prevents continuation if one required component is unpaid, expired or inconsistent.
+
+---
+
+## 7. Architecture D — Third-party Payment Provider
+
+25. The Retailer and/or Distributor sends the payment initiation data to a third-party Payment Provider.
+
+26. The Payment Provider executes or schedules the payment and returns the transaction result to the party responsible for orchestration.
+
+27. The Retailer and Distributor(s) exchange the necessary payment result information so that:
+   - every CUSTOMER PURCHASE PACKAGE or ORDER component has a clear payment state;
+   - any reservation or holding can be finalized or released;
+   - billing and settlement data remain traceable;
+   - the customer-facing status remains coherent.
+
+---
 
 #### Payment
 - **immediate**
