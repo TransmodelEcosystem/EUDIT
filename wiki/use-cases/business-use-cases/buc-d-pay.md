@@ -197,25 +197,43 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 25. If mixed payment is used, the Retailer coordinates the authorization and allocation of each part of the payment while preserving one coherent TRAVEL BASKET. Depending on the result, the Distributor may confirms or release reservation elements (see Business Use Case E).  
 26. The Retailer consolidates all payment part statuses and informs the TRANSPORT CUSTOMER of the final payment result.
 27. The Retailer and/or Distributor provides the relevant proof of payment (receipt with legal data following rule of each state), invoice, payment terms with installments, and fulfilment trigger. It can be document(s) and/or TRANSPORT CUSTOMER account update or other format.
+28. The Retailer may inform the Distributor(s) with each CUSTOMER PURCHASE PACKAGE data to create/update ORDER(s).   
    
 
 ### Alternatives scenarios
 Alternative scenarios **fully compatible** with the main scenario; using shortcuts or very detailed specific points of the main scenario.
 
-- **Negative amount**
-1. The TRANSPORT CUSTOMER has selected purchase and after-sales operations that drives to a negative amount.
-2. The Retailer 
+## Payment failure
+1. One payment part fails or expires.
+2. The Retailer receives the failure or expiry status from the Distributor or PSP.
+3. The Distributor indicates the consequence for the impacted CUSTOMER PURCHASE PACKAGE.
+4. The Retailer either asks for another PAYMENT METHOD, requests revalidation, or informs the TRANSPORt CUSTOMER that the purchase cannot continue.
 
-- **Zero amount**
-1. The TRANSPORT CUSTOMER has selected purchase and after-sales operations that drives to a negative amount.
-2. The Retailer
-   
--
+## Negative amount
+1. The resulting financial amount is negative.
+2. No customer payment is collected in BUC-D.
+3. The Retailer redirects the case to Business Use Case F or J for refund, compensation, credit note or voucher handling.
+
+## Payment after approval
+1. A corporate or group purchase requires approval before payment.
+2. The Retailer asks the Distributor(s) whether the quotation can remain valid until approval.
+3. Once approval is obtained, the Retailer restarts the payment coordination flow.
+4. If the deadline has expired, the Distributor requires refresh, revalidation or repricing.
+
+## Zero amount to pay
+1. If the payable amount for the current CHARGING MOMENT is equal to zero, the payment use case shall still be executed as a zero-payment confirmation flow.
+No monetary transaction is initiated with a Payment Provider, unless a technical payment authorization is required by implementation rules.
+2. The Retailer shall confirm with each concerned Distributor that:
+- the total amount due is zero (not necessary the Distributor part => see settlement in Business Use Case K);
+- no PAYMENT METHOD is required, or the required PAYMENT METHOD has already covered the amount;
+- the CUSTOMER PURCHASE PACKAGE can be confirmed without payment;
+- any reservation, ancillary, guarantee or service depending on payment can be finalized.
+3. The Retailer consolidates the statuses and informs the TRANSPORT CUSTOMER that no payment is due.
+4. The Retailer and/or Distributor provides the relevant proof of purchase, zero-amount receipt, invoice if legally required, confirmation and fulfilment trigger.
 
 
 ### Diagram 
 UML activity diagram
-
 
 
 ### Links with inputs
