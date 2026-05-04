@@ -224,10 +224,10 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 1. If the payable amount for the current CHARGING MOMENT is equal to zero, the payment use case shall still be executed as a zero-payment confirmation flow.
 No monetary transaction is initiated with a Payment Provider, unless a technical payment authorization is required by implementation rules.
 2. The Retailer shall confirm with each concerned Distributor that:
-- the total amount due is zero (not necessary the Distributor part => see settlement in Business Use Case K);
-- no PAYMENT METHOD is required, or the required PAYMENT METHOD has already covered the amount;
-- the CUSTOMER PURCHASE PACKAGE can be confirmed without payment;
-- any reservation, ancillary, guarantee or service depending on payment can be finalized.
+   - the total amount due is zero (not necessary the Distributor part => see settlement in Business Use Case K);
+   - no PAYMENT METHOD is required, or the required PAYMENT METHOD has already covered the amount;
+   - the CUSTOMER PURCHASE PACKAGE can be confirmed without payment;
+   - any reservation, ancillary, guarantee or service depending on payment can be finalized.
 3. The Retailer consolidates the statuses and informs the TRANSPORT CUSTOMER that no payment is due.
 4. The Retailer and/or Distributor provides the relevant proof of purchase, zero-amount receipt, invoice if legally required, confirmation and fulfilment trigger.
 
