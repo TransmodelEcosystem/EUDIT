@@ -207,11 +207,11 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 1. One payment part fails or expires.
 2. The Retailer receives the failure or expiry status from the Distributor or PSP.
 3. The Distributor indicates the consequence for the impacted CUSTOMER PURCHASE PACKAGE.
-4. The Retailer either asks for another PAYMENT METHOD, requests revalidation, or informs the TRANSPORt CUSTOMER that the purchase cannot continue.
+4. The Retailer either asks for another PAYMENT METHOD, requests revalidation, or informs the TRANSPORT CUSTOMER that the purchase cannot continue.
 
 ## Negative amount
 1. The resulting financial amount is negative.
-2. No customer payment is collected in BUC-D.
+2. No TRANSOPRT CUSTOMER payment is collected in BUC-D.
 3. The Retailer redirects the case to Business Use Case F or J for refund, compensation, credit note or voucher handling.
 
 ## Payment after approval
