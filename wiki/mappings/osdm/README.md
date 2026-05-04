@@ -370,7 +370,7 @@ x-semantics equivalent:
 
 | Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
 |---------|-----------|----------------------|-------------------------|-------|
-| OnHoldOffer | id | CUSTOMER PURCHASE PACKAGE | id | partial |
+| OnHoldOffer | id | SALES OFFER PACKAGE | id | partial |
 | OnHoldOffer | validUntil | BOOKING POLICY | latestBookingTime | partial |
 | OnHoldOffer | status | CUSTOMER PURCHASE STATUS | — | partial |
 
@@ -473,13 +473,13 @@ x-semantics equivalent:
 
 | Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
 |---------|-----------|----------------------|-------------------------|-------|
-| Booking | id | CUSTOMER PURCHASE PACKAGE / FARE CONTRACT | id | exact |
+| Booking | id | CUSTOMER PURCHASE PACKAGE | id | exact |
 | Booking | bookingCode | FARE CONTRACT | externalCode | partial |
 | Booking | externalRef | FARE CONTRACT | externalRef | partial |
 | Booking | createdOn | CUSTOMER PURCHASE PACKAGE | purchaseDate | exact |
-| Booking | passengers | TRANSPORT CUSTOMER | — | exact |
+| Booking | passengers | INDIVIDUAL TRAVELLER | — | exact |
 | Booking | purchaser | TRANSPORT CUSTOMER (purchaser role) | — | exact |
-| Booking | bookedOffers | CUSTOMER PURCHASE PACKAGE ELEMENT | — | exact |
+| Booking | bookedOffers | SALES OFFER PACKAGE | — | exact |
 | Booking | trips | TRIP | — | exact |
 | Booking | provisionalPrice | FARE PRICE | amount | partial |
 | Booking | confirmedPrice | CUSTOMER PURCHASE PACKAGE PRICE | amount | exact |
@@ -501,7 +501,7 @@ x-semantics equivalent:
 
 | Concept | Attribute | Transmodel Concept(s) | Transmodel Attribute(s) | Notes |
 |---------|-----------|----------------------|-------------------------|-------|
-| BookedOffer | offerId | SALES OFFER PACKAGE | id | exact |
+| BookedOffer | offerId | CUSTOMER PURCHASE PACKAGE | id | exact |
 | BookedOffer | admissions | CUSTOMER PURCHASE PACKAGE ELEMENT (admission) | — | exact |
 | BookedOffer | reservations | CUSTOMER PURCHASE PACKAGE ELEMENT (reservation) | — | exact |
 | BookedOffer | ancillaries | CUSTOMER PURCHASE PACKAGE ELEMENT (ancillary) | — | exact |
