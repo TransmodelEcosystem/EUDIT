@@ -60,14 +60,14 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 - **Postconditions — Success guarantees:**
   - Each CUSTOMER PURCHASE PACKAGE has a payment status, consolidated and given to TRANSPORt CUSTOMER by the Retailer.
   - The basket state presented to the customer is consistent, regardless of whether the underlying implementation relies on a retailer basket, a distributor basket, or coordinated baskets across both.
-  - This use case ends when the TRAVEL BASKET is ready for the next step; payment is done.
+  - This use case ends when the TRAVEL BASKET is ready for the next step; payment status is known.
   - Reservation, option, seat, ancillary, service or guarantee depending on payment will be finalized according to Distributor rules in Business Use Case E.
   - The TRANSPORT CUSTOMER receives the appropriate proof(s): receipt, invoice, payment terms, payment schedule, confirmation. Fulfilment is managed in Business Use Case E (access to TRAVEL DOCUMENT(s)).
 
 - **Postconditions — Minimal guarantees:**
-  - If the TRANSPORT CUSTOMER abandons the process or no suitable payment solution is found, the TRAVEL BASKET remains as it is for a delay. The purchase process is suspended or ended.
-  - The Distributor indicates whether the impacted component remains held, is released, is cancelled, is partially cancelled or requires revalidation.
-  - The Retailer consolidates the resulting state and prevents fulfilment if a required payment condition is not met.
+  - If the TRANSPORT CUSTOMER abandons the process or no suitable payment solution is found, the TRAVEL BASKET may remain as it is for a delay. The purchase process is suspended or ended.
+  - The Distributor indicates which payment part remains held, is released, is cancelled, is partially cancelled or requires revalidation.
+  - The Retailer consolidates the TRAVEL BASKET state and prevents fulfilment if a required payment condition is not met.
   - If funds or accounting information must be distributed, cleared or reconciled between the Retailer and one or more Distributor(s) are described in Business Use Case K.
   - The TRANSPORT CUSTOMER actions can be logged/audited (if required by the system).
   - If many CUSTOMER PURCHASE PACKAGE(s) are involved, allocation remains traceable per Distributor, ORDER component, payment instrument and settlement rule.
@@ -97,7 +97,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
    - the locked validity period is close to expiry or one or more component deadlines are close to expiry;
    - one or many options changes the final amount to pay. (PAYMENT METHOD, taxes, invoicing, delivery, corporate rules or currency conversion affect the payable amount).
 
-- **Distributor's contraints**  
+- **Distributor and PSP contraints synchonization**  
 5. For each concerned Distributor, the Retailer verifies and confirms:
    - CUSTOMER PURCHASE PACKAGE identifier;
    - final PRICE;
@@ -119,6 +119,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
    - shared or mixed architecture.
      
 8. The TRANSPORT CUSTOMER may select one or mixed PAYMENT METHOD(s) that may include, when applicable :
+   - monney ? 
    - bank card or other card-based payment;
    - SEPA direct debit or similar mandate-based debit;
    - wallet or account-based payment (can be on Retailer's system);
@@ -129,6 +130,14 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
    - cash or point-of-sale payment;
    - split payment across several means of payment; or
    - scheduled payment for deferred charging or instalments.
+ Depending on the business rules, payment (and additional data) may be:
+   - immediate, with direct authorisation and capture or delayed, with deferred capture or later debit;
+   - split into several CHARGING MOMENT(s);
+   - made by instalments according to a payment plan;
+   - made by one single payment for several CUSTOMER PURCHASE PACKAGE(s);
+   - verifies for particular PAYMENT METHOD (voucher, loyalty points, B2B, travel credit) with the relevant provider a particular confirmation process;  
+   - made by travel account debit or B2B invoice/settlement arrangement; or
+   - combined with voucher, loyalty redemption or other PAYMENT METHOD(s).
 
 9. The retailer shall verify, with the relevant PSP, that the selected PAYMENT METHOD(s) are accepted for:
    - the concerned CUSTOMER PURCHASE PACKAGE(s);
@@ -138,88 +147,57 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
    - the amount and charging rule;
    - the requested CHARGING MOMENT; and
    - the applicable payment deadline.
-   And request to TRANSPORT CUSTOMER additional information (payer identity, billing address, invoice data, VAT number or corporate identifier, travel account identifier, voucher or travel credit reference, loyalty identifier, mandate consent, card or account credentials, strong customer authentication data, instalment acceptance conditions).
+   And request to TRANSPORT CUSTOMER additional information (payer identity, billing address, invoice data, VAT number or corporate identifier, travel account identifier, voucher or travel credit reference, loyalty identifier, mandate consent, card or account credentials, strong customer authentication data, instalment acceptance conditions). The TRANSPORT CUSTOMER may see only one unique mayment (MarketPlace case) and later, the Retailer distributes, settles or reconciles the corresponding amounts with several distributor(s) according to commercial agreements (see Business Use Case K). 
 
-## 4. Architecture Retailer-side payment
+- **Architecture Retailer-side payment**
 
 10. The Retailer, acting directly or through its Payment Provider, initiates payment for one or more CUSTOMER PURCHASE PACKAGE(s) and receivess the transaction result.
-
 11. The Retailer sends each concerned Distributor a payment confirmation or payment status notification including:
    - paid amount;
    - payment status, timestamp and reference;
    - CUSTOMER PURCHASE PACKAGE(s);
    - allocation amount and currency;
    - payment instrument type where required for audit, invoicing or after-sales.
-
 12. Each Distributor verifies that the payment status satisfies its business rule and returns the component result (confirmed / pending / rejected / expired / revalidation required).
+13. The Retailer consolidates Distributor responses and updates the TRAVEL BASKET.
 
-13. The Retailer consolidates Distributor responses and updates the customer-facing purchase status.
+- **Architecture Distributor-side payment**
 
-## 5. Architecture Distributor-side payment
-
-14. The Distributor indicates that payment must be executed through its own Payment Provider or delegated payment process. The Retailer sends or redirects the required payment initiation context to the Distributor.
-15. The Distributor, acting with its Payment Provider, initiates payment, receives the transaction result from the Payment Provider.
-
-16. The Distributor returns the payment result and component status to the Retailer:
+14. The Distributor indicates that payment must be executed through its own Payment Provider or delegated payment process. The Retailer sends the required payment initiation context to the Distributor.
+15. The Distributor, acting with its PSP, initiates payment, receives the transaction result from the Payment Provider.
+16. The Distributor returns the payment result and status to the Retailer:
    - paid and confirmed;
    - paid but fulfilment pending;
    - payment pending / refused / expired / cancelled;
    - revalidation required.
+17. The Retailer consolidates Distributor responses and updates the TRAVEL BASKET.
 
-17. The Retailer consolidates this result with the other components of the TRAVEL BASKET.
+- **Architecture Shared Retailer-Distributor payment**
 
-## 6. Architecture C — Shared Retailer / Distributor payment
-
-20. Some components are paid through the Retailer Payment Provider and others through one or more Distributor Payment Provider(s).
-
-21. The Retailer and Distributor(s) agree on:
+20. Some parts should be paid through the Retailer PSP (arhictecture Retailer-side payment) and others through one or more Distributor PSP(s) (architecture Architecture Distributor-side payment). The Retailer and Distributor(s) have agreements on:
    - which CUSTOMER PURCHASE PACKAGE(s) are paid by which Payment Provider;
-   - whether the customer sees one payment step or several coordinated payment steps;
-   - how mixed payment instruments are allocated;
+   - whether the TRANSPORT CUSTOMER sees one payment step or several coordinated payment steps;
+   - how mixed PAYMENT METHODs are allocated;
    - how partial success is handled;
    - how payment deadlines are enforced.
+ following the architecure of the paiment part, each, Retailer or Distributor, requests for the payment part.  
+21. Each PSP returns the transaction result to its requestor. If necessary, each Distributor returns the business status of its paiment part to the Retailer.
+22. The Retailer consolidates all results and updates the TRAVEL BASKET. 
 
-22. Each Payment Provider returns the transaction result to its orchestrating party.
+- **Architecture Third-party Payment Provider**
 
-23. Each Distributor returns the business status of its component to the Retailer.
-
-24. The Retailer consolidates all results and prevents continuation if one required component is unpaid, expired or inconsistent.
-
----
-
-## 7. Architecture D — Third-party Payment Provider
-
-25. The Retailer and/or Distributor sends the payment initiation data to a third-party Payment Provider.
-
-26. The Payment Provider executes or schedules the payment and returns the transaction result to the party responsible for orchestration.
-
-27. The Retailer and Distributor(s) exchange the necessary payment result information so that:
+23. The Retailer and/or Distributor sends the payment initiation data to a third-party Payment Provider. The Payment is executed or scheduled and the transaction result is returned to his requestor.
+24. The Retailer and Distributor(s) exchange the necessary payment result information so that:
    - every CUSTOMER PURCHASE PACKAGE or ORDER component has a clear payment state;
    - any reservation or holding can be finalized or released;
    - billing and settlement data remain traceable;
-   - the customer-facing status remains coherent.
-
----
-
-#### Payment
-- **immediate**
-monney
-dematerialized CB : 
-
-- **delayed**
-immediate prélèvement
-
-- **by installments**
-each month
-installment management with unpaid invoices management
-
-#### Proofs of payment
-21. The re  
-  Receipt with legal data following rule of each state
-
-  Invoice
-
-Payment terms and instalements
+   - the TRAVEL BASKET status remains coherent.
+ 
+ - **Payment result**
+25. If mixed payment is used, the Retailer coordinates the authorization and allocation of each part of the payment while preserving one coherent TRAVEL BASKET. Depending on the result, the Distributor may confirms or release reservation elements (see Business Use Case E).  
+26. The Retailer consolidates all payment part statuses and informs the TRANSPORT CUSTOMER of the final payment result.
+27. The Retailer and/or Distributor provides the relevant proof of payment (receipt with legal data following rule of each state), invoice, payment terms with installments, and fulfilment trigger. It can be document(s) and/or TRANSPORT CUSTOMER account update or other format.
+   
 
 ### Alternatives scenarios
 Alternative scenarios **fully compatible** with the main scenario; using shortcuts or very detailed specific points of the main scenario.
@@ -232,9 +210,7 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 1. The TRANSPORT CUSTOMER has selected purchase and after-sales operations that drives to a negative amount.
 2. The Retailer
    
-- **Marketplace**
-1. The TRANSPORT CUSTOMER is purchasing on a retailer system managed as a marketplace : each distributor receives his payments after a delay (can be immediate) and with possibly fees applied by the retailer.
-2. 
+-
 
 
 ### Diagram 
