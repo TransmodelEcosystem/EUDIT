@@ -111,14 +111,13 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
    - whether the Distributor requires payment execution by a specific Payment Provider.
 
 6. Each Distributor returns the payable state and any payment-related constraints.
-7. The Retailer consolidates all Distributor responses into one coherent payment proposal for the TRANSPORt CUSTOMER. The Retailer also determines and manages the payment architecture : he identifies, for each CUSTOMER PURCHASE PACKAGE, which entity performs the PAYMENT PROVIDER ROLE:
+7. The Retailer consolidates all Distributor responses into one coherent payment proposal for the TRANSPORT CUSTOMER. The Retailer also determines and manages the payment architecture : he identifies, for each CUSTOMER PURCHASE PACKAGE, which entity performs the PAYMENT PROVIDER ROLE:
    - Retailer-side Payment Provider;
    - Distributor-side Payment Provider;
    - third-party Payment Provider;
    - shared or mixed architecture.
      
 8. The TRANSPORT CUSTOMER may select one or mixed PAYMENT METHOD(s) that may include, when applicable :
-   - monney ? 
    - bank card or other card-based payment;
    - SEPA direct debit or similar mandate-based debit;
    - wallet or account-based payment (can be on Retailer's system);
