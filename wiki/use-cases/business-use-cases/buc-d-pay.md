@@ -7,17 +7,19 @@
 
 ---
 
-## Terminology note — TRAVEL BASKET, TRAVEL BASKET ELEMENT and ORDER
+## Terminology note — TRAVEL BASKET, TRAVEL BASKET ELEMENT, SALES TRANSACTION and order
 
 At the beginning of this use case, the TRANSPORT CUSTOMER may still manage a **locked TRAVEL BASKET** containing one or more **TRAVEL BASKET ELEMENT(s)**, still part of the shopping/purchase preparation state. Each TRAVEL BASKET ELEMENT contains one CUSTOMER PURCHASE PACKAGE, as defined in BUC-B.
 
-The term **ORDER** may be used from the moment the purchase has been confirmed sufficiently to create a binding or pre-binding order state. This is typically after the customer has validated the basket and the Retailer has created, requested or received an ORDER referencing one or more DISTRIBUTOR(s). In that case:
+The term **order** is not defined as a reference business concept in Transmodel. It may be implemented from the moment the purchase has been confirmed sufficiently  (and "order" may be already pre-created at the beginning of the use-case). It may be explicitly used by a local implementation or by an external retailing system. 
+Instead, the appropriate Transmodel concept to use when the purchase is confirmed is **SALES TRANSACTION**. A SALES TRANSACTION should be used from the moment the customer has validated the basket and the sale is sufficiently confirmed to be recorded by the Retailer : 
     - the TRAVEL BASKET becomes the purchase input;
-    - each TRAVEL BASKET ELEMENT may become or feed an ORDER component;
-    - each CUSTOMER PURCHASE PACKAGE remains traceable inside the ORDER;
-    - payment may be managed at ORDER level and/or ORDER component level.
+    - each TRAVEL BASKET ELEMENT contributes to the confirmed purchase;
+    - each CUSTOMER PURCHASE PACKAGE remains traceable;
+    - the confirmed sale is represented by a SALES TRANSACTION;
+    - payment may be associated with the SALES TRANSACTION and/or the CUSTOMER PURCHASE PACKAGE(s).
 
-In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describing the payment process until his validation, and **ORDER** is used after the payment validation. However, this may vary depending on the system (and ORDER may be already pre-created at the begining of the use-case).
+In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describing the payment process until payment validation, and **SALES TRANSACTION** is used after the payment validation. However, this may vary depending on the system. The confirmed sale should be represented by SALES TRANSACTION, created or confirmed only when the purchase has reached a sufficiently binding state, typically after successful payment validation.
 
 ## Actors & Context
 
@@ -58,7 +60,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
   - Refunds, compensation, voucher issuance after refund and other after-sales processes are out of scope of present BUC and are handled in use cases **F** and **J** dedicated to after-sales. But they refers to the same PSP interactions and APIs.
 
 - **Postconditions — Success guarantees:**
-  - Each CUSTOMER PURCHASE PACKAGE has a payment status, consolidated and given to TRANSPORt CUSTOMER by the Retailer.
+  - Each CUSTOMER PURCHASE PACKAGE has a payment status, consolidated and given to TRANSPORT CUSTOMER by the Retailer.
   - The basket state presented to the customer is consistent, regardless of whether the underlying implementation relies on a retailer basket, a distributor basket, or coordinated baskets across both.
   - This use case ends when the TRAVEL BASKET is ready for the next step; payment status is known.
   - Reservation, option, seat, ancillary, service or guarantee depending on payment will be finalized according to Distributor rules in Business Use Case E.
@@ -70,7 +72,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
   - The Retailer consolidates the TRAVEL BASKET state and prevents fulfilment if a required payment condition is not met.
   - If funds or accounting information must be distributed, cleared or reconciled between the Retailer and one or more Distributor(s) are described in Business Use Case K.
   - The TRANSPORT CUSTOMER actions can be logged/audited (if required by the system).
-  - If many CUSTOMER PURCHASE PACKAGE(s) are involved, allocation remains traceable per Distributor, ORDER component, payment instrument and settlement rule.
+  - If many CUSTOMER PURCHASE PACKAGE(s) are involved, allocation remains traceable per Distributor, SALES TRANSACTION, payment instrument and settlement rule.
 
 ---
 
@@ -78,7 +80,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 ## Scenarios
 
 ### Main scenario
-1. The TRANSPORT CUSTOMER shall start this use case after the preceding shopping, reservation and order-related use case(s), when one or more CUSTOMER PURCHASE PACKAGE(s) have been selected, parameterised, inserted into a TRAVEL BASKET or ORDER and locked or stabilized for payment.At this moment, it may remain elements that modify the final payment : shipping costs, payment method fees, CHARGING MOMENT, Retailer platform feees or  promotions and operation fees (by example : after-sales fees).
+1. The TRANSPORT CUSTOMER shall start this use case after the preceding shopping and reservation phases, when one or more CUSTOMER PURCHASE PACKAGE(s) have been selected, parameterised, inserted into a TRAVEL BASKET and locked or stabilized for payment. At this moment, it may remain elements that modify the final payment : shipping costs, payment method fees, CHARGING MOMENT, Retailer platform feees or  promotions and operation fees (by example : after-sales fees).
 
 - **Payment options choice**
 2. The Retailer presents to the TRANSPORT CUSTOMER a summarized payable view :
@@ -140,7 +142,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 9. The retailer shall verify, with the relevant PSP, that the selected PAYMENT METHOD(s) are accepted for:
    - the concerned CUSTOMER PURCHASE PACKAGE(s);
    - the concerned distributor(s);
-   - the TRANSPORt CUSTOMER context;
+   - the TRANSPORT CUSTOMER context;
    - the country, currency and tax context;
    - the amount and charging rule;
    - the requested CHARGING MOMENT; and
@@ -186,7 +188,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 
 23. The Retailer and/or Distributor sends the payment initiation data to a third-party Payment Provider. The Payment is executed or scheduled and the transaction result is returned to his requestor.
 24. The Retailer and Distributor(s) exchange the necessary payment result information so that:
-   - every CUSTOMER PURCHASE PACKAGE or ORDER component has a clear payment state;
+   - every CUSTOMER PURCHASE PACKAGE has a clear payment state;
    - any reservation or holding can be finalized or released;
    - billing and settlement data remain traceable;
    - the TRAVEL BASKET status remains coherent.
@@ -195,7 +197,7 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 25. If mixed payment is used, the Retailer coordinates the authorization and allocation of each part of the payment while preserving one coherent TRAVEL BASKET. Depending on the result, the Distributor may confirms or release reservation elements (see Business Use Case E).  
 26. The Retailer consolidates all payment part statuses and informs the TRANSPORT CUSTOMER of the final payment result.
 27. The Retailer and/or Distributor provides the relevant proof of payment (receipt with legal data following rule of each state), invoice, payment terms with installments, and fulfilment trigger. It can be document(s) and/or TRANSPORT CUSTOMER account update or other format.
-28. The Retailer may inform the Distributor(s) with each CUSTOMER PURCHASE PACKAGE data to create/update ORDER(s).   
+28. The Retailer may inform the Distributor(s) with each CUSTOMER PURCHASE PACKAGE data to create/update SALES TRANSACTION(s).   
    
 
 ### Alternatives scenarios
