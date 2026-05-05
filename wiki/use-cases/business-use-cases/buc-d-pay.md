@@ -100,12 +100,11 @@ In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describ
 - **Distributor and PSP contraints synchonization**  
 5. For each concerned Distributor, the Retailer verifies and confirms:
    - CUSTOMER PURCHASE PACKAGE identifier;
-   - final PRICE;
-   - currency;
+   - final PRICE and currency;
    - taxes and invoicing constraints;
    - CHARGING MOMENT(s);
    - accepted PAYMENT METHOD(s);
-   - payment time limit;
+   - payment time limits;
    - holding or reservation status;
    - rule in case of payment success;
    - rule in case of payment pending, failure or expiry;
