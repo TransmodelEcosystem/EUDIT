@@ -12,10 +12,10 @@
 At the beginning of this use case, the TRANSPORT CUSTOMER may still manage a **locked TRAVEL BASKET** containing one or more **TRAVEL BASKET ELEMENT(s)**, still part of the shopping/purchase preparation state. Each TRAVEL BASKET ELEMENT contains one CUSTOMER PURCHASE PACKAGE, as defined in BUC-B.
 
 The term **ORDER** may be used from the moment the purchase has been confirmed sufficiently to create a binding or pre-binding order state. This is typically after the customer has validated the basket and the Retailer has created, requested or received an ORDER referencing one or more DISTRIBUTOR(s). In that case:
-- the TRAVEL BASKET becomes the purchase input;
-- each TRAVEL BASKET ELEMENT may become or feed an ORDER component;
-- each CUSTOMER PURCHASE PACKAGE remains traceable inside the ORDER;
-- payment may be managed at ORDER level and/or ORDER component level.
+    - the TRAVEL BASKET becomes the purchase input;
+    - each TRAVEL BASKET ELEMENT may become or feed an ORDER component;
+    - each CUSTOMER PURCHASE PACKAGE remains traceable inside the ORDER;
+    - payment may be managed at ORDER level and/or ORDER component level.
 
 In this use case, **TRAVEL BASKET / TRAVEL BASKET ELEMENT** is used when describing the payment process until his validation, and **ORDER** is used after the payment validation. However, this may vary depending on the system (and ORDER may be already pre-created at the begining of the use-case).
 
