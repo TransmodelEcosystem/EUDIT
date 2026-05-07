@@ -17,6 +17,7 @@ B. **Shop & Price**
 C. **Order & Book** *(+ first stage of reservation)*
 - fix your purchase (checkout) => To move in UC B ?
 - begin reservation process (seat / bike / cabin / PRM / mandatory or optional)
+- acheive reservation process
   
 D. **Pay** *(CHARGING MOMENT (complete or not))*
 - enter your payment method
@@ -24,15 +25,15 @@ D. **Pay** *(CHARGING MOMENT (complete or not))*
 - order a payment between banks/ pay with monney
 - receives a receipt / bill
 
-E. **Ticketing & Fulfilment** *(FARE CONTRACT creation + Travel doc distribution + last stage of reservation)*
+E. **Ticketing & Fulfilment** *(FARE CONTRACT creation + Travel doc distribution)*
 - creation of travel access rights (contracts)
 - managment of orders (create, consult, modify, delete)
 - receive TRAVEL DOCUMENT(s)
-- acheive reservation process
+- acheive reservation process => moved in BUC C
 
 F. **Pre-trip** *(service and aftersales)*
 - inform traveler
-- trip/service/reservation modification
+- trip/service/reservation/media modification
 
 G. **Validation – inspection / In-trip** *(services and aftersales)*
 - sale/pay on tap
