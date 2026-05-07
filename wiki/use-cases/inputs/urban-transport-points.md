@@ -40,3 +40,17 @@
 4. The retailer requests the phone operator for the PRICE payment and if it is valid, ends the purchase. 
 5. An SMS message is sent to the TRANSPORT CUSTOMER phone with the ticket details (ticket ID, FARE PRODUCT name, price, end of validity date and hour) 
 6. For the inspection, an internet link (very short) to the receipt is given in the SMS : either the CUSTOMER or the inspector can load and consult the receipt (.pdf file).  
+
+ **Reduction card**
+
+1. The TRANSPORT CUSTOMER has no reduction card. He decides to purchase one.
+2. In the same payment, the TARNSPORt CUSTOMER wants a monthly PASS to paid at the price calculated with the reduciton card.
+3. The TRANSPORT CUSTOMER pays an amount composed with reduction card price and pass reduced price
+
+ **Reimboursment and purchase in same payment**
+
+1. The TRANSPORT CUSTOMER has brought a product A last week but it is the wrong product for what he wants to do. He conects to his customer account on his applciation.
+2. He requests for the reimboursment of the product A as it is allowed in the aftersales condition (not used, not stated).
+3. He wants with this amount buy the new product B more adapted to his needs. So ha adds the pass B in his basket abd pays only the difference between the 2 prices (if product B is with higer price).
+   
+  
