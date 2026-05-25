@@ -53,22 +53,58 @@
 2. He requests for the reimboursment of the product A as it is allowed in the aftersales condition (not used, not stated).
 3. He wants with this amount buy the new product B more adapted to his needs. So ha adds the pass B in his basket abd pays only the difference between the 2 prices (if product B is with higer price).
 
-After-sales types amanged by Urban transport 
-1 : reimboursement : the operator can reimboursement any card or support or contract following the vending conditions
-2 : renouvellement : the operator produces a new support with the same data as the old one (contracts, ABT IDs, )
-3 : reconstitution : when a support is damaged, the orpator can reconstitute the support with the encoded contracts (support et contrat)
-4 : mise en liste noire (application transport) : when the card or the contract has been robbed, the operator can set in blacklist a support or a conatract or both.
-5 : restitution : can be a support or a consigne. The physical support is given to an agent that register the support as retruned. The consigne can be given back toi the customer if there is.
-5 : mise en liste de suspension (contrat) : temporaire (until an unpaid sale is regularized) /definitive (when the operator do not want this contract to be used) / periodique (with a period : by example, for the summer period)
-6 : verrouillage (ADH)
-7 : Demande de clôture dossier client : data suppression + suspension of contracts
-8 : Régularisation - PAS DE MOTIF : the customer pays an unpaid instalment and his can use his contract again
-10 : Dédommagement : something decided by the oprator
-11 : Sortie de la liste des contrats à débloquer 
-18 : Invalidation de support ABT : the CB2D has his security keyx revoked so it cannot be unsed again
-Detach and attach : a supprot can be detached from the customer account and attached to another customer account
-Update a support : the data encoded inside the contactless card are updated : change of type of user (anonymous, nominative, declarative), change of user social status)
-Résilisation d'un contract a prélèvements : the customer wants to end the paymentTerms and no more use un abonnement avec prélèvements
+## After-sales types grouped by object (urban transport)
 
+### Customer account
+1. **Customer account closure request**  
+   Close the customer account (data suppression/retention rules) and suspend associated contract(s) as required.
+
+2. **Detach / attach a medium to another account**  
+   Detach a medium/support from one customer account and attach it to another, subject to eligibility and ownership rules.
+
+---
+
+### Medium / support (physical or app-based)
+1. **Renewal of a medium/support**  
+   Issue a new medium/support and re-associate/write on the same customer data and identifiers (e.g. contracts, ABT identifiers).
+
+2. **Reconstitution after damage**  
+   Rebuild a damaged medium/support by restoring the encoded rights and associated contract/access rights.
+
+3. **Blacklisting (medium)**  
+   Blacklist the medium/support to prevent use (typically after theft or compromise).
+
+4. **Return / restitution (medium or deposit)**  
+   Register the physical return of the medium; refund any deposit where applicable.
+
+5. **ABT medium invalidation (security key revoked)**  
+   Revoke security keys of the ABT medium (e.g. CB2D) so it cannot be used again.
+
+6. **Update a medium/support (data update on the card)**  
+   Update encoded data on the medium (e.g. user type: anonymous/nominative/declarative; social status).
+
+---
+
+### Contract / access right
+1. **Refund (reimbursement)**  
+   Refund a contract/access right according to selling conditions (e.g. unused, within allowed time window).
+   The refund can be partial or total. It also can be unsupervised by an agent with rights to do.
+
+3. **Contract suspension list (temporary / definitive / periodic)**  
+   Suspend a contract temporarily (until regularised), definitively (operator decision), or periodically (defined period : example : during summer).
+
+4. **Regularisation of unpaid instalment**  
+   Record payment of an overdue instalment and re-enable the contract(s) and /or the support(s) for use where applicable.
+
+5. **Removal from “contracts to unblock” list**  
+   Remove the contract from the black list once the blocking cause is resolved.
+
+6. **Compensation (operator decision)**  
+   Grant compensation (credit/voucher/benefit) based on operator policy or a service incident.
+
+7. **Terminate a direct-debit subscription contract**  
+   End a subscription paid by direct debit; stop payment terms and prevent further use according to rules.
+
+8. **Blacklisting (contract)**  
+   Blacklist the contract/access right to prevent use (typically after theft or compromise).
    
-  
