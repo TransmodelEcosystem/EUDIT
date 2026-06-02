@@ -35,6 +35,25 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Offer'
+                  travellingEntities:
+                    type: array
+                    items:
+                      oneOf:
+                      - $ref: '#/components/schemas/Traveller'
+                      - $ref: '#/components/schemas/PassengerVehicle'
+                      - $ref: '#/components/schemas/Animal'
+                      - $ref: '#/components/schemas/Luggage'
+                      discriminator:
+                        propertyName: entityType
+                        mapping:
+                          traveller: '#/components/schemas/Traveller'
+                          vehicle: '#/components/schemas/PassengerVehicle'
+                          animal: '#/components/schemas/Animal'
+                          luggage: '#/components/schemas/Luggage'
+                  tripPatterns:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TripPattern'
                   links:
                     type: array
                     items:
@@ -52,6 +71,45 @@ paths:
       responses:
         '200':
           description: Success
+          headers:
+            Version:
+              $ref: '#/components/headers/version'
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Expiry-date:
+              $ref: '#/components/headers/expires'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Offer'
+                  travellingEntities:
+                    type: array
+                    items:
+                      oneOf:
+                      - $ref: '#/components/schemas/Traveller'
+                      - $ref: '#/components/schemas/PassengerVehicle'
+                      - $ref: '#/components/schemas/Animal'
+                      - $ref: '#/components/schemas/Luggage'
+                      discriminator:
+                        propertyName: entityType
+                        mapping:
+                          traveller: '#/components/schemas/Traveller'
+                          vehicle: '#/components/schemas/PassengerVehicle'
+                          animal: '#/components/schemas/Animal'
+                          luggage: '#/components/schemas/Luggage'
+                  tripPatterns:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TripPattern'
+                  links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Link'
   /processes/search-offers/execution:
     post:
       summary: 'TOMP-API 2.0.0: POST /processes/search-offers/execution'
@@ -65,6 +123,45 @@ paths:
       responses:
         '200':
           description: Success
+          headers:
+            Version:
+              $ref: '#/components/headers/version'
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Expiry-date:
+              $ref: '#/components/headers/expires'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Offer'
+                  travellingEntities:
+                    type: array
+                    items:
+                      oneOf:
+                      - $ref: '#/components/schemas/Traveller'
+                      - $ref: '#/components/schemas/PassengerVehicle'
+                      - $ref: '#/components/schemas/Animal'
+                      - $ref: '#/components/schemas/Luggage'
+                      discriminator:
+                        propertyName: entityType
+                        mapping:
+                          traveller: '#/components/schemas/Traveller'
+                          vehicle: '#/components/schemas/PassengerVehicle'
+                          animal: '#/components/schemas/Animal'
+                          luggage: '#/components/schemas/Luggage'
+                  tripPatterns:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TripPattern'
+                  links:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Link'
 components:
   schemas:
 
@@ -173,40 +270,6 @@ components:
         tripReference:
           type: string
           description: Reference to the trip this section belongs to.
-
-    # ─── TRAVEL PARTY ─────────────────────────────────────────────────────────
-
-    TravelParty:
-      type: object
-      additionalProperties: false
-      description: TRAVEL PARTY — the group of travelling entities for whom offers are sought.
-      properties:
-        travelPartyId:
-          type: string
-          description: Caller-assigned identifier for this travel party.
-        type:
-          type: string
-          description: Classification of the travel party.
-          x-extensible-enum:
-          - individual
-          - family
-          - group
-        entities:
-          type: array
-          description: The individual entities (travellers, vehicles, animals, luggage) making up this travel party.
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/Traveller'
-            - $ref: '#/components/schemas/PassengerVehicle'
-            - $ref: '#/components/schemas/Animal'
-            - $ref: '#/components/schemas/Luggage'
-            discriminator:
-              propertyName: entityType
-              mapping:
-                traveller: '#/components/schemas/Traveller'
-                vehicle: '#/components/schemas/PassengerVehicle'
-                animal: '#/components/schemas/Animal'
-                luggage: '#/components/schemas/Luggage'
 
     # ─── TRAVELLING ENTITIES ──────────────────────────────────────────────────
 

@@ -16,10 +16,10 @@ Maps each EUDIT **Search Offers** concept to the corresponding concept/property 
 
 | Property | Type | Mult. | TOMP concept | TOMP property | Notes |
 |---|---|---|---|---|---|
-| tripPatterns | TripPattern | 1..* | `searchOfferRequest` | `tripPattern` / `travelSpecification` | TOMP accepts either a fixed `tripPattern` (timetabled journeys) or an open-ended `travelSpecification` (O&D + time window). Multiple EUDIT `TripPattern`s have no direct equivalent; TOMP supports one `tripPattern` or one `travelSpecification` per request. |
+| tripPatterns | TripPattern | 1..* | `searchOfferRequest` | `tripPattern` | TOMP accepts either a fixed `tripPattern` (timetabled journeys) or an open-ended `travelSpecification` (O&D + time window). Multiple EUDIT `TripPattern`s have no direct equivalent; TOMP supports one `tripPattern` or one `travelSpecification` per request. |
 | travellers | TravellingEntity | 1..* | `searchOfferRequest` | `travellers[]` | Traveller sub-types map differently; see individual sections below. `Animal`, `PassengerVehicle`, `VehicleRack`, `Luggage` have no equivalent in TOMP offer search. |
-| filter | SearchOfferFilter | 0..1 | `searchOfferRequest` | `travellerRequirements` (per traveller) | TOMP applies mode/class/operator preferences per traveller, not as a global filter. `mediaTypes` and `requestedSections` have no equivalent. |
-| policy | SearchOfferPolicy | 0..1 | — | — | No equivalent. TOMP offer search is synchronous with no pagination or currency control. |
+| filter | SearchOfferFilter | 0..1 | `searchOfferRequest` | `travellerRequirements` (per traveller) | TOMP applies mode/class/operator preferences per traveller, not as a global filter. `mediaTypes` and `requestedSections` have no equivalent. Optionally, `accessType` can be used, but is not preferred |
+| policy | SearchOfferPolicy | 0..1 | — | — | No equivalent. |
 
 ---
 
@@ -29,8 +29,8 @@ Maps each EUDIT **Search Offers** concept to the corresponding concept/property 
 
 | Property | Type | Mult. | TOMP concept | TOMP property | Notes |
 |---|---|---|---|---|---|
-| numberOfResultsBefore | integer | 0..1 | — | — | Not supported. TOMP returns results without pagination control. |
-| numberOfResultsAfter | integer | 0..1 | — | — | Not supported. |
+| numberOfResultsBefore | integer | 0..1 | — | — | Not supported. TOMP returns results with pagination control. |
+| numberOfResultsAfter | integer | 0..1 | — | — | Not supported. TOMP returns results with pagination control. |
 | currency | string | 0..1 | — | — | Not supported at request level; currency is part of operator configuration. |
 
 ---
@@ -43,7 +43,7 @@ Maps each EUDIT **Search Offers** concept to the corresponding concept/property 
 |---|---|---|---|---|---|
 | modes | string | 0..* | `travellerRequirements` | `mode`, `subMode` | Applied per traveller in TOMP, not as a global filter. |
 | classOfUse | string | 0..* | `travellerRequirements` | `class` | Maps to TOMP `class` (e.g. `FIRST`, `SECOND`). Per traveller. |
-| mediaTypes | string | 0..* | — | — | No equivalent. TOMP does not filter by fulfilment media type at offer-search stage. |
+| mediaTypes | string | 0..* | — | — | No equivalent. TOMP does not filter by fulfilment media type at offer-search stage. Optionally, `accessType` can be used, but is not preferred |
 | requestedSections | RequestedSections | 0..* | — | — | No equivalent. TOMP does not support section-level offer targeting. |
 
 ---
@@ -100,7 +100,7 @@ Maps each EUDIT **Search Offers** concept to the corresponding concept/property 
 | nationality | string | 0..1 | — | — | No equivalent in TOMP. |
 | residency | string | 0..1 | — | — | No equivalent in TOMP. |
 | dateOfBirth | date | 0..1 | — | — | No equivalent in TOMP. |
-| licenseTypes | LicenseType | 0..* | — | — | Driver licence held by traveller. TOMP exposes licence types via `GET /collections/license-types/items` but does not accept them in offer-search input. |
+| licenseTypes | LicenseType | 0..* | `travellerCharacteristics` | `licenseTypes` | Driver licence held by traveller. TOMP exposes licence types via `GET /collections/license-types/items` and has a licenseTypes property in the travellersCharachteristics. |
 
 ---
 
@@ -120,7 +120,7 @@ Maps each EUDIT **Search Offers** concept to the corresponding concept/property 
 
 | Property | Type | Mult. | TOMP concept | TOMP property | Notes |
 |---|---|---|---|---|---|
-| type | string | 1..1 | — | — | TOMP exposes licence categories via a separate collection endpoint; not an input to offer search. |
+| type | string | 1..1 | `travellerCharacteristics` | `licenseTypes` |  |
 
 ---
 
@@ -138,11 +138,11 @@ Maps each EUDIT **Search Offers** concept to the corresponding concept/property 
 
 ## PassengerVehicle
 
-> Traveller-owned vehicle to be transported. **No equivalent in TOMP offer-search input.**
+> Traveller-owned vehicle to be transported. 
 
 | Property | Type | Mult. | TOMP concept | TOMP property | Notes |
 |---|---|---|---|---|---|
-| entityType | string | 1..1 | — | — | TOMP does not support vehicle transport in offer search. |
+| entityType | string | 1..1 | `travellerCharacteristics` | `assets` | A traveller can bring along a vehicle |
 | type | string | 1..1 | — | — | No equivalent. |
 | height / width / length / weight | integer | 0..1 | — | — | No equivalent. |
 | trailer | PassengerVehicle | 0..1 | — | — | No equivalent. |

@@ -1,0 +1,112 @@
+CLASS [2643] Class: ALLOCATION
+    - allocationReference: ref [1..1]
+
+CLASS [2652] Class: ALLOCATION
+
+CLASS [2644] Class: ANCILLARY
+    - ancillaryReference: ref [1..1]
+
+CLASS [2651] Class: ANCILLARY
+    - ancillaryId: str [1..1]
+    - type: lookup [1..1]
+
+CLASS [2662] Class: ASSET ALLOCATION
+
+CLASS [2654] Class: FARE PRODUCT
+    - productRef: str [1..1]
+
+CLASS [2655] Class: GUARANTEE
+
+CLASS [2659] Class: LINK
+
+CLASS [2641] Class: LOCK OFFER DELIVERY
+    - lockedOfferId: ref [1..1]
+    - expiryTime: date-time [1..1]
+    - offerRef: str [1..1]
+
+CLASS [2638] Class: LOCK OFFER REQUEST
+    - offerReference: offerRef [1..1]
+    - aftersalesByRetailerOnly: boolean [1..1]
+    - externalRef: str [1..1]
+
+CLASS [2648] Class: LOCKED OFFER
+    - lockedOfferId: str [1..1]
+    - summary: str [1..1]
+    - name: str [1..1]
+    - matching: x-enum [1..1]
+    - afterSalesFlexibility: enum[] [1..1]
+    - status: enum [1..1]
+    - personalInformationRequired: boolean [1..1]
+    - externalRef: str [1..1]
+
+CLASS [2645] Class: LOCKED OFFER DETAIL REQUEST
+    - offerReference: offerRef [1..1]
+
+CLASS [2649] Class: OFFER ELEMENT
+    - travellingEntities: ref[] [1..1]
+    - offerElementId: str [1..1]
+    - matching: x-enum [1..1]
+    - requiredInformation: RequiredInformationObject [1..1]
+
+CLASS [2653] Class: PRICE
+    - currencyCode: str [1..1]
+    - amount: double [1..1]
+
+CLASS [2658] Class: PROVIDED SECTIONS
+    - startLegId: str [1..1]
+    - endLegId: str [1..1]
+    - startPlace: placeRef [1..1]
+    - endPlace: placeRef [1..1]
+    - tripPatternRef: tripRefernceId [1..1]
+
+CLASS [2661] Class: SPOT ALLOCATION
+    - legId: str [1..1]
+    - startPlace: stopPointRef [1..1]
+    - endPlace: stopPointRef [1..1]
+    - typeOfSpot: enum [1..1]
+
+CLASS [2657] Class: SUMMARY DETAIL
+    - geometry:  [1..1]
+    - temporal:  [1..1]
+    - conditions: str [1..1]
+
+CLASS [2650] Class: TRAVEL RIGHT
+
+CLASS [2660] Class: TRAVELLING ENTITY REFERENCE
+    - t.e.Ref: int [1..1]
+
+CLASS [2656] Class: VAT
+    - amount: double [1..1]
+    - country: str [1..1]
+    - currencyCode: str [1..1]
+    - percentage: double [1..1]
+
+CLASS [2665] Class: WARNING
+
+CONNECTORS:
+  VAT --[Aggregation]--> PRICE[0..*]
+  FARE PRODUCT --[Association]--> OFFER ELEMENT[1..*]
+  GUARANTEE --[Association]--> OFFER ELEMENT[1..*]
+  LOCK OFFER DELIVERY --[Association]--> LOCKED OFFER[0..1]
+  LOCK OFFER DELIVERY --[Association]--> WARNING[0..*]
+  LOCK OFFER DELIVERY --[Association]--> LINK[0..*]
+  LOCK OFFER REQUEST --[Association]--> ALLOCATION[0..*]
+  LOCK OFFER REQUEST --[Association]--> ANCILLARY[0..*]
+  LOCKED OFFER --[Association name=elements]--> OFFER ELEMENT[1..*]
+  LOCKED OFFER --[Association name=minimumPrice]--> PRICE[0..1]
+  LOCKED OFFER --[Association]--> SUMMARY DETAIL[0..*]
+  LOCKED OFFER --[Association]--> PROVIDED SECTIONS[0..*]
+  LOCKED OFFER --[Association]--> LINK[0..*]
+  LOCKED OFFER --[Association]--> GUARANTEE[0..*]
+  OFFER ELEMENT --[Association name=price]--> PRICE[1]
+  OFFER ELEMENT --[Association]--> TRAVELLING ENTITY REFERENCE[1..*]
+  OFFER ELEMENT --[Association]--> PROVIDED SECTIONS[1..*]
+  TRAVEL RIGHT --[Association]--> ANCILLARY[0..*]
+  TRAVEL RIGHT --[Association]--> ALLOCATION[1..*]
+  ALLOCATION --[Generalization]--> OFFER ELEMENT
+  ANCILLARY --[Generalization]--> OFFER ELEMENT
+  ASSET ALLOCATION --[Generalization]--> ALLOCATION
+  SPOT ALLOCATION --[Generalization]--> ALLOCATION
+  TRAVEL RIGHT --[Generalization]--> OFFER ELEMENT
+  LOCK OFFER REQUEST --[Usage]--> LOCK OFFER DELIVERY
+  LOCKED OFFER DETAIL REQUEST --[Usage]--> LOCKED OFFER
