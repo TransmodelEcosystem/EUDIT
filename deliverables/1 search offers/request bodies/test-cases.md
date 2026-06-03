@@ -326,7 +326,7 @@ but a `requestedSections` entry restricts the offer search to the segment starti
 **Key characteristics:**
 - 1 traveller
 - 1 trip pattern with 2 timed legs (Amsterdam→Utrecht, Utrecht→Eindhoven)
-- Filter: `requestedSections` specifying `startLegId: leg-002` (Utrecht onwards)
+- Filter: `requestedSections` specifying `startLegRef: leg-002` (Utrecht onwards)
 - No policy
 
 **Example file:** `TC-015-omsa-requested-sections.json`

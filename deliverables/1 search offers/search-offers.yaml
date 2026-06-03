@@ -29,35 +29,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  offers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Offer'
-                  travellingEntities:
-                    type: array
-                    items:
-                      oneOf:
-                      - $ref: '#/components/schemas/Traveller'
-                      - $ref: '#/components/schemas/PassengerVehicle'
-                      - $ref: '#/components/schemas/Animal'
-                      - $ref: '#/components/schemas/Luggage'
-                      discriminator:
-                        propertyName: entityType
-                        mapping:
-                          traveller: '#/components/schemas/Traveller'
-                          vehicle: '#/components/schemas/PassengerVehicle'
-                          animal: '#/components/schemas/Animal'
-                          luggage: '#/components/schemas/Luggage'
-                  tripPatterns:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TripPattern'
-                  links:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Link'
+                $ref: '#/components/schemas/SearchOfferDelivery'
   /processes/search-offers/execute:
     post:
       summary: 'OMSA 0.1.0: POST /processes/search-offers/execute'
@@ -81,35 +53,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  offers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Offer'
-                  travellingEntities:
-                    type: array
-                    items:
-                      oneOf:
-                      - $ref: '#/components/schemas/Traveller'
-                      - $ref: '#/components/schemas/PassengerVehicle'
-                      - $ref: '#/components/schemas/Animal'
-                      - $ref: '#/components/schemas/Luggage'
-                      discriminator:
-                        propertyName: entityType
-                        mapping:
-                          traveller: '#/components/schemas/Traveller'
-                          vehicle: '#/components/schemas/PassengerVehicle'
-                          animal: '#/components/schemas/Animal'
-                          luggage: '#/components/schemas/Luggage'
-                  tripPatterns:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TripPattern'
-                  links:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Link'
+                $ref: '#/components/schemas/SearchOfferDelivery'
   /processes/search-offers/execution:
     post:
       summary: 'TOMP-API 2.0.0: POST /processes/search-offers/execution'
@@ -133,35 +77,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  offers:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Offer'
-                  travellingEntities:
-                    type: array
-                    items:
-                      oneOf:
-                      - $ref: '#/components/schemas/Traveller'
-                      - $ref: '#/components/schemas/PassengerVehicle'
-                      - $ref: '#/components/schemas/Animal'
-                      - $ref: '#/components/schemas/Luggage'
-                      discriminator:
-                        propertyName: entityType
-                        mapping:
-                          traveller: '#/components/schemas/Traveller'
-                          vehicle: '#/components/schemas/PassengerVehicle'
-                          animal: '#/components/schemas/Animal'
-                          luggage: '#/components/schemas/Luggage'
-                  tripPatterns:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TripPattern'
-                  links:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Link'
+                $ref: '#/components/schemas/SearchOfferDelivery'
 components:
   schemas:
 
@@ -255,21 +171,24 @@ components:
       additionalProperties: false
       description: REQUESTED SECTIONS — identifies a subset of legs within the trip for which targeted offers are requested.
       properties:
-        startLegId:
+        startLegRef:
           type: string
-          description: Identifier of the first leg in the requested section.
-        endLegId:
+          description: Reference to the first leg in the requested section.
+        endLegRef:
           type: string
-          description: Identifier of the last leg in the requested section.
-        startPlace:
+          description: Reference to the last leg in the requested section.
+        startPlaceRef:
           type: string
           description: Reference to the departure place of the section.
-        endPlace:
+        endPlaceRef:
           type: string
           description: Reference to the arrival place of the section.
-        tripReference:
+        tripPatternRef:
           type: string
-          description: Reference to the trip this section belongs to.
+          description: Reference to the trip pattern this section belongs to.
+        sectionId:
+          type: string
+          description: Caller-assigned identifier for this requested section.
 
     # ─── TRAVELLING ENTITIES ──────────────────────────────────────────────────
 
@@ -325,9 +244,9 @@ components:
             description: Caller-assigned external reference for this traveller.
           personalNeeds:
             type: array
-            description: Accessibility or personal needs of this traveller.
+            description: Accessibility or personal needs of this traveller (operator-defined lookup values, see /personal-needs).
             items:
-              $ref: '#/components/schemas/PersonalNeed'
+              type: string
           qualifyingCharacteristics:
             description: Additional qualifying characteristics used for eligibility determination.
             $ref: '#/components/schemas/TravellerQualifyingCharacteristics'
@@ -354,45 +273,9 @@ components:
           type: array
           description: License types held by this traveller that may affect offer availability.
           items:
-            $ref: '#/components/schemas/LicenseType'
+            type: string
 
-    PersonalNeed:
-      type: object
-      additionalProperties: false
-      description: PERSONAL NEED — an accessibility or personal need that may affect offer availability or seating.
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: Type of personal need (operator-defined lookup value).
 
-    LicenseType:
-      type: object
-      additionalProperties: false
-      description: LICENSE TYPE — a driving or operating license held by a traveller.
-      required:
-      - type
-      properties:
-        type:
-          type: string
-          description: License category.
-          x-extensible-enum:
-          - AM
-          - A1
-          - A2
-          - A
-          - B1
-          - B
-          - BE
-          - C1
-          - C1E
-          - C
-          - CE
-          - D1
-          - D1E
-          - D
-          - DE
 
     Animal:
       allOf:
@@ -676,9 +559,9 @@ components:
             $ref: '#/components/schemas/LegAlight'
           intermediateStops:
             type: array
-            description: Intermediate stops passed during this leg (not boarded/alighted).
+            description: Intermediate stops passed during this leg (not boarded/alighted). Each value is a reference to a NeTEx STOP PLACE or SCHEDULED STOP POINT.
             items:
-              $ref: '#/components/schemas/StopPlace'
+              type: string
 
     ContinuousLeg:
       allOf:
@@ -742,7 +625,7 @@ components:
           type: array
           description: Commercial train numbers for this departure.
           items:
-            $ref: '#/components/schemas/TrainNumber'
+            type: string
 
     LegAlight:
       type: object
@@ -763,27 +646,7 @@ components:
           type: string
           description: Reference to a specific platform, bay, or set-down zone within the stop place.
 
-    TrainNumber:
-      type: object
-      additionalProperties: false
-      description: TRAIN NUMBER — a commercial train number identifying a specific train service.
-      required:
-      - trainNumberId
-      properties:
-        trainNumberId:
-          type: string
-          description: Commercial train number (e.g. ICE 123, Thalys 9300).
 
-    StopPlace:
-      type: object
-      additionalProperties: false
-      description: STOP PLACE — a reference to a scheduled stop point along a timed leg.
-      required:
-      - stopPlaceRef
-      properties:
-        stopPlaceRef:
-          type: string
-          description: Reference to the NeTEx SCHEDULED STOP POINT or STOP PLACE.
 
     # ─── PLACE HIERARCHY ──────────────────────────────────────────────────────
 
@@ -891,7 +754,44 @@ components:
           format: double
           description: Latitude in decimal degrees (WGS-84).
 
-    # ─── OFFER RESPONSE ───────────────────────────────────────────────────────
+    # ─── OFFER RESPONSE ───────────────────────────────────────────────────────────────
+
+    SearchOfferDelivery:
+      type: object
+      additionalProperties: false
+      description: SEARCH OFFER DELIVERY — the root response object containing all offers matching the search request, together with the echoed travelling entities and trip patterns.
+      properties:
+        offers:
+          type: array
+          description: The offers returned by the server for the requested trip and travelling entities.
+          items:
+            $ref: '#/components/schemas/Offer'
+        travellers:
+          type: array
+          description: The travelling entities echoed from the request (travellers, vehicles, animals, luggage).
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/Traveller'
+            - $ref: '#/components/schemas/PassengerVehicle'
+            - $ref: '#/components/schemas/Animal'
+            - $ref: '#/components/schemas/Luggage'
+            discriminator:
+              propertyName: entityType
+              mapping:
+                traveller: '#/components/schemas/Traveller'
+                vehicle: '#/components/schemas/PassengerVehicle'
+                animal: '#/components/schemas/Animal'
+                luggage: '#/components/schemas/Luggage'
+        tripPatterns:
+          type: array
+          description: The trip patterns echoed from the request.
+          items:
+            $ref: '#/components/schemas/TripPattern'
+        links:
+          type: array
+          description: Hypermedia links for further actions (e.g. pagination).
+          items:
+            $ref: '#/components/schemas/Link'
 
     Offer:
       type: object
@@ -904,29 +804,79 @@ components:
         offerId:
           type: string
           description: Server-assigned unique identifier for this offer.
+        name:
+          type: string
+          description: Human-readable name of this offer (e.g. product or service name).
+        summary:
+          type: string
+          description: Short human-readable summary of the offer (e.g. route, date, class).
+        matching:
+          type: string
+          description: Indicates how well this offer matches the original request.
+          x-extensible-enum:
+          - exact
+          - partial
+          - none
+        status:
+          type: string
+          description: Current availability status of this offer.
+          enum:
+          - open
+          - closed
+          - expired
+        afterSalesFlexibility:
+          type: array
+          description: After-sales flexibility options applicable to this offer.
+          items:
+            type: string
+            enum:
+            - refundable
+            - exchangeable
+            - nonRefundable
+            - nonExchangeable
+        personalInformationRequired:
+          type: boolean
+          description: Whether personal information (e.g. name, date of birth) is required to purchase this offer.
         elements:
           type: array
           minItems: 1
-          description: The offer elements (travel rights, ancillaries, reservations) that make up this offer.
+          description: The offer elements (travel rights, ancillaries, allocations) that make up this offer.
           items:
             oneOf:
             - $ref: '#/components/schemas/TravelRight'
             - $ref: '#/components/schemas/Ancillary'
-            - $ref: '#/components/schemas/Reservation'
-            - $ref: '#/components/schemas/CompositeOfferElement'
+            - $ref: '#/components/schemas/SpotAllocation'
+            - $ref: '#/components/schemas/AssetAllocation'
             discriminator:
               propertyName: offerElementType
               mapping:
                 travelRight: '#/components/schemas/TravelRight'
                 ancillary: '#/components/schemas/Ancillary'
-                reservation: '#/components/schemas/Reservation'
-                composite: '#/components/schemas/CompositeOfferElement'
-        farePrice:
-          description: Total price of this offer.
-          $ref: '#/components/schemas/FarePrice'
-        travelDocument:
-          description: Travel document associated with this offer.
-          $ref: '#/components/schemas/TravelDocument'
+                spotAllocation: '#/components/schemas/SpotAllocation'
+                assetAllocation: '#/components/schemas/AssetAllocation'
+        minimumPrice:
+          description: Minimum total price of this offer (e.g. before optional ancillaries).
+          $ref: '#/components/schemas/Price'
+        summaryDetails:
+          type: array
+          description: Human-readable summaries of the journey geometry and temporal span covered by this offer.
+          items:
+            $ref: '#/components/schemas/SummaryDetail'
+        providedSections:
+          type: array
+          description: The journey sections covered by this offer.
+          items:
+            $ref: '#/components/schemas/ProvidedSections'
+        guarantees:
+          type: array
+          description: Guarantees associated with this offer (e.g. connection guarantee, seat guarantee).
+          items:
+            $ref: '#/components/schemas/Guarantee'
+        links:
+          type: array
+          description: Hypermedia links for further actions (e.g. lock-offers).
+          items:
+            $ref: '#/components/schemas/Link'
 
     OfferElement:
       type: object
@@ -943,46 +893,65 @@ components:
           description: Discriminator identifying the concrete offer element type.
         travellingEntities:
           type: array
-          description: References (travellingEntityId) to the entities this element applies to.
+          description: References (travellingEntityId values) to the travelling entities this element applies to.
           items:
             type: string
-        farePrice:
+        matching:
+          type: string
+          description: Indicates how well this offer element matches the original request.
+          x-extensible-enum:
+          - exact
+          - partial
+          - none
+        price:
           description: Price of this individual offer element.
-          $ref: '#/components/schemas/FarePrice'
-        travelDocument:
-          description: Travel document associated with this offer element.
-          $ref: '#/components/schemas/TravelDocument'
+          $ref: '#/components/schemas/Price'
+        fareProduct:
+          type: string
+          description: Reference to the fare product associated with this offer element (operator-defined code).
+        providedSections:
+          type: array
+          description: The journey sections covered by this offer element.
+          items:
+            $ref: '#/components/schemas/ProvidedSections'
         guarantees:
           type: array
-          description: Guarantees associated with this offer element (e.g. seat guarantee, connection guarantee).
+          description: Guarantees associated with this offer element.
           items:
             $ref: '#/components/schemas/Guarantee'
+        requiredInformation:
+          description: Personal information required for this offer element before purchase. Detail TBD.
+          $ref: '#/components/schemas/RequiredInformation'
 
     TravelRight:
       allOf:
       - $ref: '#/components/schemas/OfferElement'
       - type: object
         additionalProperties: false
-        description: TRAVEL RIGHT — an offer element conferring the right to travel on a specific leg or zone.
+        description: TRAVEL RIGHT — an offer element conferring the right to travel on a specific section of the journey.
         required:
         - offerElementType
         properties:
           offerElementType:
             type: string
             const: travelRight
-          legRef:
-            type: string
-            description: Reference to the leg (legId) this travel right applies to.
-          zoneRef:
-            type: string
-            description: Reference to the fare zone this travel right applies to (optional; used for zone-based fares).
+          requiredAllocations:
+            type: array
+            description: Seat or space allocations required for this travel right (e.g. mandatory seat reservation).
+            items:
+              $ref: '#/components/schemas/RequiredAllocation'
+          requiredAncillaries:
+            type: array
+            description: Ancillaries that can or must be added to this travel right (e.g. bicycle transport, cabin).
+            items:
+              $ref: '#/components/schemas/RequiredAncillary'
 
     Ancillary:
       allOf:
       - $ref: '#/components/schemas/OfferElement'
       - type: object
         additionalProperties: false
-        description: ANCILLARY — an offer element for an optional ancillary service (e.g. seat selection, meal, bike transport).
+        description: ANCILLARY — an offer element for an optional or required ancillary service (e.g. bike transport, cabin, meal).
         required:
         - offerElementType
         properties:
@@ -996,58 +965,238 @@ components:
             type: string
             description: Type of ancillary service (operator-defined lookup value).
 
-    Reservation:
+    Allocation:
       allOf:
       - $ref: '#/components/schemas/OfferElement'
       - type: object
+        description: ALLOCATION — base class for seat or space allocations within an offer. Use the offerElementType discriminator to select the concrete sub-type (spotAllocation or assetAllocation).
+        required:
+        - offerElementType
+        properties:
+          legRef:
+            type: string
+            description: Reference to the leg on which this allocation applies.
+          startPlaceRef:
+            type: string
+            description: Reference to the stop point where this allocation begins (boarding).
+          endPlaceRef:
+            type: string
+            description: Reference to the stop point where this allocation ends (alighting).
+
+    SpotAllocation:
+      allOf:
+      - $ref: '#/components/schemas/Allocation'
+      - type: object
         additionalProperties: false
-        description: RESERVATION — an offer element representing a seat or space reservation.
+        description: SPOT ALLOCATION — an allocation to a specific spot (e.g. seat, berth, parking space).
         required:
         - offerElementType
         properties:
           offerElementType:
             type: string
-            const: reservation
+            const: spotAllocation
+          typeOfSpot:
+            type: string
+            description: Category of the allocated spot.
+            x-extensible-enum:
+            - seat
+            - berth
+            - compartment
+            - wheelchairSpace
+            - parkingSpace
+            - other
 
-    CompositeOfferElement:
+    AssetAllocation:
       allOf:
-      - $ref: '#/components/schemas/OfferElement'
+      - $ref: '#/components/schemas/Allocation'
       - type: object
         additionalProperties: false
-        description: COMPOSITE OFFER ELEMENT — a grouping of two or more offer elements sold as a single unit.
+        description: ASSET ALLOCATION — an allocation to a named asset (e.g. a specific vehicle slot or named cabin).
         required:
         - offerElementType
-        - elements
         properties:
           offerElementType:
             type: string
-            const: composite
-          elements:
-            type: array
-            minItems: 2
-            description: The offer elements that make up this composite element.
-            items:
-              $ref: '#/components/schemas/OfferElement'
+            const: assetAllocation
+          assetRef:
+            type: string
+            description: Reference to the named asset being allocated.
+          typeOfAsset:
+            type: string
+            description: Category of the asset (operator-defined extensible value).
+            x-extensible-enum:
+            - vehicleSlot
+            - cabin
+            - locker
+            - other
 
-    FarePrice:
+    RequiredAllocation:
       type: object
       additionalProperties: false
-      description: FARE PRICE — the price of an offer or offer element. Detail TBD in the pricing layer of OTI.
+      description: REQUIRED ALLOCATION — specifies which allocations (seat or space reservations) are available or required for a travel right on a given leg.
+      properties:
+        legRef:
+          type: string
+          description: Reference to the leg (legId) to which these allocations apply.
+        minimum:
+          type: integer
+          description: Minimum number of allocations that must be selected.
+        maximum:
+          type: integer
+          description: Maximum number of allocations that may be selected.
+        allocations:
+          type: array
+          minItems: 1
+          description: The available allocation options for this leg.
+          items:
+            oneOf:
+            - $ref: '#/components/schemas/SpotAllocation'
+            - $ref: '#/components/schemas/AssetAllocation'
+            discriminator:
+              propertyName: offerElementType
+              mapping:
+                spotAllocation: '#/components/schemas/SpotAllocation'
+                assetAllocation: '#/components/schemas/AssetAllocation'
 
-    FareProduct:
+    RequiredAncillary:
       type: object
       additionalProperties: false
-      description: FARE PRODUCT — a purchasable fare product associated with an offer element. Detail TBD in the pricing layer of OTI.
+      description: REQUIRED ANCILLARY — specifies which ancillary services are available or required for a travel right on a given leg.
+      properties:
+        legRef:
+          type: string
+          description: Reference to the leg (legId) to which these ancillaries apply.
+        minimum:
+          type: integer
+          description: Minimum number of ancillaries that must be selected (0 = optional).
+        maximum:
+          type: integer
+          description: Maximum number of ancillaries that may be selected.
+        ancillaries:
+          type: array
+          minItems: 1
+          description: The available ancillary options for this leg.
+          items:
+            $ref: '#/components/schemas/Ancillary'
 
-    TravelDocument:
+
+    Price:
       type: object
       additionalProperties: false
-      description: TRAVEL DOCUMENT — the document issued to the traveller as proof of entitlement. Detail TBD in the fulfilment layer of OTI.
+      description: PRICE — a monetary amount in a specific currency.
+      required:
+      - currencyCode
+      - amount
+      properties:
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code (e.g. EUR, GBP, SEK).
+        amount:
+          type: number
+          format: double
+          description: Monetary amount in the specified currency.
+        vat:
+          type: array
+          description: VAT breakdown applicable to this price.
+          items:
+            $ref: '#/components/schemas/Vat'
+
+    Vat:
+      type: object
+      additionalProperties: false
+      description: VAT — a VAT component of a price, broken down by country and percentage.
+      required:
+      - amount
+      - currencyCode
+      - country
+      - percentage
+      properties:
+        amount:
+          type: number
+          format: double
+          description: VAT amount in the specified currency.
+        currencyCode:
+          type: string
+          description: ISO 4217 currency code for this VAT component.
+        country:
+          type: string
+          description: ISO 3166-1 alpha-2 country code for which this VAT rate applies.
+        percentage:
+          type: number
+          format: double
+          description: VAT percentage rate (e.g. 21.0 for 21%).
+
+    ProvidedSections:
+      type: object
+      additionalProperties: false
+      description: PROVIDED SECTIONS — identifies the journey section (from–to legs) covered by an offer or offer element.
+      properties:
+        startLegRef:
+          type: string
+          description: Reference to the first leg in this section.
+        endLegRef:
+          type: string
+          description: Reference to the last leg in this section.
+        startPlaceRef:
+          type: string
+          description: Reference to the departure place of this section.
+        endPlaceRef:
+          type: string
+          description: Reference to the arrival place of this section.
+        tripPatternRef:
+          type: string
+          description: Reference to the trip pattern this section belongs to.
+        sectionId:
+          type: string
+          description: Server-assigned identifier for this provided section.
+
+    SummaryDetail:
+      type: object
+      additionalProperties: false
+      description: SUMMARY DETAIL — a human-readable summary of the journey geometry and temporal span covered by an offer.
+      properties:
+        geometry:
+          type: string
+          description: Geometric description of the journey (e.g. origin–destination name pair).
+        temporal:
+          type: string
+          description: Temporal description of the journey (e.g. departure–arrival date-time range).
+        conditions:
+          type: string
+          description: Human-readable summary of the applicable fare conditions.
+
 
     Guarantee:
       type: object
       additionalProperties: false
-      description: GUARANTEE — a guarantee associated with an offer element (e.g. connection guarantee, seat guarantee). Detail TBD.
+      description: GUARANTEE — a guarantee associated with an offer or offer element (e.g. connection guarantee, seat guarantee).
+      properties:
+        guaranteeId:
+          type: string
+          description: Server-assigned identifier for this guarantee.
+        type:
+          type: string
+          description: Category of guarantee (operator-defined extensible value).
+          x-extensible-enum:
+          - connectionGuarantee
+          - seatGuarantee
+          - priceGuarantee
+          - other
+
+    RequiredInformation:
+      type: object
+      additionalProperties: false
+      description: REQUIRED INFORMATION — personal information that must be provided for an offer element before purchase.
+      properties:
+        requiredInformationId:
+          type: string
+          description: Server-assigned identifier for this required information item.
+        validation:
+          type: string
+          description: JSONPath expression defining the expected data structure or validation rule.
+        travellerRef:
+          type: string
+          description: Reference to the travelling entity for whom this information is required.
 
     # ─── SHARED ───────────────────────────────────────────────────────────────
 

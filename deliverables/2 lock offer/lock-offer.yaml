@@ -356,7 +356,7 @@ components:
           type: array
           description: References (travellingEntityId) to the travelling entities this element applies to.
           items:
-            $ref: '#/components/schemas/TravellingEntityReference'
+            type: string
         matching:
           type: string
           description: Indicates how well this offer element matches the original request.
@@ -371,8 +371,8 @@ components:
           description: Price of this individual offer element.
           $ref: '#/components/schemas/Price'
         fareProduct:
-          description: The fare product associated with this offer element.
-          $ref: '#/components/schemas/FareProduct'
+          type: string
+          description: Reference to the fare product associated with this offer element (productRef).
         guarantees:
           type: array
           description: Guarantees associated with this offer element.
@@ -488,17 +488,6 @@ components:
 
     # ─── SUPPORTING TYPES ───────────────────────────────────────────────────────────────────────
 
-    TravellingEntityReference:
-      type: object
-      additionalProperties: false
-      description: TRAVELLING ENTITY REFERENCE — a reference to a travelling entity (traveller, vehicle, animal or luggage) within the booking context.
-      required:
-      - travellingEntityRef
-      properties:
-        travellingEntityRef:
-          type: integer
-          description: Reference (travellingEntityId) to the travelling entity.
-
     Price:
       type: object
       additionalProperties: false
@@ -580,15 +569,6 @@ components:
         conditions:
           type: string
           description: Human-readable summary of the applicable fare conditions.
-
-    FareProduct:
-      type: object
-      additionalProperties: false
-      description: FARE PRODUCT — the purchasable fare product associated with an offer element. Detail TBD in the pricing layer of OTI.
-      properties:
-        productRef:
-          type: string
-          description: Reference to the fare product.
 
     Guarantee:
       type: object

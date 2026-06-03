@@ -276,7 +276,7 @@ Response files follow the updated OTI model (June 2026 revision):
 
 **Expected response:**
 - 1 offer with 1 `travelRight` for `leg-002` only (EUR 12.30)
-- `providedSections` covers `startLegId: leg-002`, `endLegId: leg-002`
+- `providedSections` covers `startLegRef: leg-002`, `endLegRef: leg-002`
 - `matching: partial` (only part of the trip pattern is offered)
 - Echoed traveller and trip pattern (including both legs, but offer covers only `leg-002`)
 
