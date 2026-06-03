@@ -10,6 +10,9 @@
 
 * status on offer elements (to discuss)
 
+* document the process of versioning (of locked offers)
+
+* Find out how taxIds work. Where should this be administered?
 
 ***** 
 - how to limit the amount of offers? => functional, 
