@@ -474,34 +474,12 @@ components:
                 timed: '#/components/schemas/TimedLeg'
                 continuous: '#/components/schemas/ContinuousLeg'
                 transfer: '#/components/schemas/TransferLeg'
-
-    Trip:
-      type: object
-      additionalProperties: false
-      description: TRIP (INPUT) — a specific trip (sequence of legs on fixed departures) within a trip pattern.
-      properties:
-        tripId:
-          type: string
-          description: Caller-assigned identifier for this trip.
-        legs:
-          type: array
-          description: The legs that make up this trip.
-          items:
-            oneOf:
-            - $ref: '#/components/schemas/TimedLeg'
-            - $ref: '#/components/schemas/ContinuousLeg'
-            - $ref: '#/components/schemas/TransferLeg'
-            discriminator:
-              propertyName: legType
-              mapping:
-                timed: '#/components/schemas/TimedLeg'
-                continuous: '#/components/schemas/ContinuousLeg'
-                transfer: '#/components/schemas/TransferLeg'
-
+    
     Leg:
       type: object
       description: LEG (INPUT) — a single leg within a trip. Use the legType discriminator to select the concrete sub-type.
       required:
+      - legId
       - legType
       properties:
         legId:
@@ -525,6 +503,9 @@ components:
         legType:
           type: string
           description: Discriminator identifying the concrete leg type.
+        trip:
+          type: string
+          description: Caller-assigned identifier for the trip this leg belongs to (used to group legs from the same trip, e.g. for interlining).
 
     TimedLeg:
       allOf:

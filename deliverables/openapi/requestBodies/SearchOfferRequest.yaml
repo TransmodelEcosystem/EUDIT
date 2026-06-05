@@ -1,0 +1,96 @@
+ searchOfferRequest:
+  content:
+    application/json:
+      schema:    
+        type: object
+        properties:
+          travellers:
+            type: array
+            minItems: 1
+            description: >
+              The travelling entities (travellers, vehicles, animals, luggage) for whom offers are sought.
+            items:
+              oneOf:
+                - $ref: ../schemas/Traveller.yaml
+                - $ref: ../schemas/PassengerVehicle.yaml
+                - $ref: ../schemas/Animal.yaml
+                - $ref: ../schemas/Luggage.yaml
+              discriminator:
+                propertyName: entityType
+                mapping:
+                  traveller: ../schemas/Traveller.yaml
+                  vehicle: ../schemas/PassengerVehicle.yaml
+                  animal: ../schemas/Animal.yaml
+                  luggage: ../schemas/Luggage.yaml
+          tripPatterns:
+            type: array
+            items:
+              $ref: ../schemas/TripPattern.yaml
+          products:
+            type: array
+            items:
+              $ref: ../schemas/Product.yaml
+          policy:
+            type: object
+            properties:
+              # result constraints
+              requestedCurrency:
+                description: >
+                  The currency in which the offer prices should be returned. This is relevant for offers that include prices.
+                  ISO 4217 currency code, e.g. "EUR", "USD", "GBP", etc.
+                type: string
+
+              requestedLanguage:
+                description: >
+                  The language in which the offer should be returned. This is relevant for offers that include human-readable descriptions, 
+                  such as the offer summary or the description of the offer elements.
+                  RFC 5646 language tag, e.g. "en", "de", "fr", etc.
+                type: string
+
+              exactMatch:
+                description: >
+                  Whether the search should return only offers that exactly match the specified criteria (true) 
+                  or if it can also return offers that partially match the criteria (false).
+                  TBD: (recommended) remove this field. If the retailer want to have also alternatives, it must
+                  request e.g. additional classes of use, modes, etc. in the filters.
+                type: boolean
+          filters:
+            type: object
+            properties:
+              # travellers constraints (=> trip planner)
+              # maxTransfers:
+              #   type: integer
+              # maxTravelTime:
+              #   type: integer
+              # maxWalkingTime:
+              #   type: integer
+              # maxTransferWalkingTime:
+              #   type: integer
+              # maxTransferDistance:
+              #   type: integer
+
+              # media/distribution constraints
+              mediaTypes:
+                type: array
+                items:
+                  type: string
+              distributionChannels:
+                type: array
+                items:
+                  type: string
+
+              # mode constraints
+              modes:
+                type: array
+                items:
+                  type: string
+              classOfUse:
+                type: array
+                items:
+                  type: string
+
+              # leg constraints (for trip pattern-based search)
+              sections:
+                type: array
+                items:
+                  $ref: ../schemas/Section.yaml

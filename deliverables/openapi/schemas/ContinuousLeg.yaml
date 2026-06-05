@@ -1,0 +1,25 @@
+allOf:
+  - $ref: .\Leg.yaml 
+  - type: object
+    additionalProperties: false
+    description: CONTINUOUS LEG (INPUT) — a leg without fixed timetabled stops (e.g. walk, cycle, taxi).
+    required:
+    - legType
+    properties:
+      legType:
+        type: string
+        const: continuous
+      startTime:
+        type: string
+        format: date-time
+        description: Scheduled start time of this leg.
+      endTime:
+        type: string
+        format: date-time
+        description: Scheduled end time of this leg.
+      startLocation:
+        description: Departure location for this continuous leg.
+        $ref: .\Place.yaml
+      endLocation:
+        description: Arrival location for this continuous leg.
+        $ref: .\Place.yaml

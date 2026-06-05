@@ -1,0 +1,66 @@
+type: object
+required:
+  - offerId
+  - name
+  - minimumPrice
+  - elements
+properties:
+  offerId:
+    type: string
+  name:
+    type: string
+  matching:
+    type: string
+    enum:
+      - exact
+      - partial
+  minimumPrice:
+    $ref: ./Price.yaml
+  personalInformationRequired:
+    type: boolean
+  summary:
+    type: string
+  summaryDetails:
+    type: array
+    items:
+      $ref: ./SummaryDetail.yaml
+  afterSalesFlexibility:
+    type: string
+    description: >-
+      The flexibility of the offer after the sale has been made.
+      TBD: Define the possible values for this field. Should we include here the allowed 'after sales operations'
+      (e.g. exchange, cancel, refund) instead of flexible, semiFlexible, nonFlexible?
+    enum:
+      - flexible
+      - semiFlexible
+      - nonFlexible
+  status:
+    type: string
+    enum:
+      - offered
+
+      - locked
+      - released
+
+      - confirmed
+      - rollbacked
+      - expired
+
+      - fulfilled
+      - cancelled
+
+      - in_progress
+      - executed
+  elements:
+    type: array
+    minItems: 1
+    items:
+      $ref: ./PriceableElement.yaml
+  warnings:
+    type: array
+    items:
+      $ref: ./Warning.yaml
+  links:
+    type: array
+    items:
+      $ref: ./Link.yaml

@@ -1,0 +1,15 @@
+type: object
+additionalProperties: false
+description: A geodetic position (WGS-84).
+required:
+- longitude
+- latitude
+properties:
+  longitude:
+    type: number
+    format: double
+    description: Longitude in decimal degrees (WGS-84).
+  latitude:
+    type: number
+    format: double
+    description: Latitude in decimal degrees (WGS-84).

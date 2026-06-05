@@ -1,0 +1,20 @@
+allOf:
+  - $ref: Place.yaml
+  - type: object
+    additionalProperties: false
+    description: ADDRESS (INPUT) — a postal address as a place.
+    required:
+    - placeType
+    properties:
+      placeType:
+        type: string
+        const: address
+      addressLine1:
+        type: string
+        description: Primary address line (street name and number).
+      addressLine2:
+        type: string
+        description: Secondary address line (postalcode, city, state, nation)
+      addressLine3:
+        type: string
+        description: Tertiary address line (additional address information, if needed)

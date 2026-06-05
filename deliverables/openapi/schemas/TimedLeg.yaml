@@ -1,0 +1,35 @@
+allOf:
+  - $ref: Leg.yaml
+  - type: object
+    additionalProperties: false
+    description: TIMED LEG (INPUT) — a leg on a fixed timetabled service.
+    required:
+    - legType
+    properties:
+      legType:
+        type: string
+        const: timed
+      serviceJourneyRef:
+        type: string
+        description: Reference to the NeTEx SERVICE JOURNEY for this leg.
+      operatingDate:
+        type: string
+        format: date
+        description: The operating date of the service.
+      lineNumber:
+        type: string
+        description: Commercial line number or designator.
+      brand:
+        type: string
+        description: Commercial brand or product name of the service.
+      start:
+        description: Boarding point for this leg.
+        $ref: .\LegBoard.yaml
+      end:
+        description: Alighting point for this leg.
+        $ref: .\LegAlight.yaml
+      intermediateStops:
+        type: array
+        description: Intermediate stops passed during this leg (not boarded/alighted). Each value is a reference to a NeTEx STOP PLACE or SCHEDULED STOP POINT.
+        items:
+          type: string

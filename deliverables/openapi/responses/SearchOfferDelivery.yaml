@@ -1,0 +1,32 @@
+type: object
+properties:
+  offers:
+    type: array
+    items:
+      $ref: ..\schemas\Offer.yaml
+  travellers:
+    type: array
+    description: The travelling entities echoed from the request (travellers, vehicles, animals, luggage).
+    items:
+      oneOf:
+      - $ref: ..\schemas\Traveller.yaml
+      - $ref: ..\schemas\PassengerVehicle.yaml
+      - $ref: ..\schemas\Animal.yaml
+      - $ref: ..\schemas\Luggage.yaml
+      discriminator:
+        propertyName: entityType
+        mapping:
+          traveller: ..\schemas\Traveller.yaml
+          vehicle: ..\schemas\PassengerVehicle.yaml
+          animal: ..\schemas\Animal.yaml
+          luggage: ..\schemas\Luggage.yaml
+  tripPatterns:
+    type: array
+    description: The trip patterns echoed from the request.
+    items:
+      $ref: ..\schemas\TripPattern.yaml
+  links:
+    type: array
+    description: Hypermedia links for further actions (e.g. pagination).
+    items:
+      $ref: ..\schemas\Link.yaml

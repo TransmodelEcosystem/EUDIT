@@ -1,0 +1,18 @@
+allOf:
+  - $ref: .\Place.yaml
+  - type: object
+    additionalProperties: false
+    description: TOPOLOGICAL PLACE (INPUT) — a geographic area or zone as a place.
+    required:
+    - placeType
+    properties:
+      placeType:
+        type: string
+        const: topologicalPlace
+      area:
+        type: object
+        description: GeoJSON Polygon geometry defining the area.
+      range:
+        type: integer
+        minimum: 0
+        description: Search radius in metres around the area centroid.

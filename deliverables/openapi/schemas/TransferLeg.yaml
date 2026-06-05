@@ -1,0 +1,11 @@
+allOf:
+  - $ref: .\Leg.yaml
+  - type: object
+    additionalProperties: false
+    description: TRANSFER LEG — a leg representing a transfer between services (e.g. platform change, interchange).
+    required:
+    - legType
+    properties:
+      legType:
+        type: string
+        const: transfer

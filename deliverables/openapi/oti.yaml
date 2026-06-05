@@ -1,0 +1,42 @@
+openapi: 3.1.0
+info:
+  title: OpenAPI Specification for OTI
+  version: 0.0.1
+  description: >-
+    This is the OpenAPI specification for the OTI. It defines the request and response formats for the OTI (compliant) API specifications.
+
+servers: []
+paths: {}
+components:
+  requestBodies: 
+    $ref: ./requestBodies/SearchOfferRequest.yaml
+  responses:
+    $ref: ./responses/SearchOfferResponse.yaml
+  schemas: 
+    TravellingEntity:
+      $ref: ./schemas/TravellingEntity.yaml
+
+    # Traveller
+    Traveller:
+      $ref: ./schemas/Traveller.yaml
+    TravellerQualifyingCharacteristics:
+      $ref: ./schemas/TravellerQualifyingCharacteristics.yaml
+    TravellingParty:
+      $ref: ./schemas/TravellingParty.yaml
+    
+    # Vehicles
+    PassengerVehicle:
+      $ref: ./schemas/PassengerVehicle.yaml
+    VehicleRack:
+      $ref: ./schemas/VehicleRack.yaml
+
+    # Luggage
+    Luggage:
+      $ref: ./schemas/Luggage.yaml
+    
+    # Animal
+    Animal:
+      $ref: ./schemas/Animal.yaml
+
+
+  

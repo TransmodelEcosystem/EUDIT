@@ -1,0 +1,18 @@
+type: object
+description: PLACE (INPUT) — a geographic location referenced in the trip context. Use the placeType discriminator to select the concrete sub-type.
+required:
+- placeId
+- placeType
+properties:
+  placeId:
+    type: string
+    description: Caller-assigned identifier for this place. Used to cross-reference from legs or sections.
+  placeType:
+    type: string
+    description: Discriminator identifying the concrete place type.
+  name:
+    type: string
+    description: Name of the place.
+  location:
+    description: Geodetic position of this place.
+    $ref: .\GeoPosition.yaml
