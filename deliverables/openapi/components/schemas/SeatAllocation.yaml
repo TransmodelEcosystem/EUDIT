@@ -1,0 +1,34 @@
+allOf:
+  - $ref: ./PriceableObject.yaml
+  - type: object
+    description: SEAT ALLOCATION — a seat allocation offer element, which can be added to an offer
+    properties:
+      spotType:
+        type: string
+        description: the type of allocation (e.g. seat, berth). Lookup / x-enum to be defined.
+      coach:
+        type: string
+        description: the coach of the allocated seat (if applicable)
+      deck:
+        type: string
+        description: the deck of the allocated seat (if applicable)
+      row:
+        type: string
+        description: the row of the allocated seat (if applicable)
+      seatNumber:
+        type: string
+        description: the number of the allocated seat (if applicable)
+
+      # additional properties to specify the validity
+      legRef: 
+        type: string
+        description: the reference to the leg of the trip for which the seat is allocated. 
+          This can be used to determine the validity of the seat allocation based on the itinerary of the trip.
+      startPlaceRef:
+        type: string
+        description: the reference to the place from which the seat allocation starts to be valid. 
+          This can be used to determine the validity of the seat allocation based on the itinerary of the trip.
+      endPlaceRef:
+        type: string
+        description: the reference to the place at which the seat allocation stops being valid. 
+          This can be used to determine the validity of the seat allocation based on the itinerary of the trip.

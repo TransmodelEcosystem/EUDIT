@@ -40,6 +40,9 @@ allOf:
         type: integer
         minimum: 0
         description: Total weight of the vehicle in kilograms.
+      licensePlate:
+        type: string
+        description: Vehicle license plate number.
       trailer:
         description: Details of a towed trailer, if applicable.
         $ref: PassengerVehicle.yaml

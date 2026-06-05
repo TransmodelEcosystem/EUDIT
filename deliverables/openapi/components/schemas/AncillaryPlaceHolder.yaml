@@ -1,0 +1,13 @@
+allOf:
+- $ref: ./PlaceHolder.yaml
+- type: object
+  properties:
+- type: object
+  properties:
+    travelRightRef:
+      type: string
+    selectableAncillaryRefs:
+      type: array
+      description: the offer elements associated to this placeholder (e.g. seat allocation, asset allocation). 
+      items:
+        type: string

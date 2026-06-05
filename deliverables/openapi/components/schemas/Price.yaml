@@ -1,0 +1,42 @@
+type: object
+required:
+  - amount
+  - currency
+properties:
+  amount:
+    type: number
+    format: double
+    description: The price amount.
+  currency:
+    type: string
+    description: The currency of the price, in ISO 4217 format (e.g., "USD", "EUR").
+  description:
+    type: string
+    description: An optional description of the price.
+  type:
+    type: string
+    description: An optional type of the price (e.g., "fee").
+    enum: 
+      - fee
+      - deposit
+      - fine
+      - refund
+      - reimbursement
+      - other
+  discounts:
+    type: array
+    description: An optional list of discounts APPLIED to the price.
+    items:
+      type: number
+      format: double
+  surcharges:
+    type: array
+    description: An optional list of surcharges APPLIED to the price.
+    items:
+      type: number
+      format: double
+  taxes:
+    type: array
+    description: An optional list of taxes INCLUDED in the price.
+    items:
+      $ref: .\Tax.yaml

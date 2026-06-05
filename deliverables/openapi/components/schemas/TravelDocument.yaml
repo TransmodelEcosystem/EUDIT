@@ -1,0 +1,26 @@
+type: object
+required:
+  - travelDocumentId
+  - type
+properties:
+  travelDocumentId:
+    type: string
+  
+  type:
+    type: string
+    description: the type of travel document (e.g. QR code, barcode, image, token). Lookup / x-enum to be defined.
+    enum: 
+      - QR_CODE
+      - BARCODE
+      - IMAGE
+      - TOKEN
+  
+  mediaType:
+    type: string
+    description: the media type of the travel document (e.g. PDF, image/jpeg, etc., IANA media type). 
+      This can be used to determine how to process or display the travel document.
+  
+  issuingCarrier:
+    type: string
+    description: the carrier that issued the travel document (if applicable)
+  

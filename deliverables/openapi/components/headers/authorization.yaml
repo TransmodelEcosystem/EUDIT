@@ -1,0 +1,6 @@
+in: header
+name: authorization
+required: true
+schema:
+  type: string
+description: Header field, JWT-bearer must be supplied

@@ -1,0 +1,43 @@
+type: object
+description: Link object
+properties:
+  href:
+    type: string
+    description: the URL of the linked resource
+  rel:
+    type: string
+    description: the relationship between the current resource and the linked resource
+  type:
+    type: string
+    description: >-
+      the media type of the linked resource (recommended: use IANA MIME type)
+  title:
+    type: string
+    description: a human-readable title for the linked resource
+
+  method:
+    type: string
+    description: to indicate the HTTP method.
+    default: GET
+    enum:
+    - POST
+    - GET
+    - DELETE
+    - PATCH
+  body:
+    type: object
+    description: the (prefilled) body for the request
+  headers:
+    type: object
+    additionalProperties:
+      type: string
+  mandatory:
+    description: is this link informative, or must it be used?
+    type: boolean
+  availableFrom:
+    type: string
+    format: date-time
+  expires:
+    type: string
+    format: date-time
+

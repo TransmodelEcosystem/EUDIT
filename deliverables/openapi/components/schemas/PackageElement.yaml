@@ -1,0 +1,31 @@
+allOf:
+  - $ref: ./PriceableObject.yaml
+  - type: object
+    description: PACKAGE ELEMENT — a package element offer element, which can be added to an offer
+    properties:
+      packageElementType:
+        type: string
+        description: the type of package element 
+        enum:
+          - travelRight
+          - seatAllocation
+          - assetAllocation
+          - ancillary
+
+      sectionRefs:
+        type: array
+        description: the sections of the offer to which this element belongs
+        items:
+          type: string
+
+      travellingEntityRefs:
+        type: array
+        description: the travelling entities (e.g. travellers) associated to this offer element
+        items:
+          type: string
+
+      mandatory:
+        type: boolean
+        description: Indicates if the package element is mandatory in the offer/package. 
+          If true, the package element cannot be removed from the offer/package by the customer.
+          It might be possible to exchange this package element with another one.

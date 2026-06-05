@@ -1,0 +1,12 @@
+type: object
+properties:
+  offers:
+    type: array
+    items:
+      $ref: ../schemas/Offer.yaml
+
+  links:
+    type: array
+    description: Hypermedia links for further actions (e.g. pagination).
+    items:
+      $ref: ../schemas/Link.yaml

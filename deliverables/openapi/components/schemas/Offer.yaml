@@ -1,0 +1,27 @@
+allOf: 
+- $ref: ./Package.yaml
+- type: object
+  required:
+    - minimumPrice
+
+  properties:
+    matching:
+      type: string
+      enum:
+        - exact
+        - partial
+    
+    minimumPrice:
+      $ref: ./Price.yaml
+
+    personalInformationRequired:
+      type: boolean
+
+    placeHolders:
+      type: array
+      description: .
+      items:
+        oneOf:
+          - $ref: ./TravellingEntityPlaceHolder.yaml
+          - $ref: ./AllocationPlaceHolder.yaml
+          - $ref: ./AncillaryPlaceHolder.yaml

@@ -1,0 +1,12 @@
+allOf:
+  - $ref: ./PriceableObject.yaml
+  - type: object
+    description: ASSET ALLOCATION — an asset allocation offer element, which can be added to an offer
+    properties:
+      #assetType:
+      #  type: string
+      #  description: the type of asset (e.g. vehicle, equipment). Lookup / x-enum to be defined.
+      # => product of the asset can be used to determine the type of asset, so assetType is not needed as a separate property
+      assetId:
+        type: string
+        description: the identifier of the allocated asset

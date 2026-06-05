@@ -1,0 +1,10 @@
+type: object
+properties:
+  feeType:
+    type: string
+    description: The type of fee being applied (e.g., service fee, booking fee, cancellation fee).
+  offerElementRefs:
+    type: array
+    description: The related offer elements that this fee is covering. This can include specific services, products, or other components of the offer.
+    items:
+      type: string

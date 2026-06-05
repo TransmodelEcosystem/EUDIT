@@ -1,0 +1,8 @@
+allOf:
+  - $ref: ./OfferElement.yaml
+  - type: object
+    description: ANCILLARY — an ancillary offer element, which can be added to an offer
+    properties:
+      ancillaryType:
+        type: string
+        description: the type of ancillary (e.g. baggage, meal, lounge access). Lookup

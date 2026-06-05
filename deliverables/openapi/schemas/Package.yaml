@@ -1,6 +1,0 @@
-type: object
-properties:
-  mode:
-    type: string
-  classOfUse:
-    type: string

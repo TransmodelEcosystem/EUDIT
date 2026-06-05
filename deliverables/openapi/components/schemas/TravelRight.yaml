@@ -1,0 +1,17 @@
+allOf:
+  - $ref: ./PackageElement.yaml
+  - type: object
+    description: TRAVEL RIGHT — a travel right offer element, which can be added to an offer
+    properties:
+    
+      ancillaryRefs:
+        type: array
+        description: the ancillaries associated to this travel right
+        items:
+          type: string
+
+      allocationRefs:
+        type: array
+        description: the seat or asset allocations associated to this travel right
+        items:
+          type: string

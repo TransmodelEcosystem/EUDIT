@@ -1,0 +1,23 @@
+content:
+  application/json:
+    schema:    
+      type: object
+      properties:
+        offerReference:
+          description: >
+            The reference of the offer to be locked. This reference is obtained from the offer search response.
+          type: string
+
+        allocationRefs:
+          type: array
+          description: >
+            The references of the offer allocations to be locked. These references are obtained from the offer search response.
+          items:
+            type: string
+            
+        ancillaryRefs:
+          type: array
+          description: >
+            The references of the ancillary services to be locked. These references are obtained from the offer search response.
+          items:
+            type: string

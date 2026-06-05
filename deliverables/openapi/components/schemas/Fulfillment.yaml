@@ -1,0 +1,31 @@
+type: object
+description: FULFILLMENT — the fulfillment details of a booked offer
+properties:
+  fulfillmentId:
+    type: string
+    description: the identifier of the fulfillment
+  travellingEntityRefs:
+    type: array
+    description: the travelling entities associated to the fulfillment (e.g. passenger, driver). 
+      This can be used to determine for whom the fulfillment is.
+    items:
+      type: string
+  travelDocuments:
+    type: array
+    description: the travel documents associated to the fulfillment (e.g. ticket, boarding pass)
+    items:
+      $ref: './TravelDocument.yaml'
+  packageElementRefs:
+    type: array
+    description: the package elements associated to the fulfillment (e.g. travel right, ancillary, seat allocation). 
+      This can be used to determine what is fulfilled.
+    items:
+      type: object
+      properties:
+        packageElementRef:
+          type: string
+          description: the reference to the package element (e.g. travel right, ancillary, seat allocation)
+        sectionRef:
+          type: string
+          description: the reference to the section of the trip for which the package element is fulfilled. 
+            This can be used to determine when the fulfillment is valid based on the itinerary of the trip.

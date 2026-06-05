@@ -1,0 +1,33 @@
+type: object
+required:
+  - amount
+  - currency
+properties:
+  amount:
+    type: number
+    description: The price amount.
+  currency:
+    type: string
+    description: The currency of the price, in ISO 4217 format (e.g., "USD", "EUR").
+  country:
+    type: string
+    description: The country code (ISO 3166-1 alpha-2) where the tax is applied.
+  percentage:
+    type: number
+    format: double
+    description: The tax percentage rate (e.g., 20 for 20%).
+  taxNumber:
+    type: string
+    description: An optional tax identification number or code.
+  type:
+    type: string
+    description: A type of the tax.
+    x-enum: 
+      - VAT
+      - GST
+      - sales_tax
+      - service_tax
+      - other
+  description:
+    type: string
+    description: An optional description of the tax.

@@ -1,0 +1,10 @@
+in: header
+name: expires
+required: true
+description: A HTTP date string
+schema:
+  type: string
+  format: http-date
+x-externalDocs:
+  url: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
+  description: http-date format as defined in RFC7231, section 7.1.1.1

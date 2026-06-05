@@ -1,0 +1,36 @@
+type: object
+description: SummaryDetail — a summary of the details of an offer, which can be used for display purposes
+properties:
+  conditions:
+    type: array
+    description: the conditions associated to the offer
+    items:
+      type: string
+  temporalRestrictions:
+    type: string
+    description: the temporal restrictions associated to the offer, RFC 8601 time range
+    pattern: '^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?\/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?)|(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z?)$'
+  geographicalRestrictions:
+    type: array
+    description: the geographical restrictions associated to the offer
+    items:
+      description: the geographical restriction, which can be used for display purposes. GeoJSON feature.
+      type: object
+      properties:
+        type:
+          type: string
+          description: the type of the GeoJSON feature (e.g. Point, Polygon)
+        geometry:
+          type: object
+          description: the geometry of the GeoJSON feature
+          properties:
+            type:
+              type: string
+              description: the type of the geometry (e.g. Point, Polygon)
+            coordinates:
+              type: array
+              description: the coordinates of the geometry
+              items:
+                oneOf:
+                  - type: number
+                  - $ref: '#/components/schemas/GeoJSONGeometry'

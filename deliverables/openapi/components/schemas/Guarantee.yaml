@@ -1,0 +1,29 @@
+type: object
+description: GUARANTEE — a guarantee associated to package elements
+properties:
+
+  guaranteeType:
+    type: string
+    description: the type of guarantee (e.g. refund, exchange, cancel)
+    enum:
+      - refund
+      - exchange
+      - cancel
+      - travel_through
+  
+  description:
+    type: string
+    description: a human readable description of the guarantee
+
+  packageElementRefs:
+    type: array
+    description: the package element(s) to which the guarantee applies
+    items:
+      type: string
+
+  redresses:
+    type: array
+    description: the redresses associated to the guarantee
+    items:
+      $ref: ./Redress.yaml
+        
