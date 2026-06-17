@@ -1,0 +1,16 @@
+EntitlementRight:
+  type: object
+  additionalProperties: false
+  description: ENTITLEMENT RIGHT — a credential held by a travelling entity that may qualify for reduced fares or special conditions (loyalty card, discount card, concession, etc.).
+  required:
+  - entitlementType
+  properties:
+    issuer:
+      type: string
+      description: Issuing authority or scheme name.
+    entitlementType:
+      type: string
+      description: Type of entitlement (operator-defined lookup value, e.g. loyaltyCard, discountCard, concession).
+    code:
+      type: string
+      description: Instance identifier such as a card number or voucher code.
