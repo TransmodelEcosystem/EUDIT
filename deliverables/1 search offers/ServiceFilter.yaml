@@ -1,0 +1,17 @@
+allOf:
+  - $ref: .\SearchOfferFilter.yaml
+  - type: object
+    required:
+      - filterType
+    properties:
+      filterType:
+        type: string
+        const: mode    
+      mode:
+        $ref: .\Mode.yaml
+      class:
+        type: string
+        x-enum-values:
+          - economy
+          - business
+          - first
