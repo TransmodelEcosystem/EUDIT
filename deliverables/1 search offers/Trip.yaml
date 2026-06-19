@@ -1,0 +1,18 @@
+type: object
+required: 
+- legs
+- tripId
+properties:
+  tripId:
+    type: string
+    description: Unique identifier for the trip
+    format: trip-ref
+  legs:
+    type: array
+    items:
+      oneOf:
+        - $ref: .\TimedLeg.yaml
+        - $ref: .\ContinuousLeg.yaml
+        - $ref: .\TransferLeg.yaml
+      discriminator:
+        propertyName: legType

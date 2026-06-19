@@ -1,0 +1,28 @@
+type: object
+properties:
+  searchOfferId:
+    type: string
+    description: Unique identifier for the search offer request
+    format: search-offer-ref
+  trip:
+    $ref: .\Trip.yaml
+  requestedSections:
+    type: array
+    items:
+      $ref: .\TripSection.yaml
+  policy:
+    $ref: .\SearchOfferPolicy.yaml
+  filters:
+    type: array
+    items:
+      oneOf:
+        - $ref: .\ServiceFilter.yaml
+        - $ref: .\DistributionFilter.yaml
+        # - $ref: .\PriceFilter.yaml
+        # - $ref: .\AreaFilter.yaml
+        # - $ref: .\TimeFilter.yaml
+        # - $ref: .\AccessibilityFilter.yaml
+        # - $ref: .\OperatorFilter.yaml
+        - $ref: .\FlexibilityFilter.yaml
+      discriminator:
+        propertyName: filterType

@@ -1,0 +1,20 @@
+type: object
+required:
+  - setDownLocation
+  - arrivalTime
+properties:
+  setDownLocation:
+    type: string
+    format: place-ref
+    description: Reference to the drop-off location for the leg
+  arrivalTime:
+    type: string
+    format: date-time
+    description: The arrival time at the drop-off location. Local time zone should be used.
+  stopPointName:
+    type: string
+    description: Name of the stop point where the leg ends
+  stopPointRef:
+    type: string
+    format: stop-point-ref
+    description: Reference to the stop point where the leg ends

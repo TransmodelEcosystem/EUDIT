@@ -1,0 +1,26 @@
+type: object
+required:
+  - pickupLocation
+  - departureTime
+properties:
+  pickupLocation:
+    type: string
+    format: place-ref
+    description: Reference to the pickup location for the leg
+  departureTime:
+    type: string
+    format: date-time
+    description: The departure time from the pickup location. Local time zone should be used.
+  stopPointName:
+    type: string
+    description: Name of the stop point where the leg starts
+  stopPointRef:
+    type: string
+    format: stop-point-ref
+    description: Reference to the stop point where the leg starts
+  trainNumbers:
+    type: array
+    items:
+      type: string
+      format: train-number
+    description: List of train numbers associated with this leg, if applicable

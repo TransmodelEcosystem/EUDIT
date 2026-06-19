@@ -1,0 +1,63 @@
+allOf:
+  - $ref: .\SearchOfferFilter.yaml
+  - type: object
+    required:
+      - filterType
+      - mediaType
+    properties:
+      filterType:
+        type: string
+        const: distribution
+      channel:
+        type: string
+        description: The channel of the offer.
+        x-enum-values:
+          - "web"
+          - "mobile"
+          - "kiosk"
+          - "call center"
+          - "travel agency"
+          - "other"
+      fulfillmentMethod:
+        type: string
+        description: The fulfillment method of the offer.
+        x-enum-values:
+          - "electronic"
+          - "paper"
+          - "mobile"
+          - "other"
+      typeOfPayment:
+        type: string
+        description: The type of payment of the offer.
+        x-enum-values:
+          - "prepaid"
+          - "postpaid"
+          - "other"
+      mediaType:
+        type: string
+        description: |-
+         The media type of the offer. IANA media type registry: https://www.iana.org/assignments/media-types/media-types.xhtml
+        examples: 
+          - "application/json"
+          - "application/xml"
+          - "text/html"
+          - "application/pdf"
+          - "image/jpeg"
+          - "image/svg+xml"
+      contentStandard:
+        type: string
+        description: The content standard of the offer.
+        x-enum-values:
+          - "ISO/IEC 18004" # QR Code
+          - "ISO/IEC 24778" # Aztec Code
+          - "ISO/IEC 15438" # PDF417
+          - "ISO/IEC 16022" # Data Matrix
+          - "ISO/IEC 15417" # Code 128
+          - "ISO/IEC 16388" # Code 39
+          - "ISO/IEC 15420" # EAN-13
+          - "ISO/IEC 15417" # UPC-A
+          - "ISO/IEC 15424" # MaxiCode
+          - "ISO/IEC 7816-4" # NFC, MIFARE DESFire
+          - "GATT" # Bluetooth Low Energy
+          - "AXA Bike lock" # AXA Bike lock
+          - "OTHER" # Other content standard
