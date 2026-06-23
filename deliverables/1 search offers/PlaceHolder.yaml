@@ -1,0 +1,13 @@
+type: object
+required:
+  - placeHolderType
+  - required
+description: A placeholder for a package element, which can be used to indicate that a specific type of package element 
+  is required for the package.
+properties:
+  placeHolderType:
+    type: string
+    enum: [personalDetail, ancillary, allocation]
+  required:
+    type: boolean
+    description: Indicates whether the placeholder is required for the package

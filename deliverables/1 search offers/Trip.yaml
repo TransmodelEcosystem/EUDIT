@@ -16,3 +16,7 @@ properties:
         - $ref: .\TransferLeg.yaml
       discriminator:
         propertyName: legType
+        mapping:
+          timed: .\TimedLeg.yaml
+          continuous: .\ContinuousLeg.yaml
+          transfer: .\TransferLeg.yaml

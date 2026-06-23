@@ -1,0 +1,95 @@
+type: object
+required:
+  - fulfillmentId
+  - status
+  - mediaType
+  - packageElements
+  - oneOf:
+    - url
+    - binaryData   
+properties:
+  fulfillmentId:
+    type: string
+    description: Unique identifier for the fulfillment
+  status:
+    type: string
+    description: The current status of the fulfillment.
+    enum:
+    - pending
+    - in_progress
+    - completed
+    - issued
+    - revoked
+    - refunded
+  binaryData:
+    type: string
+    format: binary
+    description: The binary data associated with the fulfillment, which may include documents, tickets, or other relevant files.
+  url:
+    type: string
+    format: uri
+    description: The URL where the fulfillment can be accessed or downloaded.
+  channel:
+    type: string
+    description: The channel of the offer.
+    x-enum-values:
+      - "web"
+      - "mobile"
+      - "kiosk"
+      - "call center"
+      - "travel agency"
+      - "other"
+  fulfillmentMethod:
+    type: string
+    description: The fulfillment method of the offer.
+    x-enum-values:
+      - "electronic"
+      - "paper"
+      - "mobile"
+      - "other"
+  typeOfPayment:
+    type: string
+    description: The type of payment of the offer.
+    x-enum-values:
+      - "prepaid"
+      - "postpaid"
+      - "other"
+  mediaType:
+    type: string
+    description: |-
+      The media type of the offer.
+    externalDocs:
+      description: |-
+        For more information about media types, see the [IANA Media Types](https://www.iana.org/assignments/media-types/media-types.xhtml) registry.
+      url: https://www.iana.org/assignments/media-types/media-types.xhtml
+    examples: 
+      - "application/json"
+      - "application/xml"
+      - "text/html"
+      - "application/pdf"
+      - "image/jpeg"
+      - "image/svg+xml"
+  contentStandard:
+    type: string
+    description: The content standard of the offer.
+    x-enum-values:
+      - "ISO/IEC 18004" # QR Code
+      - "ISO/IEC 24778" # Aztec Code
+      - "ISO/IEC 15438" # PDF417
+      - "ISO/IEC 16022" # Data Matrix
+      - "ISO/IEC 15417" # Code 128
+      - "ISO/IEC 16388" # Code 39
+      - "ISO/IEC 15420" # EAN-13
+      - "ISO/IEC 15417" # UPC-A
+      - "ISO/IEC 15424" # MaxiCode
+      - "ISO/IEC 7816-4" # NFC, MIFARE DESFire
+      - "GATT" # Bluetooth Low Energy
+      - "AXA Bike lock" # AXA Bike lock
+      - "OTHER" # Other content standard
+  packageElements:
+    type: array
+    description: A list of package elements associated with the fulfillment.
+    minItems: 1
+    items:
+      type: string
+      format: package-element-ref

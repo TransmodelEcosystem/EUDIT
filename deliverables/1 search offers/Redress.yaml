@@ -1,0 +1,11 @@
+type: object
+properties:
+  redressId:
+    type: string
+    description: An identifier for the redress
+  description:
+    type: string
+    description: A human-readable description of the redress
+  redressType:
+    type: string
+    x-extensible-enum: []

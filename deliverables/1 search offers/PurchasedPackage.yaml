@@ -1,0 +1,19 @@
+allOf:
+  - $ref: ./Package.yaml
+  - type: object
+    properties:
+      status:
+        type: string
+        enum: 
+        - purchased
+        - rollbacked
+        - cancelled
+        - fulfilled
+        - refunded
+        - exchanged
+        - in_progress
+        - completed
+      fulfillments:
+        type: array
+        items:
+          $ref: .\Fulfillment.yaml

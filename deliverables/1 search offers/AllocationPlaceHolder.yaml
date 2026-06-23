@@ -1,0 +1,18 @@
+allOf:
+  - $ref: .\PlaceHolder.yaml
+  - type: object
+    properties:
+      placeHolderType:
+        type: string
+        const: allocation
+      selectableAllocations:
+        type: array
+        items:
+          type: string
+          format: allocation-ref
+      minimumToSelect:
+        type: integer
+        minimum: 0
+      maximumToSelect:
+        type: integer
+        minimum: 0

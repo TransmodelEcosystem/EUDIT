@@ -1,0 +1,39 @@
+type: object
+required:
+  - packageElementId
+  - packageElementType
+properties:
+  packageElementType:
+    description: The type of the package element, which can be used to determine the specific schema to use for validation.
+    type: string
+    enum: [travelRight, ancillary, allocation]
+  packageElementId:
+    description: Unique identifier for the package element
+    type: string
+  numberOfAvailableItems:
+    description: The number of available items at the moment of request
+    type: string
+  covering:
+    type: array
+    description: A list of trip sections that are covered by this package element
+    items:
+      $ref: .\TripSection.yaml
+  price:
+    description: The price of this package element
+    $ref: .\Cost.yaml
+  product:
+    description: The product associated with this package element
+    $ref: .\Product.yaml
+  travellingEntities:
+    type: array
+    description: A list of travelling entities associated with this package element
+    items:
+      type: string
+      format: travelling-entity-ref
+examples:
+  - { "packageElementId": "PE-123", 
+      "numberOfAvailableItems": "5", 
+      "covering": [ { "startLeg": "L-789", "endLeg": "L-789" } ], 
+      "price": { "amount": 23.20, "currency": "EUR" }, 
+      "travellingEntities": [ "TE-123", "TE-456" ]
+    }

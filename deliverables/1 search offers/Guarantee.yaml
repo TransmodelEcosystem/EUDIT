@@ -1,0 +1,17 @@
+type: object
+properties:
+  guaranteeId:
+    type: string
+    description: The unique identifier of the guarantee
+  description:
+    type: string
+    description: A human-readable description of the guarantee
+  guaranteeType:
+    type: string
+    description: The type of guarantee (e.g., refund, replacement, compensation). Valid values can be obtained using the `guaranteeType` endpoint
+    x-extensible-enum: [refund, replacement, compensation, travel-through, travel-back]
+  redresses:
+    type: array
+    description: A list of redresses for this guarantee
+    items:
+      $ref: .\Redress.yaml

@@ -1,0 +1,30 @@
+type: object
+description: TRAVELLING ENTITY — base class for all entities taking part in a journey. Use the entityType discriminator to select the concrete sub-type.
+required:
+- entityType
+- travellingEntityId
+properties:
+  travellingEntityId:
+    type: string
+    description: Stable caller-assigned identifier for this entity. Must be unique within the request.
+  entityType:
+    type: string
+    enum:
+    - traveller
+    - passengerVehicle
+    - animal
+    - luggage
+    description: Discriminator identifying the concrete type of this entity.
+  entitlementRights:
+    type: array
+    description: ENTITLEMENT RIGHTs held by this entity that may qualify for reduced fares or additional offers.
+    items:
+      $ref: .\EntitlementRight.yaml
+  travelParty:
+    $ref: .\TravelParty.yaml
+examples:
+  - { "travellingEntityId": "TE-123", 
+      "entityType": "traveller", 
+      "entitlementRights": [ { "entitlementRightId": "ER-456", "description": "Senior citizen discount" } ], 
+      "travelParty": { "travelPartyId": "TP-789", "type": "family" } 
+    }

@@ -1,0 +1,14 @@
+allOf:
+- $ref: .\PackageElement.yaml
+- type: object
+  required:
+    - packageElementType
+  properties:
+    packageElementType:
+      description: The type of the package element, which can be used to determine the specific schema to use for validation.
+      type: string
+      const: afterSalesFee
+    price:
+      $ref: .\Cost.yaml
+      description: The fee associated with the after-sales service. This can include costs for cancellations, 
+       exchanges, or other post-purchase services.

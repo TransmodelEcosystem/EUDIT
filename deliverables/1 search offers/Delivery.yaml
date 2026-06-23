@@ -1,0 +1,16 @@
+type: object
+properties:
+  request:
+    type: string
+    description: Identifier of the originating request
+    format: request-ref
+  warnings:
+    type: array
+    description: List of warnings related to the request
+    items:
+      $ref: .\Warning.yaml
+  errors:
+    type: array
+    description: List of errors related to the request
+    items:
+      $ref: .\Error.yaml

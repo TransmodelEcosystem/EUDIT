@@ -1,0 +1,16 @@
+type: object
+properties:
+  amount:
+    type: number
+    description: The monetary amount of the cost.
+    format: float
+  country:
+    type: string
+    description: The country associated with the tax, represented as a two-letter ISO 3166-1 alpha-2 code
+  currencyCode:
+    type: string
+    description: The currency code of the cost, represented as a three-letter ISO 4217 code
+  percentage:
+    type: number
+    description: The percentage of the tax applied to the cost.
+    format: float

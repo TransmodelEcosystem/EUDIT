@@ -1,0 +1,9 @@
+allOf:
+  - $ref: ./Delivery.yaml
+  - type: object
+    properties:
+      offers:
+        type: array
+        description: List of sales offers included in the delivery
+        items:
+          $ref: ./OfferedPackage.yaml

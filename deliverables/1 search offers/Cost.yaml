@@ -1,0 +1,14 @@
+type: object
+properties:
+  amount:
+    type: number
+    description: The monetary amount of the cost.
+    format: float
+  currency:
+    type: string
+    description: The currency of the cost, represented as a three-letter ISO 4217 code
+  taxes:
+    type: array
+    description: A list of taxes associated with the cost.
+    items:
+      $ref: .\Tax.yaml

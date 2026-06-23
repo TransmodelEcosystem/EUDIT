@@ -1,0 +1,31 @@
+allOf:
+- $ref: ./PlaceHolder.yaml
+- type: object
+  properties:
+    placeHolderType:
+      type: string
+      const: personalDetail
+    travellingEntity:
+      type: string
+      format: travelling-entity-ref
+    fieldName:
+      type: string
+      x-extensible-enum: 
+        - fullName
+        - firstName
+        - lastName
+        - dateOfBirth
+        - gender
+        - nationality
+        - email
+        - address
+        - phoneNumber
+        - passportNumber
+        - passportExpiryDate
+        - passportIssuingCountry
+        - idCardNumber
+        - idCardExpiryDate
+        - idCardIssuingCountry
+        - drivingLicenseNumber
+        - drivingLicenseExpiryDate
+        - drivingLicenseIssuingCountry

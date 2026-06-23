@@ -1,0 +1,20 @@
+allOf:
+- $ref: .\PackageElement.yaml
+- type: object
+  required:
+    - ancillaryType
+    - packageElementType
+  properties:
+    packageElementType:
+      description: The type of the package element, which can be used to determine the specific schema to use for validation.
+      type: string
+      const: ancillary
+    ancillaryType:
+      type: string
+      description: The type of ancillary service provided. The allowed values are defined in 'ancillary-type' lookup.
+    appliesTo:
+      type: array
+      description: A list of package elements to which this ancillary applies
+      items:
+        type: string
+        format: package-element-ref

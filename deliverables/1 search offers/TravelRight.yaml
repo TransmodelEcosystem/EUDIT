@@ -1,0 +1,8 @@
+allOf:
+- $ref: .\PackageElement.yaml
+- type: object
+  properties:
+    packageElementType:
+      description: The type of the package element, which can be used to determine the specific schema to use for validation.
+      type: string
+      const: travelRight

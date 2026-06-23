@@ -1,0 +1,14 @@
+type: object
+required:
+  - entitlementType
+  - code
+properties:
+  issuer:
+    type: string
+    description: The entity that issues the entitlement right.
+  entitlementType:
+    type: string
+    description: The type of entitlement right (e.g., subscription, license, access). Valid values can be obtained using the `entitlementType` endpoint
+  code:
+    type: string
+    description: A unique code representing the entitlement right.
