@@ -5,6 +5,10 @@ allOf:
       status:
         type: string
         const: offered
+      matching:
+        type: string
+        description: Indicates the matching status of the package.
+        enum: [match, partial-match]        
       placeHolders:
         type: array
         items:

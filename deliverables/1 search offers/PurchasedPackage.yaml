@@ -4,16 +4,32 @@ allOf:
     properties:
       status:
         type: string
-        enum: 
-        - purchased
-        - rollbacked
-        - cancelled
-        - fulfilled
-        - refunded
-        - exchanged
-        - in_progress
-        - completed
+        enum:
+          - purchased
+          - rollbacked
+          - cancelled
+          - fulfilled
+          - refunded
+          - exchanged
+          - in_progress
+          - completed
       fulfillments:
         type: array
         items:
           $ref: .\Fulfillment.yaml
+examples:
+  - {
+      "packageId": "PKG-123",
+      "status": "purchased",
+      "fulfillments":
+        [
+          {
+            "fulfillmentId": "FULFILLMENT-123",
+            "status": "revoked",
+            "mediaType": "application/pdf",
+            "packageElements": ["PE-123", "PE-456"],
+            "url": "https://example.com/fulfillment/FULFILLMENT-123",
+            "contentStandard": "ISO/IEC 18004",
+          },
+        ],
+    }

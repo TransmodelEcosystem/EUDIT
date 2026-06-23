@@ -29,3 +29,10 @@ properties:
     examples:
       - "inbound-1234"
       - "outbound-5678"
+examples:
+- {
+    "legId": "LEG-123",
+    "legType": "timed",
+    "mode": "TRAIN",
+    "tripPattern": "inbound-1234"
+  }

@@ -14,3 +14,5 @@ properties:
     type: number
     description: The percentage of the tax applied to the cost.
     format: float
+examples:
+- { amount: 5.00, country: "US", currencyCode: "USD", percentage: 10.0 }

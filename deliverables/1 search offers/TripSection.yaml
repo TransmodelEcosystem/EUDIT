@@ -22,3 +22,9 @@ properties:
     examples:
       - "inbound-1234"
       - "outbound-5678"
+examples:
+  - { startLeg: "L-789", 
+      startPlace: "PLACE-123",
+      endLeg: "L-789",
+      endPlace: "PLACE-456",
+      tripPattern: "inbound-1234" }

@@ -3,14 +3,19 @@ allOf:
   - type: object
     required:
       - filterType
-      - afterCondition
+      - afterSalesCondition
     properties:
       filterType:
         type: string
         const: flexibility
-      afterCondition:
+      afterSalesCondition:
         type: string
         enum:
         - cancellable
         - exchangeable
         - refundable
+examples:
+- {
+    "filterType": "flexibility",
+    "afterSalesCondition": "cancellable"
+  }

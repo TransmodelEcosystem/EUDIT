@@ -29,3 +29,9 @@ allOf:
         - drivingLicenseNumber
         - drivingLicenseExpiryDate
         - drivingLicenseIssuingCountry
+examples:
+- {
+    "placeHolderType": "personalDetail",
+    "travellingEntity": "TE-123",
+    "fieldName": "fullName"
+  }

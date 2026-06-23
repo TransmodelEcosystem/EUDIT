@@ -18,3 +18,10 @@ properties:
     type: string
     format: stop-point-ref
     description: Reference to the stop point
+examples:
+- {
+    "arrivalTime": "2024-06-15T14:00:00Z",
+    "departureTime": "2024-06-15T14:06:00Z",
+    "stopPointName": "Central Station",
+    "stopPointRef": "STOP-456"
+  }

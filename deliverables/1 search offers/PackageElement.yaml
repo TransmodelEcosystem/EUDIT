@@ -13,7 +13,7 @@ properties:
   numberOfAvailableItems:
     description: The number of available items at the moment of request
     type: string
-  covering:
+  coverage:
     type: array
     description: A list of trip sections that are covered by this package element
     items:
@@ -33,7 +33,7 @@ properties:
 examples:
   - { "packageElementId": "PE-123", 
       "numberOfAvailableItems": "5", 
-      "covering": [ { "startLeg": "L-789", "endLeg": "L-789" } ], 
+      "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ], 
       "price": { "amount": 23.20, "currency": "EUR" }, 
       "travellingEntities": [ "TE-123", "TE-456" ]
     }

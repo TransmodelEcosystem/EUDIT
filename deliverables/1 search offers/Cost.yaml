@@ -12,3 +12,12 @@ properties:
     description: A list of taxes associated with the cost.
     items:
       $ref: .\Tax.yaml
+examples:
+- {
+    "amount": 100.00,
+    "currency": "EUR",
+    "taxes": [
+      { "taxType": "VAT", "amount": 20.00, "currency": "EUR" },
+      { "taxType": "Service Tax", "amount": 5.00, "currency": "EUR" }
+    ]
+  }

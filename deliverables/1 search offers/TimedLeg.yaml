@@ -34,3 +34,36 @@ allOf:
         description: List of intermediate stops for this leg
         items:
           $ref: .\LegIntermediate.yaml
+examples:
+  - {
+      legType: "timed",
+      journeyRef: "journey123",
+      lineRef: "line456",
+      operatingDayRef: "Monday",
+      privateMode: "bus",
+      ptMode: "bus",
+      start:
+        {
+          "pickupLocation": "PLACE-123",
+          "departureTime": "2024-06-15T14:00:00Z",
+          "stopPointName": "Central Station",
+          "stopPointRef": "STOP-456",
+          "trainNumbers": ["1234", "5678"],
+        },
+      end:
+        {
+          "setDownLocation": "PLACE-456",
+          "arrivalTime": "2024-06-15T14:30:00Z",
+          "stopPointName": "Central Station",
+          "stopPointRef": "STOP-789",
+        },
+      intermediateStops:
+        [
+          {
+            "arrivalTime": "2024-06-15T14:00:00Z",
+            "departureTime": "2024-06-15T14:06:00Z",
+            "stopPointName": "Central Station",
+            "stopPointRef": "STOP-456",
+          },
+        ],
+    }

@@ -10,3 +10,5 @@ properties:
   type:
     type: string
     x-extensible-enum: [family, group, individual]
+examples:
+- { travelPartyId: "party123", type: "family" }

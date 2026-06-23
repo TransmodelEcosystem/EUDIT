@@ -6,3 +6,11 @@ allOf:
       description: The type of the package element, which can be used to determine the specific schema to use for validation.
       type: string
       const: travelRight
+  examples:
+  - { packageElementType: "travelRight",
+      packageElementId: "PE-123",
+      coverage: [ { startLeg: "L-789", endLeg: "L-789" } ],
+      price: { amount: 23.20, currency: "EUR" },
+      product: { productId: "PR-456", name: "Second class" },
+      travellingEntities: [ "TE-123", "TE-456" ]
+    }

@@ -18,3 +18,10 @@ properties:
     type: string
     format: stop-point-ref
     description: Reference to the stop point where the leg ends
+examples:
+- {
+    "setDownLocation": "PLACE-456",
+    "arrivalTime": "2024-06-15T14:30:00Z",
+    "stopPointName": "Central Station",
+    "stopPointRef": "STOP-789"
+  }

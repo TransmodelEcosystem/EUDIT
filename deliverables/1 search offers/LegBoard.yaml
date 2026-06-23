@@ -24,3 +24,11 @@ properties:
       type: string
       format: train-number
     description: List of train numbers associated with this leg, if applicable
+examples:
+- {
+    "pickupLocation": "PLACE-123",
+    "departureTime": "2024-06-15T14:00:00Z",
+    "stopPointName": "Central Station",
+    "stopPointRef": "STOP-456",
+    "trainNumbers": ["1234", "5678"]
+  }

@@ -15,3 +15,17 @@ properties:
     description: A list of redresses for this guarantee
     items:
       $ref: .\Redress.yaml
+examples:
+- {
+    "guaranteeId": "G-123",
+    "description": "This guarantee provides a refund in case of cancellation.",
+    "guaranteeType": "refund",
+    "redresses": [
+      { "redressType": "refund",
+        "amount": 23.00,
+        "currency": "EUR",
+        "conditions": "Valid for cancellations made at least 24 hours before departure.",
+        "validityPeriod": "/2024-06-01T10:13:00Z"
+      }
+    ]
+  }

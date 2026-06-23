@@ -16,3 +16,10 @@ allOf:
       maximumToSelect:
         type: integer
         minimum: 0
+examples:
+- {
+    "placeHolderType": "allocation",
+    "selectableAllocations": ["SEAT", "BERTH"],
+    "minimumToSelect": 1,
+    "maximumToSelect": 2
+  }

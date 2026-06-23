@@ -93,3 +93,12 @@ properties:
     items:
       type: string
       format: package-element-ref
+examples:
+- {
+    "fulfillmentId": "FULFILLMENT-123",
+    "status": "revoked",
+    "mediaType": "application/pdf",
+    "packageElements": ["PE-123", "PE-456"],
+    "url": "https://example.com/fulfillment/FULFILLMENT-123",
+    "contentStandard": "ISO/IEC 18004"
+  }

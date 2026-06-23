@@ -18,3 +18,9 @@ allOf:
       items:
         type: string
         format: package-element-ref
+examples:
+- {
+    "packageElementType": "ancillary",
+    "ancillaryType": "meal",
+    "appliesTo": ["PE-123"]
+  }

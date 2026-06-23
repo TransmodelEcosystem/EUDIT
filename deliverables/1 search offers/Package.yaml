@@ -22,10 +22,6 @@ properties:
   name:
     type: string
     description: The name of the package, which can be used for display purposes in user interfaces.
-  matching:
-    type: string
-    description: Indicates the matching status of the package.
-    enum: [match, partial-match]
   status:
     type: string
     description: The current status of the package.

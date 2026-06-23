@@ -21,3 +21,11 @@ allOf:
       end:
         type: string
         format: place-ref
+examples:
+  - {
+      legType: "transfer",
+      duration: 10,
+      transferMode: "walking",
+      start: "PLACE-123",
+      end: "PLACE-456"
+    }

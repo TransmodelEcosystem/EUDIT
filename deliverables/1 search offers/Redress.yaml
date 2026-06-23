@@ -9,3 +9,5 @@ properties:
   redressType:
     type: string
     x-extensible-enum: []
+examples:
+- { redressId: "12345", description: "Refund for overcharge", redressType: "refund" }

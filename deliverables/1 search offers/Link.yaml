@@ -27,3 +27,12 @@ properties:
     type: object
     additionalProperties:
       type: string
+examples:
+- {
+    "rel": "self",
+    "type": "application/json",
+    "title": "Self link",
+    "length": 1234,
+    "href": "https://api.example.com/resource/1",
+    "method": "GET"  
+  }

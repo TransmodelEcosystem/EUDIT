@@ -16,3 +16,10 @@ allOf:
       maximumToSelect:
         type: integer
         minimum: 0
+examples:
+- {
+    "placeHolderType": "ancillary",
+    "selectableAncillaries": ["MEAL", "LUXURY_MEAL"],
+    "minimumToSelect": 0,
+    "maximumToSelect": 2
+  }

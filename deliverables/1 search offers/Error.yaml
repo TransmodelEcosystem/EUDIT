@@ -26,3 +26,11 @@ externalDocs:
       type: string
       format: uri
       description: A URI reference that identifies the specific occurrence of the problem. It may or may not yield further information if dereferenced.
+examples:
+- {
+    "type": "https://example.com/probs/out-of-credit",
+    "title": "You do not have enough credit.",
+    "status": 403,
+    "detail": "Your current balance is 30, but that costs 50.",
+    "instance": "/account/12345/msgs/abc"
+  }

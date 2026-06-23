@@ -12,3 +12,8 @@ allOf:
       $ref: .\Cost.yaml
       description: The fee associated with the after-sales service. This can include costs for cancellations, 
        exchanges, or other post-purchase services.
+example:
+  { 
+    "packageElementType": "afterSalesFee",
+    "price": { "amount": 10.00, "currency": "EUR" }
+  }

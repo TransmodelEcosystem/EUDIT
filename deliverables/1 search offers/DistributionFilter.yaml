@@ -61,3 +61,12 @@ allOf:
           - "GATT" # Bluetooth Low Energy
           - "AXA Bike lock" # AXA Bike lock
           - "OTHER" # Other content standard
+examples:
+  - {
+      "filterType": "distribution",
+      "channel": "web",
+      "fulfillmentMethod": "electronic",
+      "typeOfPayment": "prepaid",
+      "mediaType": "application/json",
+      "contentStandard": "ISO/IEC 18004"
+    }

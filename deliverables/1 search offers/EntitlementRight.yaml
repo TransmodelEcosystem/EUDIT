@@ -12,3 +12,9 @@ properties:
   code:
     type: string
     description: A unique code representing the entitlement right.
+examples:
+- {
+    "issuer": "Company XYZ",
+    "entitlementType": "voucher",
+    "code": "VOUCHER-2024-001"
+  }

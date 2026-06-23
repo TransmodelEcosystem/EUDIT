@@ -15,3 +15,7 @@ allOf:
           - economy
           - business
           - first
+          - second
+          - premium
+examples:
+- { filterType: "mode", mode: { modeId: "mode123", description: "Economy class mode" }, class: "economy" }

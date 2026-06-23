@@ -8,3 +8,9 @@ allOf:
       status:
         type: string
         enum: [locked, released, expired]
+examples:
+- {
+    "packageId": "PKG-123",
+    "expiryTime": "2024-06-15T12:00:00Z",
+    "status": "locked"
+  }

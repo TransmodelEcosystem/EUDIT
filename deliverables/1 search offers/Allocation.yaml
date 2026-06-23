@@ -40,3 +40,22 @@ allOf:
       items:
         type: string
         format: package-element-ref
+examples:
+- {
+    "packageElementType": "allocation",
+    "allocationType": "spot",
+    "typeOfSpot": "seat",
+    "description": "Allocated seat for the trip.",
+    "reference": "SPOT-123",
+    "numberOfAllocatedUnits": 1,
+    "appliesTo": ["PE-123"]
+  }
+- {
+    "packageElementType": "allocation",
+    "allocationType": "asset",
+    "typeOfAsset": "normal-bike",
+    "description": "Normal bike for the trip.",
+    "reference": "DEFAULT_BIKE",
+    "numberOfAllocatedUnits": 2,
+    "appliesTo": ["PE-456"]
+  }

@@ -15,9 +15,16 @@ allOf:
       individualMode:
         type: string
         enum: []
-      start:
+      startPlace:
         type: string
         format: place-ref
-      end:
+      endPlace:
         type: string
         format: place-ref
+examples:
+- {
+    "legType": "continuous",
+    "duration": 120,
+    "startPlace": "PLACE-123",
+    "endPlace": "PLACE-456"
+  }
