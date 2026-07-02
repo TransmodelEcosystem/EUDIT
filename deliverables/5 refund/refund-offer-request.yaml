@@ -1,0 +1,32 @@
+type: object
+required:
+  - packageId
+  - version
+properties:
+  contentLanguage:
+    type: string
+    description: (policy) The language/localization of user-facing content, One IETF BCP 47 (RFC 5646) language tag. If missing, the local accepted language
+  requestId:
+    type: string
+    description: a unique ID, the response to this request MUST have the same ID (in case of a-sync call)
+  packageId:
+    type: string
+    description: the reference of the package to refund
+  version:
+    type: string
+    description: the version of the package to (partial) refund
+  packageElementRefs:
+    type: array
+    items:
+      type: string
+    description: parts to refund
+  travellingEntityRefs:
+    type: array
+    items:
+      type: string
+    description: travelling entities to refund
+  fulfillmentRefs:
+    type: array
+    items:
+      type: string
+    description: fullfillments to refund

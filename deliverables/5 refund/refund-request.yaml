@@ -1,0 +1,18 @@
+type: object
+required:
+  - refundOfferId
+  - packageId
+  - version
+properties:
+  contentLanguage:
+    type: string
+    description: (policy) The language/localization of user-facing content, One IETF BCP 47 (RFC 5646) language tag. If missing, the local accepted language
+  refundOfferId:
+    type: string
+    description: a unique ID, to identify the offer
+  packageId:
+    type: string
+    description: the reference of the package
+  version:
+    type: string
+    description: the version of the package to (partial) refund
