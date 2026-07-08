@@ -1,0 +1,20 @@
+type: object
+properties:
+  section:
+    $ref: .\TripSection.yaml
+  selectionType:
+    type: string
+    description: The type of selection that is required for this section. It can be either "ancillary" or "allocation".
+    enum: [ancillary, allocation]
+  options:
+    type: array
+    description: List of options to select for the section
+    items:
+      type: string
+      format: allocation-ref or ancillary-ref
+  minimumNumberOfItems:
+    type: integer
+    description: The minimum number of options to select for the section
+  maximumNumberOfItems:
+    type: integer
+    description: The maximum number of options to select for the section

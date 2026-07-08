@@ -31,7 +31,7 @@ properties:
     - expired
     - released
     - purchased
-    - rollback
+    - rollbacked
     - cancelled
     - fulfilled
     - refunded
@@ -83,32 +83,32 @@ example:
     "minimumPrice": { "amount": 100.00, "currency": "USD" },
     "summaryDetails": [
       { 
-        "detailType": "geospatial",
+        "detailType": "geospatial-condition",
         "description": "A route from San Francisco to Los Angeles.",
-        "content": { "type": "Feature", "geometry": { "type": "LineString", "coordinates": [[-122.4194, 37.7749], [-118.2437, 34.0522]] } }
+        "geospatialValidity": { "type": "Feature", "geometry": { "type": "LineString", "coordinates": [[-122.4194, 37.7749], [-118.2437, 34.0522]] } }
       },
       { 
-        "detailType": "condition",
-        "content": "No pets allowed"
+        "detailType": "other-condition",
+        "description": "No pets allowed"
       }
     ],
     "elements": [
       {
         "elementType": "travelRight",
-        "packageElementId": "PE-123",
-        "numberOfAvailableItems": "5",
-        "covering": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
+        "elementId": "PE-123",
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
         "price": { "amount": 23.20, "currency": "EUR" },
         "travellingEntities": [ "TE-123", "TE-456" ]
       }, 
       {
         "elementType": "allocation",
-        "packageElementId": "PE-124",
+        "elementId": "PE-124",
         "allocationType": "spot",
         "typeOfSpot": "seat",
         "numberOfAllocatedUnits": 1,
         "reference": "102/36B",
-        "appliesTo": [ "PE-123" ]
+        "appliesTo": [ "PE-123" ], # do we need this, or could we (alternative) use the next line?
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ]
       }
     ],
     "links": [

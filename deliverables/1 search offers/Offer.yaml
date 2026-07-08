@@ -1,0 +1,90 @@
+allOf:
+  - $ref: ./Package.yaml
+  - type: object
+    properties:
+      status:
+        type: string
+        const: offered
+      matching:
+        type: string
+        description: Indicates the matching status of the package.
+        enum: [match, partial-match]
+      expirationTime:
+        type: string
+        format: date-time
+        description: The expiration time of the offer. After this time, the package is no longer valid for locking.
+      selections:
+        type: array
+        description: A list of selections that are required for the package, which can include ancillary or allocation options.
+        items:
+          $ref: .\OfferElementSelection.yaml
+      requiredInformation:
+        description: A list of required information that must be provided by the traveller in order to purchase this package element.
+        type: array
+        items:
+          $ref: .\RequiredPersonalInformation.yaml
+example:
+  { 
+    "packageId": "pkg-123",
+    "summary": "This is a sample offered package.",
+    "name": "Sample Package",
+    "status": "offered",
+    "minimumPrice": { "amount": 45.00, "currency": "EUR" },
+    "trip": { 
+      "tripId": "trip-456",
+      "legs": [
+        { "legId": "L-789",
+          "legType": "timed",
+          "journeyRef": "journey-789",
+          "operatingDayRef": "Monday",
+          "start": { "stopPointRef": "stop-001", "departureTime": "2024-06-01T08:00:00Z" },
+          "end": { "stopPointRef": "stop-002", "arrivalTime": "2024-06-01T10:00:00Z" } 
+        },
+        { "legId": "T-43294028",
+          "legType": "transfer",
+          "duration": 5,
+          "mode": "FOOT"
+        },
+        { "legId": "L-349",
+          "legType": "timed",
+          "journeyRef": "journey-349",
+          "operatingDayRef": "Monday",
+          "start": { "stopPointRef": "stop-002", "departureTime": "2024-06-01T10:24:00Z" },
+          "end": { "stopPointRef": "stop-004", "arrivalTime": "2024-06-01T12:10:00Z" } 
+        }
+      ]
+    },
+    "elements": [
+      { "packageElementType": "travelRight",
+        "packageElementId": "PE-123",
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-349" } ],
+        "price": { "amount": 45.00, "currency": "EUR" },
+        "product": { "productId": "PR-456", "name": "Second class" },
+        "travellingEntities": [ "TE-123", "TE-456" ]
+      }, 
+      { "packageElementType": "ancillary",
+        "packageElementId": "ANC-123",
+        "price": { "amount": 10.00, "currency": "EUR" },
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
+        "product": { "productId": "PR-789", "name": "Meal" }
+      }, 
+      { "packageElementType": "ancillary",
+        "packageElementId": "ANC-456",
+        "price": { "amount": 15.00, "currency": "EUR" },
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
+        "product": { "productId": "PR-3498", "name": "Luxurious meal A" }
+      }
+    ],
+    "selections": [
+      {
+        "selectionType": "ancillary",
+        "options": [ "ANC-123", "ANC-456" ],
+        "minimumNumberOfItems": 0,
+        "maximumNumberOfItems": 2
+      }
+    ],
+    "requiredInformation": [
+      { "requiredInformationType": "fullName", "packageElementId": "PE-123" }
+    ]
+  }
+

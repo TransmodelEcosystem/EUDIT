@@ -6,15 +6,15 @@ description: should we include all Transmodel validities in here?
 properties:
   detailType:
     type: string
-    enum: [refund-condition, exchange-condition, other-condition, geospatial-condition]
+    enum: [refund-condition, exchange-condition, reusable-condition, other-condition, travel-condition]
   description:
     type: string
     description: A human-readable description of the detail or condition, providing context or additional information.
-  geospatialCondition:
+  geospatialValidity:
     type: object
     format: geojson-feature
-    description: A string representing the geometric shape of the trip, such as a route or area.
-  validityPeriod:
+    description: A representation of the geometric shape of the trip, such as a route or area.
+  temporalValidity:
     type: string
     format: period
     description: The duration for which the flexibility filter is valid. ISO 8601 period format is used.
@@ -29,27 +29,47 @@ properties:
       type: string
       format: package-element-ref
   fee:
-    $ref: .\Cost.yaml
+    allOf:
+      - $ref: .\Cost.yaml
+      - type: object
+        description: The fee associated with the detail or condition, if applicable.
+        properties:
+          recurring:
+            type: string
+            description: ISO 8601 recurring interval format, indicating if the fee is recurring.
+            example: R/PT10M
 examples:
 - {
-    "detailType": "geospatial-condition",
+    "detailType": "travel-condition",
     "description": "You can travel within the city centre of Amersfoort.",
-    "geospatialCondition": { "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [[[5.387, 52.156], [5.387, 52.157], [5.388, 52.157], [5.388, 52.156], [5.387, 52.156]]] } },
+    "geospatialValidity": { "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [[[5.387, 52.156], [5.387, 52.157], [5.388, 52.157], [5.388, 52.156], [5.387, 52.156]]] } },
+    "packageElements": ["PE-123"]
+  }
+- {
+    "detailType": "travel-condition",
+    "description": "You can travel until 8 PM. After that, you will be charged an additional fee of 10 EUR per hour.",
+    "temporalValidity": "/2024-06-01T20:00:00Z",
     "packageElements": ["PE-123"],
-    "fee": { "amount": 10.00, "currency": "EUR" }
+    "fee": { "amount": 10.00, "currency": "EUR", "recurring": "R/PT1H" }
+  }
+- {
+    "detailType": "exchange-condition",
+    "description": "Exchanges are available, made at least 24 hours before departure.",
+    "temporalValidity": "/2024-06-01T10:13:00Z",
+    "fee": { "amount": 5.00, "currency": "EUR" }
   }
 - {
     "detailType": "refund-condition",
-    "description": "Refunds are available, made at least 24 hours before departure.",
+    "description": "(Partial) refunds are available",
     "packageElements": ["PE-456"],
-    "validityPeriod": "/2024-06-01T10:13:00Z",
-    "fee": { "amount": 5.00, "currency": "EUR" }
+    "temporalValidity": "/2024-06-01T10:13:00Z",
+    "fee": { "amount": 3.00, "currency": "EUR" }
   }
 - {
     "detailType": "refund-condition",
     "description": "No refunding available within the last 24 hours before departure.",
     "packageElements": ["PE-456"],
-    "validityPeriod": "2024-06-01T10:13:00Z/P1D",
+    "temporalValidity": "2024-06-01T10:13:00Z/",
     "fee": { "amount": 23.25, "currency": "EUR" }
   }
 - {
@@ -58,7 +78,7 @@ examples:
     "packageElements": ["PE-123", "PE-456"]
   }
 - {
-    "detailType": "other-condition",
+    "detailType": "travel-condition",
     "description": "Bikes only allowed outside peak hours",
     "fee": { "amount": 12.50, "currency": "EUR" },
   }

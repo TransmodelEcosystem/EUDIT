@@ -1,8 +1,11 @@
 type: object
+required:
+  - startLeg
 properties:
   startLeg:
     type: string
     format: leg-ref
+    description: in case the trip section covers a complete leg, no other details are needed.
   startPlace:
     type: string
     description: The starting place of the trip, which can be a stop or a location.
@@ -25,6 +28,6 @@ properties:
 examples:
   - { startLeg: "L-789", 
       startPlace: "PLACE-123",
-      endLeg: "L-789",
+      endLeg: "L-3409",
       endPlace: "PLACE-456",
       tripPattern: "inbound-1234" }

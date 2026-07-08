@@ -15,6 +15,12 @@ properties:
     description: A list of redresses for this guarantee
     items:
       $ref: .\Redress.yaml
+  guaranteeFor:
+    type: array
+    description: A list of package elements that this guarantee applies to
+    items:
+      type: string
+      format: package-element-ref
 examples:
 - {
     "guaranteeId": "G-123",
@@ -25,7 +31,7 @@ examples:
         "amount": 23.00,
         "currency": "EUR",
         "conditions": "Valid for cancellations made at least 24 hours before departure.",
-        "validityPeriod": "/2024-06-01T10:13:00Z"
+        "temporalValidity": "/2024-06-01T10:13:00Z"
       }
     ]
   }

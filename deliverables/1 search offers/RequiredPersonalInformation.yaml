@@ -1,0 +1,41 @@
+type: object
+required:
+  - requiredInformationType
+  - packageElementId
+properties:
+  requiredInformationType:
+    description: The type of required information that must be provided by the traveller in order to book this package element
+    type: string
+    x-extensible-enum: 
+    - fullName
+    - firstName
+    - lastName
+    - dateOfBirth
+    - gender
+    - nationality
+    - email
+    - address
+    - phoneNumber
+    - passportNumber
+    - passportExpiryDate
+    - passportIssuingCountry
+    - idCardNumber
+    - idCardExpiryDate
+    - idCardIssuingCountry
+    - drivingLicenseNumber
+    - drivingLicenseExpiryDate
+    - drivingLicenseIssuingCountry
+  packageElementId:
+    description: all travelling entities within this package element need to supply the required information.
+    type: string
+  travellingEntityIds:
+    description: >-
+     The travelling entities for which this required information is applicable, in case not all travelling entities 
+     within the package element need to supply the required information. If absent, it is assumed that all 
+     travelling entities within the package element need to supply the required information.
+    type: array
+    items:
+      type: string
+  validation:
+    type: string
+    description: The validation rules or constraints for the required information, expressed in JSONPath format
