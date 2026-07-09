@@ -8,12 +8,12 @@ allOf:
         type: string
         format: date-time
         description: The time at which this locked offer expires and is no longer available for purchase.
-      status:
+      packageType:
         type: string
-        enum: [locked, released, expired]
+        const: locked_offer
 examples:
 - {
     "packageId": "PKG-123",
     "expiryTime": "2024-06-15T12:00:00Z",
-    "status": "locked"
+    "packageType": "locked_offer"
   }
