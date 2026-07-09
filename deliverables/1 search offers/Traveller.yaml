@@ -14,13 +14,17 @@ Traveller:
         type: integer
         minimum: 0
         description: Age in years at the start time of travel.
+      gender:
+        type: string
+        description: Gender of the traveller
+        enum:
+        - male
+        - female
+        - other
+        - not_specified
       assistant:
         type: boolean
         description: Whether this traveller acts as an assistant to another traveller.
-      dateOfBirth:
-        type: string
-        format: date
-        description: Date of birth. Enables age-band fare calculation. (TBD)
       externalReference:
         type: string
         description: Caller-assigned external reference for this traveller.
@@ -29,6 +33,3 @@ Traveller:
         description: Accessibility or personal needs types (operator-defined lookup values, see GET /personal-needs or GET /collections/personal-needs/items).
         items:
           type: string
-      qualifyingCharacteristics:
-        description: Additional qualifying characteristics used for eligibility determination. Only to specify in the purchase request
-        $ref: .\TravellerQualifyingCharacteristics.yaml

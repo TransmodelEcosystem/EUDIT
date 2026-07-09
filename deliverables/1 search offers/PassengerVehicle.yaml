@@ -18,24 +18,28 @@ PassengerVehicle:
         - car
         - motorhome
         - caravan
-        - motorbike
+        - motorcycle
         - bicycle
         - trailerOnly
-      height:
-        type: integer
-        minimum: 0
-        description: Height of the vehicle in centimetres.
-      width:
-        type: integer
-        minimum: 0
-        description: Width of the vehicle in centimetres.
       length:
-        type: integer
-        minimum: 0
-        description: Total length of the vehicle in centimetres.
+        type: number
+        format: double
+        minimum: 0.0
+        description: Total length of the vehicle in meters.
+      width:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Width of the vehicle in meters.
+      height:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Height of the vehicle in metres.
       weight:
-        type: integer
-        minimum: 0
+        type: number
+        format: double
+        minimum: 0.0
         description: Total weight of the vehicle in kilograms.
       trailer:
         description: Details of a towed trailer, if applicable.

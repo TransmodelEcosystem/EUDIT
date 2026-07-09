@@ -24,18 +24,22 @@ Luggage:
         - musicalInstrument
         - other
       length:
-        type: integer
-        minimum: 0
-        description: Length in centimetres.
+        type: number
+        format: double
+        minimum: 0.0
+        description: Length in meters.
       width:
-        type: integer
-        minimum: 0
-        description: Width in centimetres.
+        type: number
+        format: double
+        minimum: 0.0
+        description: Width in meters.
       height:
-        type: integer
-        minimum: 0
-        description: Height in centimetres.
+        type: number
+        format: double
+        minimum: 0.0
+        description: Height in meters.
       weight:
-        type: integer
-        minimum: 0
+        type: number
+        format: double
+        minimum: 0.0
         description: Weight in kilograms.

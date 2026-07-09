@@ -19,19 +19,23 @@ VehicleRack:
       - roof
       - towbar
       - rear
-    height:
-      type: integer
-      minimum: 0
-      description: Height of the rack in centimetres.
-    width:
-      type: integer
-      minimum: 0
-      description: Width of the rack in centimetres.
     length:
-      type: integer
-      minimum: 0
-      description: Length of the rack in centimetres.
+      type: number
+      format: double
+      minimum: 0.0
+      description: Length of the rack in meters.
+    width:
+      type: number
+      format: double
+      minimum: 0.0
+      description: Width of the rack in meters.
+    height:
+      type: number
+      format: double
+      minimum: 0.0
+      description: Height of the rack in meters.
     weight:
-      type: integer
-      minimum: 0
+      type: number
+      format: double
+      minimum: 0.0
       description: Weight of the rack (including load) in kilograms.
