@@ -1,10 +1,13 @@
 allOf:
   - $ref: ./Package.yaml
   - type: object
+    required:
+      - expiryTime
     properties:
       expiryTime:
         type: string
         format: date-time
+        description: The time at which this locked offer expires and is no longer available for purchase.
       status:
         type: string
         enum: [locked, released, expired]

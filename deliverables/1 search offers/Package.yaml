@@ -5,6 +5,7 @@ required:
   - name
   - matching
   - status
+  - version
 properties:
   packageId:
     type: string
@@ -22,22 +23,18 @@ properties:
   name:
     type: string
     description: The name of the package, which can be used for display purposes in user interfaces.
-  status:
+  packageType:
     type: string
-    description: The current status of the package.
-    enum: 
-    - offered
-    - locked
-    - expired
-    - released
-    - purchased
-    - rollbacked
-    - cancelled
-    - fulfilled
-    - refunded
-    - exchanged
-    - in_progress
-    - completed
+    description: The type of the package.
+    x-enum-values: 
+    - offer 
+    - locked_offer
+    - expired_offer
+    - released_offer
+    - purchased_package
+    - rollbacked_package
+    - cancelled_package
+    - fulfilled_package
   elements:
     type: array
     description: A list of elements that are part of the package
@@ -45,15 +42,22 @@ properties:
       oneOf:
         - $ref: .\TravelRight.yaml
         - $ref: .\Ancillary.yaml
-        - $ref: .\Allocation.yaml
+        - $ref: .\SpotAllocation.yaml
+        - $ref: .\AssetAllocation.yaml
         - $ref: .\AfterSalesFee.yaml
       discriminator:
         propertyName: packageElementType
         mapping:
           travelRight: .\TravelRight.yaml
           ancillary: .\Ancillary.yaml
-          allocation: .\Allocation.yaml
+          spotAllocation: .\SpotAllocation.yaml
+          assetAllocation: .\AssetAllocation.yaml
           afterSalesFee: .\AfterSalesFee.yaml
+  travellingEntities:
+    type: array
+    description: A list of travelling entities associated with the package.
+    items:
+      $ref: .\TravellingEntity.yaml
   minimumPrice:
     $ref: .\Cost.yaml
   summaryDetails:
@@ -68,19 +72,19 @@ properties:
     description: A list of guarantees
     items:
       $ref: .\Guarantee.yaml
-  links:
-    type: array
-    description: A list of links related to the package, which can provide additional information or actions.
-    items:
-      $ref: .\Link.yaml
+  # links:
+  #   type: array
+  #   description: A list of links related to the package, which can provide additional information or actions.
+  #   items:
+  #     $ref: .\Link.yaml
+  # moved to the response!
 example:
   {
     "packageId": "PK-123",
     "summary": "This is a sample package.",
     "name": "Sample Package",
     "matching": "match",
-    "status": "offered",
-    "minimumPrice": { "amount": 100.00, "currency": "USD" },
+    "minimumPrice": { "amount": 100.00, "currencyCode": "USD" },
     "summaryDetails": [
       { 
         "detailType": "geospatial-condition",
@@ -97,26 +101,16 @@ example:
         "elementType": "travelRight",
         "elementId": "PE-123",
         "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
-        "price": { "amount": 23.20, "currency": "EUR" },
-        "travellingEntities": [ "TE-123", "TE-456" ]
+        "price": { "amount": 23.20, "currencyCode": "EUR" },
+        "travellingEntities": [ "TE-123", "TE-456" ],
+
       }, 
       {
-        "elementType": "allocation",
+        "elementType": "spotAllocation",
         "elementId": "PE-124",
-        "allocationType": "spot",
         "typeOfSpot": "seat",
         "numberOfAllocatedUnits": 1,
-        "reference": "102/36B",
-        "appliesTo": [ "PE-123" ], # do we need this, or could we (alternative) use the next line?
         "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ]
-      }
-    ],
-    "links": [
-      {
-        "rel": "lock",
-        "href": "https://api.example.com/packages/PK-123/lock",
-        "method": "POST",
-        "type": "application/json"
       }
     ]
   }

@@ -1,20 +1,38 @@
 type: object
+required:
+  - selectionType
+  - selectableElements
+description: A selection of package elements (for a section of a trip pattern). 
+  Each OfferElementSelection is a separate choice (AND construct).
+  The validity of the selection is equal to the validity of the referred packageElement(s).
 properties:
-  section:
-    $ref: .\TripSection.yaml
   selectionType:
     type: string
-    description: The type of selection that is required for this section. It can be either "ancillary" or "allocation".
-    enum: [ancillary, allocation]
-  options:
+    description: The type of selection that is required (for this section).
+    enum: [travelRight, ancillary, spotAllocation, assetAllocation]
+  selectableElements:
     type: array
-    description: List of options to select for the section
+    description: List of package elements to select for the section
     items:
       type: string
-      format: allocation-ref or ancillary-ref
+      format: package-element-ref
   minimumNumberOfItems:
     type: integer
-    description: The minimum number of options to select for the section
+    description: The minimum number of package elements to select for the section
   maximumNumberOfItems:
     type: integer
-    description: The maximum number of options to select for the section
+    description: The maximum number of package elements to select for the section
+examples:
+  - # choose or a normal seat or a luxury seat (mandatory)
+    { 
+      selectionType: "spotAllocation", 
+      selectableElements: ["NORMAL_SEAT", "LUXURY_SEAT"], 
+      minimumNumberOfItems: 1, 
+      maximumNumberOfItems: 1
+    }
+  - # an optional ancillary, e.g. a meal or a drink
+    { 
+      selectionType: "ancillary", 
+      selectableElements: ["MEAL"], 
+      maximumNumberOfItems: 1
+    }

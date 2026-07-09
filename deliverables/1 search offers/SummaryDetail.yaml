@@ -1,12 +1,20 @@
 type: object
 required:
-  - detailType
-  - content
+  - summaryLevel
+  - summaryType
+  - summaryClassification
+  - description
 description: should we include all Transmodel validities in here?
 properties:
-  detailType:
+  summaryLevel:
     type: string
-    enum: [refund-condition, exchange-condition, reusable-condition, other-condition, travel-condition]
+    enum: [package, package_element, product]
+  summaryType:
+    type: string
+    enum: [refund_condition, exchange_condition, reusable_condition, other_condition, travel_condition]
+  summaryClassification:
+    type: string
+    enum: [information, mandatory, mandatory_with_confirmation, ticket_validity]
   description:
     type: string
     description: A human-readable description of the detail or condition, providing context or additional information.
@@ -21,13 +29,14 @@ properties:
     examples: 
     - "2026-01-01T00:00:00Z/P1D"  # Valid for one day from January 1, 2026
     - "2026-01-01T12:00:00Z/2026-01-02T12:00:00Z"  # Valid for one day from January 1, 2026
-  packageElements:
-    type: array
-    description: A list of package elements, where this detail/condition is applicable.
-      This can be used to specify which parts of the package are affected by the detail or condition.
-    items:
-      type: string
-      format: package-element-ref
+  summaryFor:
+    type: object
+    properties:
+      packageElementId:
+        type: string
+        format: package-element-ref
+      section:
+        $ref: .\TripPatternSection.yaml
   fee:
     allOf:
       - $ref: .\Cost.yaml
@@ -40,45 +49,58 @@ properties:
             example: R/PT10M
 examples:
 - {
-    "detailType": "travel-condition",
+    "summaryLevel": "package",
+    "summaryType": "travel-condition",
+    "summaryClassification": "information",
     "description": "You can travel within the city centre of Amersfoort.",
-    "geospatialValidity": { "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [[[5.387, 52.156], [5.387, 52.157], [5.388, 52.157], [5.388, 52.156], [5.387, 52.156]]] } },
-    "packageElements": ["PE-123"]
+    "geospatialValidity": { "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [[[5.387, 52.156], [5.387, 52.157], [5.388, 52.157], [5.388, 52.156], [5.387, 52.156]]] } }
   }
 - {
-    "detailType": "travel-condition",
+    "summaryLevel": "package_element",
+    "summaryType": "travel-condition",
+    "summaryClassification": "mandatory",
     "description": "You can travel until 8 PM. After that, you will be charged an additional fee of 10 EUR per hour.",
     "temporalValidity": "/2024-06-01T20:00:00Z",
     "packageElements": ["PE-123"],
     "fee": { "amount": 10.00, "currency": "EUR", "recurring": "R/PT1H" }
   }
 - {
-    "detailType": "exchange-condition",
+    "summaryLevel": "package",
+    "summaryType": "exchange-condition",
+    "summaryClassification": "information",
     "description": "Exchanges are available, made at least 24 hours before departure.",
     "temporalValidity": "/2024-06-01T10:13:00Z",
     "fee": { "amount": 5.00, "currency": "EUR" }
   }
 - {
-    "detailType": "refund-condition",
+    "summaryLevel": "package",
+    "summaryType": "refund-condition",
+    "summaryClassification": "information",
     "description": "(Partial) refunds are available",
     "packageElements": ["PE-456"],
     "temporalValidity": "/2024-06-01T10:13:00Z",
     "fee": { "amount": 3.00, "currency": "EUR" }
   }
 - {
-    "detailType": "refund-condition",
+    "summaryLevel": "package",
+    "summaryType": "refund-condition",
+    "summaryClassification": "information",
     "description": "No refunding available within the last 24 hours before departure.",
     "packageElements": ["PE-456"],
     "temporalValidity": "2024-06-01T10:13:00Z/",
     "fee": { "amount": 23.25, "currency": "EUR" }
   }
 - {
-    "detailType": "other-condition",
+    "summaryLevel": "package",
+    "summaryType": "other-condition",
+    "summaryClassification": "information",
     "description": "No pets allowed",
     "packageElements": ["PE-123", "PE-456"]
   }
 - {
-    "detailType": "travel-condition",
+    "summaryLevel": "package",
+    "summaryType": "travel-condition",
+    "summaryClassification": "information",
     "description": "Bikes only allowed outside peak hours",
     "fee": { "amount": 12.50, "currency": "EUR" },
   }

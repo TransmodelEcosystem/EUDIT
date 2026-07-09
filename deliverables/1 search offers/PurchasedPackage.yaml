@@ -2,17 +2,13 @@ allOf:
   - $ref: ./Package.yaml
   - type: object
     properties:
-      status:
+      packageType:
         type: string
         enum:
-          - purchased
-          - rollbacked
-          - cancelled
-          - fulfilled
-          - refunded
-          - exchanged
-          - in_progress
-          - completed
+          - purchased_package
+          - rollbacked_package
+          - cancelled_package
+          - fulfilled_package
       fulfillments:
         type: array
         items:
@@ -20,7 +16,7 @@ allOf:
 examples:
   - {
       "packageId": "PKG-123",
-      "status": "purchased",
+      "packageType": "purchased_package",
       "fulfillments":
         [
           {

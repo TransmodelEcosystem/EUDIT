@@ -4,9 +4,6 @@ required:
 - entityType
 - travellingEntityId
 properties:
-  travellingEntityId:
-    type: string
-    description: Stable caller-assigned identifier for this entity. Must be unique within the request.
   entityType:
     type: string
     enum:
@@ -15,6 +12,10 @@ properties:
     - animal
     - luggage
     description: Discriminator identifying the concrete type of this entity.
+  travellingEntityId:
+    type: string
+    description: Stable caller-assigned identifier for this entity. Must be unique within the request.
+    format: travelling-entity-ref
   entitlementRights:
     type: array
     description: ENTITLEMENT RIGHTs held by this entity that may qualify for reduced fares or additional offers.

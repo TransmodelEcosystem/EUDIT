@@ -4,7 +4,7 @@ properties:
     type: number
     description: The monetary amount of the cost.
     format: float
-  currency:
+  currencyCode:
     type: string
     description: The currency of the cost, represented as a three-letter ISO 4217 code
   taxes:
@@ -15,9 +15,9 @@ properties:
 examples:
 - {
     "amount": 100.00,
-    "currency": "EUR",
+    "currencyCode": "EUR",
     "taxes": [
-      { "taxType": "VAT", "amount": 20.00, "currency": "EUR" },
-      { "taxType": "Service Tax", "amount": 5.00, "currency": "EUR" }
+      { "taxType": "VAT", "amount": 20.00, "currencyCode": "EUR" },
+      { "taxType": "Service Tax", "amount": 5.00, "currencyCode": "EUR" }
     ]
   }

@@ -1,11 +1,12 @@
 type: object
 required:
+  - issuer
   - entitlementType
   - code
 properties:
   issuer:
     type: string
-    description: The entity that issues the entitlement right.
+    description: The entity that issues the entitlement right. Could be a RISC code
   entitlementType:
     type: string
     description: The type of entitlement right (e.g., subscription, license, access). Valid values can be obtained using the `entitlementType` endpoint

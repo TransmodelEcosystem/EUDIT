@@ -58,6 +58,7 @@ allOf:
           - "ISO/IEC 15417" # UPC-A
           - "ISO/IEC 15424" # MaxiCode
           - "ISO/IEC 7816-4" # NFC, MIFARE DESFire
+          - "CEN/TS 16794" # calypso NFC card 
           - "GATT" # Bluetooth Low Energy
           - "AXA Bike lock" # AXA Bike lock
           - "OTHER" # Other content standard

@@ -18,4 +18,4 @@ allOf:
           - second
           - premium
 examples:
-- { filterType: "mode", mode: { modeId: "mode123", description: "Economy class mode" }, class: "economy" }
+- { filterType: "mode", mode: "RAIL", class: "economy" }

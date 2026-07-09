@@ -1,13 +1,14 @@
 type: object
 required:
-  - setDownLocation
-  - arrivalTime
+  - stopPointRef
+  - stopPointName
+  - serviceArrivalTimetabledTime
 properties:
   setDownLocation:
     type: string
     format: place-ref
     description: Reference to the drop-off location for the leg
-  arrivalTime:
+  serviceArrivalTimetabledTime:
     type: string
     format: date-time
     description: The arrival time at the drop-off location. Local time zone should be used.
@@ -21,7 +22,7 @@ properties:
 examples:
 - {
     "setDownLocation": "PLACE-456",
-    "arrivalTime": "2024-06-15T14:30:00Z",
+    "serviceArrivalTimetabledTime": "2024-06-15T14:30:00Z",
     "stopPointName": "Central Station",
     "stopPointRef": "STOP-789"
   }

@@ -1,10 +1,16 @@
 allOf:
   - $ref: ./Package.yaml
   - type: object
+    required:
+      - expirationTime
     properties:
-      status:
+      packageType:
         type: string
-        const: offered
+        enum:
+          - offer 
+          - locked_offer
+          - expired_offer
+          - released_offer
       matching:
         type: string
         description: Indicates the matching status of the package.
@@ -22,14 +28,19 @@ allOf:
         description: A list of required information that must be provided by the traveller in order to purchase this package element.
         type: array
         items:
-          $ref: .\RequiredPersonalInformation.yaml
+          $ref: .\RequiredInformation.yaml
+      optionalInformation:
+        description: A list of optional information that can be provided by the traveller in order to purchase this package element.
+        type: array
+        items:
+          $ref: .\OptionalInformation.yaml
 example:
   { 
     "packageId": "pkg-123",
     "summary": "This is a sample offered package.",
     "name": "Sample Package",
-    "status": "offered",
-    "minimumPrice": { "amount": 45.00, "currency": "EUR" },
+    "packageType": "offer",
+    "minimumPrice": { "amount": 45.00, "currencyCode": "EUR" },
     "trip": { 
       "tripId": "trip-456",
       "legs": [
@@ -58,19 +69,19 @@ example:
       { "packageElementType": "travelRight",
         "packageElementId": "PE-123",
         "coverage": [ { "startLeg": "L-789", "endLeg": "L-349" } ],
-        "price": { "amount": 45.00, "currency": "EUR" },
+        "price": { "amount": 45.00, "currencyCode": "EUR" },
         "product": { "productId": "PR-456", "name": "Second class" },
         "travellingEntities": [ "TE-123", "TE-456" ]
       }, 
       { "packageElementType": "ancillary",
         "packageElementId": "ANC-123",
-        "price": { "amount": 10.00, "currency": "EUR" },
+        "price": { "amount": 10.00, "currencyCode": "EUR" },
         "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
         "product": { "productId": "PR-789", "name": "Meal" }
       }, 
       { "packageElementType": "ancillary",
         "packageElementId": "ANC-456",
-        "price": { "amount": 15.00, "currency": "EUR" },
+        "price": { "amount": 15.00, "currencyCode": "EUR" },
         "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
         "product": { "productId": "PR-3498", "name": "Luxurious meal A" }
       }
@@ -78,13 +89,15 @@ example:
     "selections": [
       {
         "selectionType": "ancillary",
-        "options": [ "ANC-123", "ANC-456" ],
+        "selectableElements": [ "ANC-123", "ANC-456" ],
         "minimumNumberOfItems": 0,
         "maximumNumberOfItems": 2
       }
     ],
     "requiredInformation": [
-      { "requiredInformationType": "fullName", "packageElementId": "PE-123" }
+      { "requiredInformation": ["fullName"], 
+        "travellingEntityIds": ["PE-123"] 
+      }
     ]
   }
 

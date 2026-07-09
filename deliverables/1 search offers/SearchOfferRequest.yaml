@@ -2,18 +2,19 @@ allOf:
 - $ref: .\Request.yaml
 - type: object
   properties:
-    searchOfferId:
-      type: string
-      description: Unique identifier for the search offer request
-      format: search-offer-ref
     trip:
       $ref: .\Trip.yaml
+    context:
+      $ref: .\TripContext.yaml
     requestedSections:
       type: array
       items:
-        $ref: .\TripSection.yaml
-    policy:
-      $ref: .\SearchOfferPolicy.yaml
+        $ref: .\TripPatternSection.yaml
+    travellingEntities:
+      type: array
+      description: A list of travelling entities associated with the package.
+      items:
+        $ref: .\TravellingEntity.yaml
     filters:
       type: array
       items:

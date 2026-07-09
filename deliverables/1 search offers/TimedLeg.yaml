@@ -1,30 +1,18 @@
 allOf:
   - $ref: .\Leg.yaml
   - type: object
+    required:
+      - legType
+      - service
+      - start
+      - end
     properties:
       legType:
         type: string
         description: discriminator for the leg type
         const: timed
-      journeyRef:
-        type: string
-        description: Reference to the journey associated with this leg
-        format: journey-ref
-      lineRef:
-        type: string
-        description: Reference to the line associated with this leg
-        format: line-ref
-      operatingDayRef:
-        type: string
-        description: Reference to the operating day associated with this leg
-        format: day-of-week
-        enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
-      privateMode:
-        type: string
-        enum: []
-      ptMode:
-        type: string
-        enum: []
+      service:
+        $ref: .\DatedJourney.yaml
       start:
         $ref: .\LegBoard.yaml
       end:
@@ -37,33 +25,33 @@ allOf:
 examples:
   - {
       legType: "timed",
-      journeyRef: "journey123",
-      lineRef: "line456",
-      operatingDayRef: "Monday",
-      privateMode: "bus",
-      ptMode: "bus",
-      start:
+      "tripPatternId": "outbound-1",
+      "service": {
+        "journeyRef": "journey-123",
+        "lineRef": "line-456",
+        "operatingDayRef": "2024-06-15",
+        "directionRef": "outbound",
+        "publishedServiceName": "Intercity 1234",
+        "operatorRefs": ["NS"],
+        "destinationStopPointRef": "stop-100",
+        "productCategory": "IC"
+      },
+      "start": {
+        "stopPointRef": "STOP-456",
+        "stopPointName": "Amsterdam Centraal",
+        "serviceDepartureTime": "2024-06-15T14:00:00Z"
+      },
+      "end": {
+        "stopPointRef": "STOP-789",
+        "stopPointName": "Utrecht Centraal",
+        "serviceArrivalTimetabledTime": "2024-06-15T14:28:00Z"
+      },
+      "intermediateStops": [
         {
-          "pickupLocation": "PLACE-123",
-          "departureTime": "2024-06-15T14:00:00Z",
-          "stopPointName": "Central Station",
-          "stopPointRef": "STOP-456",
-          "trainNumbers": ["1234", "5678"],
-        },
-      end:
-        {
-          "setDownLocation": "PLACE-456",
-          "arrivalTime": "2024-06-15T14:30:00Z",
-          "stopPointName": "Central Station",
-          "stopPointRef": "STOP-789",
-        },
-      intermediateStops:
-        [
-          {
-            "arrivalTime": "2024-06-15T14:00:00Z",
-            "departureTime": "2024-06-15T14:06:00Z",
-            "stopPointName": "Central Station",
-            "stopPointRef": "STOP-456",
-          },
-        ],
+          "stopPointRef": "STOP-500",
+          "stopPointName": "Amstel",
+          "serviceArrivalTimetabledTime": "2024-06-15T14:10:00Z",
+          "serviceDepartureTimetabledTime": "2024-06-15T14:11:00Z"
+        }
+      ]
     }

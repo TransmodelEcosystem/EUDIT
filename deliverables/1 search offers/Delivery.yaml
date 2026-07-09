@@ -1,16 +1,21 @@
 type: object
 properties:
-  request:
+  requestId:
     type: string
     description: Identifier of the originating request
     format: request-ref
+  problems:
+    type: array
+    description: List of problems related to the request
+    items:
+      $ref: .\Problem.yaml
   warnings:
     type: array
     description: List of warnings related to the request
     items:
-      $ref: .\Warning.yaml
-  errors:
+      $ref: .\Problem.yaml
+  links:
     type: array
-    description: List of errors related to the request
+    description: List of links related to the request
     items:
-      $ref: .\Error.yaml
+      $ref: .\Link.yaml

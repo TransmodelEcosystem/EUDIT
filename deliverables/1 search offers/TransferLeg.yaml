@@ -7,8 +7,8 @@ allOf:
         description: discriminator for the leg type
         const: transfer
       duration:
-        type: integer
-        description: Duration of the leg in minutes
+        type: string
+        description: Duration of the leg in minutes (ISO 8601 duration format, e.g., "PT10M" for 10 minutes).
       start:
         type: string
         format: place-ref
@@ -18,6 +18,6 @@ allOf:
 examples:
   - {
       legType: "transfer",
-      duration: 10,
-      mode: "FOOT"
+      duration: "PT10M",
+      mode: "WALK"
     }

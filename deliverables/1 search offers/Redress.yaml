@@ -1,4 +1,8 @@
 type: object
+required:
+  - redressId
+  - redressType
+  - description
 properties:
   redressId:
     type: string

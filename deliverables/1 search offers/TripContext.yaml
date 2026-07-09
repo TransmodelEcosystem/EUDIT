@@ -4,6 +4,12 @@ properties:
     type: string
     description: The currency code for the search offer request (e.g., USD, EUR)
     format: ISO4217
+  # TBD: adding the place structure
+  # places:
+  #   type: array
+  #   items:
+  #     oneOf:
+  #       - $ref: .\Place.yaml
   maxResults:
     type: integer
     description: Maximum number of results to return for the search offer request

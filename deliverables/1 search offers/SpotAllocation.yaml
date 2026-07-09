@@ -1,0 +1,32 @@
+allOf:
+- $ref: .\PackageElement.yaml
+- type: object
+  required:
+    - packageElementType
+    - typeOfSpot
+  properties:
+    packageElementType:
+      description: The type of the package element, which can be used to determine the specific schema to use for validation.
+      type: string
+      const: spotAllocation
+    typeOfSpot:
+      type: string
+      description: The type of spot allocated. 
+      x-enum : [seat, berth, other]
+    description:
+      type: string
+      description: A description of the allocation.
+    reference:
+      type: string
+      description: A spot reference identifier for the allocation.
+      format: spot-ref
+    numberOfSpots:
+      type: integer
+      description: The number of allocated spots for the allocation.
+examples:
+- {
+    "packageElementType": "spotAllocation",
+    "typeOfSpot": "seat",
+    "description": "Allocated seat for the trip.",
+    "numberOfSpots": 1
+  }

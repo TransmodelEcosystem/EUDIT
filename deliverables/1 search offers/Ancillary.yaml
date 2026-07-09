@@ -9,7 +9,7 @@ allOf:
       description: The type of the package element, which can be used to determine the specific schema to use for validation.
       type: string
       const: ancillary
-    ancillaryType:
+    typeOfAncillary:
       type: string
       description: The type of ancillary service provided. The allowed values are defined in 'ancillary-type' lookup.
     appliesTo:
