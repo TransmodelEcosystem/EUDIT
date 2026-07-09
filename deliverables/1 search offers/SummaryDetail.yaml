@@ -29,14 +29,16 @@ properties:
     examples: 
     - "2026-01-01T00:00:00Z/P1D"  # Valid for one day from January 1, 2026
     - "2026-01-01T12:00:00Z/2026-01-02T12:00:00Z"  # Valid for one day from January 1, 2026
-  summaryFor:
-    type: object
-    properties:
-      packageElementId:
-        type: string
-        format: package-element-ref
-      section:
-        $ref: .\TripPatternSection.yaml
+  packageElements:
+    type: array
+    items:
+      type: string
+      format: package-element-ref
+  products:
+    type: array
+    items:
+      type: string
+      format: product-ref
   fee:
     allOf:
       - $ref: .\Cost.yaml
