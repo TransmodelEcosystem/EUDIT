@@ -40,6 +40,10 @@ paths:
           headers:
             Content-Language:
               $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
@@ -64,6 +68,10 @@ paths:
           headers:
             Content-Language:
               $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
@@ -89,6 +97,10 @@ paths:
           headers:
             Content-Language:
               $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
@@ -113,6 +125,10 @@ paths:
           headers:
             Content-Language:
               $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
@@ -138,6 +154,10 @@ paths:
           headers:
             Content-Language:
               $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
@@ -162,6 +182,10 @@ paths:
           headers:
             Content-Language:
               $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
           content:
             application/json:
               schema:
@@ -389,3 +413,17 @@ components:
         type: string
         pattern: ^[a-zA-Z]+-[a-zA-Z]+$
       required: true
+
+    cacheControl:
+      description: >
+        Caching directives for this response. Lookup tables are typically static and can be cached
+        for a long time (e.g. 1 day). The server may also provide ETag headers for conditional requests.
+      schema:
+        type: string
+
+    ETag:
+      description: >
+        Entity tag for this response, used for conditional requests (If-None-Match).
+        Lookup tables are typically static and can be cached for a long time (e.g. 1 day).
+      schema:
+        type: string
