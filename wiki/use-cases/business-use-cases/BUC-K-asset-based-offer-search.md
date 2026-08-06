@@ -8,7 +8,7 @@
   - Present comparable offers to the Customer
   - Output: a list of offered, usable assets
 
-## Terminology note —
+## Terminology
 
 **Asset**: a physical resource made available for individual short-term use, located at or near a street-level position. Examples: shared bike, shared e-scooter, shared e-moped, on-street parking bay, off-street parking space, EV charging socket, cargo bike. In Transmodel terms: VEHICLE (for moving assets), or PARKING BAY (for static assets).
 
@@ -42,7 +42,7 @@
 
 - **Postconditions — Success guarantees:**
   - For each offer option, the Customer can see:
-    - the asset type and the specific asset identifier or asset class
+    - the asset type or the specific asset identifier
     - the pricing model and calculated indicative or final price (PRICE), including the unlock fee where applicable, per-unit rate (per minute, per km), and any applicable caps or tiered thresholds (PARKING CHARGE BAND / FARE PRODUCT)
     - the applicable usage conditions: maximum session duration, geographic constraints, permitted parking/drop-off zones (VALIDITY CONDITION(s), MOBILITY SERVICE CONSTRAINT ZONE(s))
     - requirements (subscription, reduction right, vehicle type, age) (ENTITLEMENT(s), USER PROFILE)
@@ -60,29 +60,29 @@
  The Customer provides the following selection criteria to the Retailer:  
  - location or area (GPS position, address, or zone),
  - departure time,
+ - and asset identification (QR, name, ...) OR asset type (bike, e-scooter, e-moped, parking bay, EV charging point, …),
  - (optional) desired usage duration,
- - (optional) asset type (bike, e-scooter, e-moped, parking bay, EV charging point, …), 
- - and any eligibility information that might impact the result (employer code, driver's license). This last category should be known by the Retailer already, and possibly validated.
+ - and any eligibility information that might impact the result (employer code, driver's license). This last category should be known by the Retailer already, and possibly validated up forehand.
 
 - **Locate available assets**
 
-2. The Retailer determines which Distributor(s) to query based on the requested location, asset type, and applicable commercial agreements. The Retailer requests available offers from the relevant Distributor(s), providing the Customer's location, asset type, desired duration, and context.
+2. The Retailer determines which Distributor(s) to query based on the requested location, asset (type), and applicable commercial agreements. The Retailer requests available offers (assets or asset types & number available) from the relevant Distributor(s), providing the Customer's location, asset type, desired duration, and context.
 
-3a. Each distributor with a station-based solution should return a list of offers per asset type, their common attributes, the pricing model (per-minute, per-km, flat-rate, combined unlock fee + per-minute, tiered, daily cap) (PARKING CHARGE BAND / TIME INTERVAL / DISTANCE MATRIX ELEMENT), how many of this type are available, and an estimated price (band)
+3. Each distributor with a station-based solution should return a list of offers per asset type, their common attributes, the pricing model (per-minute, per-km, flat-rate, combined unlock fee + per-minute, tiered, daily cap) (PARKING CHARGE BAND / TIME INTERVAL / DISTANCE MATRIX ELEMENT), how many of this type are available, and an estimated price (band)
 
-3b. Each distributor with a non-station-based solution should reply with a list of offers per asset, including it's identification, status (AVAILABILITY CONDITION), the location, the fare structure, any relevant asset-specific attributes relevant (e.g. battery level for electric assets, accessibility features), the pricing model (per-minute, per-km, flat-rate, combined unlock fee + per-minute, tiered, daily cap) (PARKING CHARGE BAND / TIME INTERVAL / DISTANCE MATRIX ELEMENT), and an estimated price (band)
+4. Each distributor with a non-station-based solution should reply with a list of offers per asset, including it's identification, status (AVAILABILITY CONDITION), the location, the fare structure, any relevant asset-specific attributes relevant (e.g. battery level for electric assets, accessibility features), the pricing model (per-minute, per-km, flat-rate, combined unlock fee + per-minute, tiered, daily cap) (PARKING CHARGE BAND / TIME INTERVAL / DISTANCE MATRIX ELEMENT), and an estimated price (band)
 
-- **Extensions**
+**Extensions**
 
-4. For each offer the Distributor could include:
+5. For each offer the Distributor could include:
   - the applicable usage conditions: maximum session duration, service area, permitted parking/drop-off zones, return constraints (VALIDITY CONDITION(s), MOBILITY SERVICE CONSTRAINT ZONE(s))
   - any active subscription or reduction benefit (ENTITLEMENT(s), USER PROFILE)
   - all necessary required booking information categories (e.g. passport number, driver license, name, ...), in order to supply it during the booking
   - cancellation conditions applicable before session start
   
-- **Present comparable offers**
+**Present comparable offers**
 
-5. The Retailer consolidates the results from the relevant Distributor(s) into a consistent list of comparable offers and presents them to the Customer. The Retailer may filter, sort, or group options by: distance to asset, price (indicative total for stated duration), pricing model, asset class, or availability. The Customer can compare options side by side.
+6. The Retailer consolidates the results from the relevant Distributor(s) into a consistent list of comparable offers and presents them to the Customer. The Retailer may filter, sort, or group options by: distance to asset, price (indicative total for stated duration), pricing model, asset class, or availability. The Customer can compare options side by side.
 
 ### Alternatives scenarios
 Alternative scenarios **fully compatible** with the main scenario; using shortcuts or very detailed specific points of the main scenario.
@@ -90,7 +90,7 @@ Alternative scenarios **fully compatible** with the main scenario; using shortcu
 ##### Walk-up scan (QR code or NFC on the asset)
 1. The Customer is standing next to an available asset and scans the QR code or taps the NFC tag on it.
 2. The Retailer retrieves the asset identifier and queries the Distributor for the applicable offers for that specific asset, using the Customer's account context where available.
-3. The Distributor returns the offer(s) for that specific asset. If will only return one offer
+3. The Distributor returns the offer(s) for that specific asset. In most cases, it will only return one offer
 
 ##### Pre-planned future use (advance reservation)
 1. The Customer is planning a future trip and wants to know the fare for an asset to be used at a specific time and location (e.g. a bike at a hub for tomorrow morning).
@@ -106,10 +106,37 @@ UML activity diagram to point out the flows between Retailer and Distributor
 
 ```mermaid
 sequenceDiagram
+    title Request to use a specific asset
     participant Customer
     participant Retailer
-    participant Districtor1
-    participant Districtor2
+    participant Distributor1 as Distributor/Operator
+  
+    Customer->>+Retailer: i want to use asset X
+    Retailer->>+Distributor1: find offers for asset X
+    Distributor1-->>Retailer: offer list (for asset X)
+    Retailer-->>Customer: list of offers
+```
+
+```mermaid
+sequenceDiagram
+    title Request to use assets from a station
+    participant Customer
+    participant Retailer
+    participant Distributor1 as Distributor/Operator
+  
+    Customer->>+Retailer: find offers in this station
+    Retailer->>+Distributor1: find offers
+    Distributor1-->>Retailer: offer list <br>(asset type & number available)
+    Retailer-->>Customer: list of offers
+```
+
+```mermaid
+sequenceDiagram
+    title Search in an area
+    participant Customer
+    participant Retailer
+    participant Distributor1
+    participant Distributor2
   
     Customer->>+Retailer: find offers
     Retailer->>+Distributor1: find offers
