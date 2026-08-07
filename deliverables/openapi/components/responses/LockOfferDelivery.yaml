@@ -3,7 +3,7 @@ headers:
   Version:
     $ref: ../headers/version.yaml
   Content-Language:
-    $ref: ../headers/contentLanguage.yaml
+    $ref: ../headers/content-language.yaml
   Expires:
     $ref: ../headers/expires.yaml
 content:

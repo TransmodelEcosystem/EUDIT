@@ -1,5 +1,3 @@
-in: header
-name: Content-Language
 required: true
 schema:
   type: string

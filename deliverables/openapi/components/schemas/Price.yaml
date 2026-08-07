@@ -39,4 +39,4 @@ properties:
     type: array
     description: An optional list of taxes INCLUDED in the price.
     items:
-      $ref: .\Tax.yaml
+      $ref: ./Tax.yaml

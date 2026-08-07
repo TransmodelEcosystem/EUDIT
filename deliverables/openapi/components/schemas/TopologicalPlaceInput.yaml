@@ -1,5 +1,5 @@
 allOf:
-  - $ref: .\Place.yaml
+  - $ref: ./Place.yaml
   - type: object
     additionalProperties: false
     description: TOPOLOGICAL PLACE (INPUT) — a geographic area or zone as a place.

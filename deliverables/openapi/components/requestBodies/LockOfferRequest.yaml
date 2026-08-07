@@ -2,6 +2,8 @@ content:
   application/json:
     schema:    
       type: object
+      required:
+        - offerReference
       properties:
         offerReference:
           description: >

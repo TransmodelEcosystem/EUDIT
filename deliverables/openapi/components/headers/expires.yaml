@@ -1,5 +1,3 @@
-in: header
-name: expires
 required: true
 description: A HTTP date string
 schema:

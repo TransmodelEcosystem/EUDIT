@@ -1,5 +1,5 @@
 allOf:
-  - $ref: .\Leg.yaml 
+  - $ref: ./Leg.yaml
   - type: object
     additionalProperties: false
     description: CONTINUOUS LEG (INPUT) — a leg without fixed timetabled stops (e.g. walk, cycle, taxi).

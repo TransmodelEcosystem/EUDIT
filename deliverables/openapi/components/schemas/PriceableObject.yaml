@@ -18,4 +18,4 @@ properties:
     type: array
     description: the price of the priceable object, which can be composed of multiple price elements
     items:
-      $ref: .\Price.yaml
+      $ref: ./Price.yaml

@@ -13,12 +13,12 @@ properties:
     description: The legs that make up this trip pattern.
     items:
       oneOf:
-      - $ref: .\TimedLeg.yaml
-      - $ref: .\ContinuousLeg.yaml
-      - $ref: .\TransferLeg.yaml
+      - $ref: ./TimedLeg.yaml
+      - $ref: ./ContinuousLeg.yaml
+      - $ref: ./TransferLeg.yaml
       discriminator:
         propertyName: legType
         mapping:
-          timed: .\TimedLeg.yaml
-          continuous: .\ContinuousLeg.yaml
-          transfer: .\TransferLeg.yaml
+          timed: ./TimedLeg.yaml
+          continuous: ./ContinuousLeg.yaml
+          transfer: ./TransferLeg.yaml

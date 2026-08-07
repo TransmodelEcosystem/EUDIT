@@ -3,6 +3,9 @@
     application/json:
       schema:    
         type: object
+        required:
+          - travellers
+          - tripPatterns
         properties:
           travellers:
             type: array

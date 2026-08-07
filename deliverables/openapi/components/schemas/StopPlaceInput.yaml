@@ -1,5 +1,5 @@
 allOf:
-- $ref: '#/components/schemas/Place'
+- $ref: ./Place.yaml
 - type: object
   additionalProperties: false
   description: STOP PLACE (INPUT) — a stop place or scheduled stop point identified by reference.

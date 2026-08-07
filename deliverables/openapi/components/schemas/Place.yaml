@@ -15,4 +15,4 @@ properties:
     description: Name of the place.
   location:
     description: Geodetic position of this place.
-    $ref: .\GeoPosition.yaml
+    $ref: ./GeoPosition.yaml
