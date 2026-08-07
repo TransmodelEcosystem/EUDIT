@@ -408,10 +408,10 @@ components:
 
   headers:
     contentLanguage:
-      description: Language of human-readable content in the response (IETF BCP 47 tag, e.g. nl-NL).
+      description: Language of human-readable content in the response (IETF BCP 47 tag, e.g. en or nl-NL).
       schema:
         type: string
-        pattern: ^[a-zA-Z]+-[a-zA-Z]+$
+        pattern: '^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$'
       required: true
 
     cacheControl:
