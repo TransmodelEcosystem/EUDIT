@@ -1,8 +1,7 @@
-required: true
-description: A HTTP date string
+description: The date/time at which the offer expires, as an HTTP-date string.
+required: false
 schema:
-  type: string
-  format: http-date
+  $ref: ../schemas/httpDate.yaml
 x-externalDocs:
-  url: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Expires
-  description: http-date format as defined in RFC7231, section 7.1.1.1
+  url: https://www.rfc-editor.org/rfc/rfc9111#section-5.3
+  description: "RFC 9111 — HTTP Caching, section 5.3: Expires"

@@ -1,12 +1,12 @@
-type: object
-properties:
-  offers:
-    type: array
-    items:
-      $ref: ../schemas/Offer.yaml
-
-  links:
-    type: array
-    description: Hypermedia links for further actions (e.g. pagination).
-    items:
-      $ref: ../schemas/Link.yaml
+description: SEARCH OFFER DELIVERY — the root response object containing all offers matching the search request.
+headers:
+  Version:
+    $ref: ../headers/version.yaml
+  Content-Language:
+    $ref: ../headers/content-language.yaml
+  Expires:
+    $ref: ../headers/expires.yaml
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/SearchOfferDelivery.yaml

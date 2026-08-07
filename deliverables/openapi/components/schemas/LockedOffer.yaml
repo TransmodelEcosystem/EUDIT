@@ -1,1 +1,8 @@
-$ref: ./Offer.yaml
+allOf:
+  - $ref: ./Offer.yaml
+  - type: object
+    properties:
+      status:
+        type: string
+        description: The status of the offer.
+        const: locked

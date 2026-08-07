@@ -1,0 +1,514 @@
+openapi: 3.1.0
+info:
+  title: OTI — Search offers (OGC API Processes)
+  version: 0.1.0-draft
+  description: >-
+    OGC API Processes-compatible variant of the OTI Search offers API,
+    aligned with TOMP-API 2.0.0.
+
+    Implements OGC API — Processes Part 1: Core (OAProc-1) and the
+    relevant parts of OGC API — Common Part 1 (landing page, conformance).
+
+    The search-offers process accepts an OfferRequest as its "offerRequest"
+    input and returns a SearchOfferDelivery as its "searchOfferDelivery" output.
+
+    Conformance classes implemented:
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/json
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/oas30
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/job-list
+
+  contact:
+    name: OTI working group
+  license:
+    name: EUPL-1.2
+    url: https://eupl.eu/1.2/en/
+
+servers: []
+
+security:
+  - BearerAuth: []
+
+tags:
+- name: Capabilities
+  description: OGC API — Common capabilities (landing page, conformance).
+- name: Processes
+  description: OGC API — Process discovery and description.
+- name: Jobs
+  description: OGC API — Asynchronous job management.
+- name: Search offers
+  description: OTI Search offers process execution.
+
+paths:
+
+  # ─── OGC API COMMON — Capabilities ─────────────────────────────────────────
+
+  /:
+    get:
+      summary: Landing page
+      description: >-
+        Returns the landing page of the API with links to the API definition,
+        the conformance declaration and the process list
+        (OGC API — Common Part 1, clause 7.2).
+      operationId: getLandingPage
+      tags:
+      - Capabilities
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      responses:
+        '200':
+          description: Landing page.
+          headers:
+            Content-Language:
+              $ref: ./components/headers/content-language.yaml
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/LandingPage.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /conformance:
+    get:
+      summary: Conformance declaration
+      description: >-
+        Returns the list of OGC conformance classes that this API implements
+        (OGC API — Common Part 1, clause 7.4).
+      operationId: getConformance
+      tags:
+      - Capabilities
+      responses:
+        '200':
+          description: Conformance declaration.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/ConfClasses.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  # ─── OGC API PROCESSES — Process discovery ──────────────────────────────────
+
+  /processes:
+    get:
+      summary: Process list
+      description: >-
+        Returns the list of available processes
+        (OGC API — Processes Part 1, clause 7.9).
+      operationId: getProcesses
+      tags:
+      - Processes
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      - name: limit
+        in: query
+        description: Maximum number of processes to include in the response.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      responses:
+        '200':
+          description: Process list.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/ProcessList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /processes/search-offers:
+    get:
+      summary: Search-offers process description
+      description: >-
+        Returns the full description of the search-offers process,
+        including its inputs and outputs
+        (OGC API — Processes Part 1, clause 7.10).
+      operationId: getSearchOffersProcessDescription
+      tags:
+      - Processes
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      responses:
+        '200':
+          description: Process description.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/Process.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  # ─── OGC API PROCESSES — Execution ──────────────────────────────────────────
+
+  /processes/search-offers/execution:
+    post:
+      summary: Execute search-offers
+      description: >-
+        Executes the search-offers process (TOMP-API 2.0.0 / OGC API Processes Part 1, clause 7.11).
+
+        Execution mode is controlled by the Prefer header:
+        - "respond-async" requests asynchronous execution → 201 + StatusInfo
+        - absent or "respond-sync" requests synchronous execution → 200 + Results
+      operationId: executeSearchOffers
+      tags:
+      - Search offers
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      - $ref: ./components/parameters/traceState.yaml
+      - $ref: ./components/parameters/prefer.yaml
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./ogc/SearchOffersExecute.yaml
+      responses:
+        '200':
+          description: >-
+            Synchronous execution — process completed successfully.
+            Returns execution results in document mode.
+          headers:
+            Version:
+              $ref: ./components/headers/version.yaml
+            Content-Language:
+              $ref: ./components/headers/content-language.yaml
+            Expires:
+              $ref: ./components/headers/expires.yaml
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/SearchOffersResults.yaml
+        '201':
+          description: >-
+            Asynchronous execution accepted — job created.
+            The Location header contains the URL to poll for job status.
+          headers:
+            Location:
+              description: URL of the created job (GET /jobs/{jobId}).
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/StatusInfo.yaml
+        '400':
+          description: Bad request — the request body is invalid or missing required inputs.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '404':
+          description: No process with the given identifier exists.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  # ─── OGC API PROCESSES — Job management ─────────────────────────────────────
+
+  /jobs:
+    get:
+      summary: Job list
+      description: >-
+        Returns a list of jobs (optionally filtered by status)
+        (OGC API — Processes Part 1, clause 7.13).
+      operationId: getJobs
+      tags:
+      - Jobs
+      parameters:
+      - name: status
+        in: query
+        description: Filter by job status.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - accepted
+            - running
+            - successful
+            - failed
+            - dismissed
+        style: form
+        explode: false
+      - name: processID
+        in: query
+        description: Filter by process identifier.
+        schema:
+          type: string
+      - name: limit
+        in: query
+        description: Maximum number of jobs to include in the response.
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
+      responses:
+        '200':
+          description: Job list.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/JobList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /jobs/{jobId}:
+    get:
+      summary: Job status
+      description: >-
+        Returns the current status of the job identified by {jobId}
+        (OGC API — Processes Part 1, clause 7.12).
+      operationId: getJobStatus
+      tags:
+      - Jobs
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        description: Unique identifier of the job.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Job status.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/StatusInfo.yaml
+        '404':
+          description: No job with the given identifier exists.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+    delete:
+      summary: Dismiss job
+      description: >-
+        Cancels an accepted or running job, or removes a finished job
+        (OGC API — Processes Part 1, clause 7.13).
+      operationId: dismissJob
+      tags:
+      - Jobs
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        description: Unique identifier of the job to dismiss.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Job dismissed.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/StatusInfo.yaml
+        '404':
+          description: No job with the given identifier exists.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /jobs/{jobId}/results:
+    get:
+      summary: Job results
+      description: >-
+        Returns the results of a successful job
+        (OGC API — Processes Part 1, clause 7.14).
+      operationId: getJobResults
+      tags:
+      - Jobs
+      parameters:
+      - name: jobId
+        in: path
+        required: true
+        description: Unique identifier of the job.
+        schema:
+          type: string
+          format: uuid
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      responses:
+        '200':
+          description: Job results.
+          headers:
+            Version:
+              $ref: ./components/headers/version.yaml
+            Content-Language:
+              $ref: ./components/headers/content-language.yaml
+            Expires:
+              $ref: ./components/headers/expires.yaml
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/Results.yaml
+        '404':
+          description: No job with the given identifier exists or results are not (yet) available.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        JWT Bearer token. Supply as "Authorization: Bearer <token>" on every request.
+
+  parameters:
+    traceState:
+      $ref: ./components/parameters/traceState.yaml
+    acceptLanguage:
+      $ref: ./components/parameters/acceptLanguage.yaml
+    prefer:
+      $ref: ./components/parameters/prefer.yaml
+
+  headers:
+    contentLanguage:
+      $ref: ./components/headers/content-language.yaml
+    expires:
+      $ref: ./components/headers/expires.yaml
+    version:
+      $ref: ./components/headers/version.yaml
+
+  requestBodies:
+    searchOfferRequest:
+      $ref: ./components/requestBodies/SearchOfferRequest.yaml
+
+  responses:
+    searchOfferDelivery:
+      $ref: ./components/responses/SearchOfferDelivery.yaml
+    warningList:
+      $ref: ./components/responses/WarningList.yaml
+
+  schemas:
+    # ─── OGC API elements ─────────────────────────────────────────────────────
+    LandingPage:
+      $ref: ./ogc/LandingPage.yaml
+    ConfClasses:
+      $ref: ./ogc/ConfClasses.yaml
+    ProcessList:
+      $ref: ./ogc/ProcessList.yaml
+    ProcessSummary:
+      $ref: ./ogc/ProcessSummary.yaml
+    Process:
+      $ref: ./ogc/Process.yaml
+    InputDescription:
+      $ref: ./ogc/InputDescription.yaml
+    OutputDescription:
+      $ref: ./ogc/OutputDescription.yaml
+    Execute:
+      $ref: ./ogc/Execute.yaml
+    SearchOffersExecute:
+      $ref: ./ogc/SearchOffersExecute.yaml
+    Results:
+      $ref: ./ogc/Results.yaml
+    SearchOffersResults:
+      $ref: ./ogc/SearchOffersResults.yaml
+    StatusInfo:
+      $ref: ./ogc/StatusInfo.yaml
+    JobList:
+      $ref: ./ogc/JobList.yaml
+
+    # ─── OTI domain schemas (shared with oti-rest.yaml) ──────────────────────
+    OfferRequest:
+      $ref: ./components/schemas/OfferRequest.yaml
+    SearchOfferDelivery:
+      $ref: ./components/schemas/SearchOfferDelivery.yaml
+    Offer:
+      $ref: ./components/schemas/Offer.yaml
+    TravelRight:
+      $ref: ./components/schemas/TravelRight.yaml
+    Ancillary:
+      $ref: ./components/schemas/Ancillary.yaml
+    Allocation:
+      $ref: ./components/schemas/Allocation.yaml
+    SpotAllocation:
+      $ref: ./components/schemas/SpotAllocation.yaml
+    AssetAllocation:
+      $ref: ./components/schemas/AssetAllocation.yaml
+    AllocationSelection:
+      $ref: ./components/schemas/AllocationSelection.yaml
+    AncillarySelection:
+      $ref: ./components/schemas/AncillarySelection.yaml
+    Price:
+      $ref: ./components/schemas/Price.yaml
+    Link:
+      $ref: ./components/schemas/Link.yaml
+    Warning:
+      $ref: ./components/schemas/Warning.yaml
+    WarningList:
+      $ref: ./components/schemas/WarningList.yaml

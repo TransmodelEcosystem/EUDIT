@@ -1,3 +1,4 @@
+deprecated: true
 allOf:
   - $ref: ./PriceableObject.yaml
   - type: object

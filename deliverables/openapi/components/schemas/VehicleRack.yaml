@@ -3,6 +3,8 @@ additionalProperties: false
 description: >
   VEHICLE RACK — a rack or carrier mounted on a passenger vehicle
   (e.g. roof rack, bike carrier).
+required:
+  - type
 properties:
   type:
     type: string

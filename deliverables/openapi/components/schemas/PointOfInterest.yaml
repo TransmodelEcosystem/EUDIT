@@ -1,5 +1,5 @@
 allOf:
-  - $ref: Place.yaml
+  - $ref: ./Place.yaml
   - type: object
     additionalProperties: false
     description: POINT OF INTEREST (INPUT) — a named point of interest as a place.

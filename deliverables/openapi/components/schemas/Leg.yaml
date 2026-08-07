@@ -1,5 +1,6 @@
 type: object
-description: LEG (INPUT) — a single leg within a trip. Use the legType discriminator to select the concrete sub-type.
+x-abstract: true
+description: LEG (INPUT) — abstract base class for a single leg within a trip. Use the legType discriminator to select the concrete sub-type.
 required:
 - legId
 - legType
@@ -27,4 +28,4 @@ properties:
     description: Discriminator identifying the concrete leg type.
   trip:
     type: string
-    description: Caller-assigned identifier for the trip this leg belongs to (used to group legs from the same trip, e.g. for interlining).
+    description: Caller-assigned identifier for the trip this leg belongs to (used to group legs from the same trip, e.g. for interlining, inbound/outbound).

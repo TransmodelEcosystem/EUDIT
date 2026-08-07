@@ -1,0 +1,55 @@
+type: object
+x-abstract: true
+description: >-
+  OGC API Processes — Execute request (abstract base).
+  Process-specific variants extend this schema via allOf and add a typed
+  "inputs" property (OGC API — Processes Part 1, clause 7.11).
+
+  Note for code generators: the abstract base deliberately leaves "inputs"
+  untyped. Use the process-specific subschema (e.g. SearchOffersExecute)
+  as the concrete request body type.
+properties:
+  inputs:
+    type: object
+    description: >-
+      Named process inputs. Typed concretely in each process-specific
+      Execute subschema.
+  outputs:
+    type: object
+    description: >-
+      Requested outputs and their transmission modes. Omit to receive all
+      outputs inline (value transmission).
+    additionalProperties:
+      type: object
+      properties:
+        transmissionMode:
+          type: string
+          enum:
+          - value
+          - reference
+          default: value
+  response:
+    type: string
+    description: >-
+      How the response is structured when executing synchronously.
+      "raw" returns the output directly; "document" wraps it in a results object.
+    enum:
+    - raw
+    - document
+    default: document
+  subscriber:
+    type: object
+    description: Callback URLs for asynchronous execution notifications.
+    properties:
+      successUri:
+        type: string
+        format: uri
+        description: URI to POST the result to on successful completion.
+      inProgressUri:
+        type: string
+        format: uri
+        description: URI to POST status updates to during execution.
+      failedUri:
+        type: string
+        format: uri
+        description: URI to POST the failure notification to.

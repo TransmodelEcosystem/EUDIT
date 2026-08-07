@@ -1,5 +1,6 @@
 type: object
-description: PLACE (INPUT) — a geographic location referenced in the trip context. Use the placeType discriminator to select the concrete sub-type.
+x-abstract: true
+description: PLACE (INPUT) — abstract base class for a geographic location referenced in the trip context. Use the placeType discriminator to select the concrete sub-type.
 required:
 - placeId
 - placeType

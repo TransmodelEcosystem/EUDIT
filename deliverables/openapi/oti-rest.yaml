@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: OTI — Search offers (REST)
+  version: 0.1.0-draft
+  description: >-
+    OSDM 3.7.1-compatible REST variant of the OTI Search offers API.
+    Exposes a single POST /offers endpoint; request and response schemas
+    are shared with the OGC variant via oti.yaml.
+  contact:
+    name: OTI working group
+    url: https://github.com/UnionInternationalCheminsdeFer/OSDM
+  license:
+    name: EUPL-1.2
+    url: https://eupl.eu/1.2/en/
+
+servers: []
+
+security:
+  - BearerAuth: []
+
+paths:
+  /offers:
+    post:
+      summary: Search offers
+      description: >-
+        OSDM 3.7.1 — POST /offers.
+        Returns SALES OFFER PACKAGEs matching the traveller's trip context,
+        PASSENGER TYPEs, and FARE CONDITIONS.
+      operationId: searchOffers
+      tags:
+      - Search offers
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      - $ref: ./components/parameters/traceState.yaml
+      requestBody:
+        $ref: ./components/requestBodies/SearchOfferRequest.yaml
+      responses:
+        '200':
+          $ref: ./components/responses/SearchOfferDelivery.yaml
+        '400':
+          description: Bad request — the request body is invalid or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '401':
+          description: Unauthorized — missing or invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        JWT Bearer token. Supply as "Authorization: Bearer <token>" on every request.

@@ -1,27 +1,47 @@
-allOf: 
+allOf:
 - $ref: ./Package.yaml
 - type: object
+  description: OFFER — a purchasable combination of package elements for the requested trip.
   required:
-    - minimumPrice
-
+  - minimumPrice
+  - matching
   properties:
+    status:
+        type: string
+        const: offered
+
     matching:
       type: string
-      enum:
-        - exact
-        - partial
-    
+      description: Indicates how well this offer matches the original request.
+      x-extensible-enum:
+      - exact
+      - partial
+      - none
+
     minimumPrice:
+      description: Minimum total price of this offer (e.g. before optional ancillaries).
       $ref: ./Price.yaml
 
-    personalInformationRequired:
-      type: boolean
-
-    placeHolders:
+    selectableAllocations:
       type: array
-      description: .
+      description: List of selectable allocations for this offer (e.g. seat selection, cabin class, ...).
       items:
-        oneOf:
-          - $ref: ./TravellingEntityPlaceHolder.yaml
-          - $ref: ./AllocationPlaceHolder.yaml
-          - $ref: ./AncillaryPlaceHolder.yaml
+        $ref: ./AllocationSelection.yaml
+
+    selectableAncillaries:
+      type: array
+      description: List of selectable ancillaries for this offer (e.g. baggage, meals, ...).
+      items:
+        $ref: ./AncillarySelection.yaml
+
+    allowedEntitlements:
+      type: array
+      description: List of allowed entitlements to obtain reduction or additional offers.
+      items:
+        type: string
+
+    requiredInformation:
+      type: array
+      description: List of required information for this offer (e.g. traveller details, vehicle registration, ...).
+      items:
+        $ref: ./RequiredInformation.yaml

@@ -1,5 +1,8 @@
 type: object
-description: PRICEABLE OBJECT — an object of a trip that can be priced
+x-abstract: true
+description: >
+  PRICEABLE OBJECT — abstract base class for all objects that can carry a price
+  (packages, package elements, ancillaries, allocations).
 properties:
   priceableObjectId:
     type: string

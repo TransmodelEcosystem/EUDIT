@@ -1,0 +1,36 @@
+type: object
+additionalProperties: false
+description: SEARCH OFFER REQUEST — the root object for an offer search.
+required:
+- travellers
+- tripPatterns
+properties:
+  tripPatterns:
+    type: array
+    minItems: 1
+    description: One or more trip patterns the traveller wants to undertake, for which offers are sought.
+    items:
+      $ref: ./TripPattern.yaml
+  travellers:
+    type: array
+    minItems: 1
+    description: The travelling entities (travellers, vehicles, animals, luggage) for whom offers are sought.
+    items:
+      oneOf:
+      - $ref: ./Traveller.yaml
+      - $ref: ./PassengerVehicle.yaml
+      - $ref: ./Animal.yaml
+      - $ref: ./Luggage.yaml
+      discriminator:
+        propertyName: entityType
+        mapping:
+          traveller: ./Traveller.yaml
+          vehicle: ./PassengerVehicle.yaml
+          animal: ./Animal.yaml
+          luggage: ./Luggage.yaml
+  filter:
+    description: Constraints on the offers to be returned.
+    $ref: ./SearchOfferFilter.yaml
+  policy:
+    description: Controls what the server includes in the response.
+    $ref: ./SearchOfferPolicy.yaml

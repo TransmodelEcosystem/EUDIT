@@ -1,0 +1,13 @@
+name: Prefer
+in: header
+description: >-
+  Controls synchronous vs asynchronous execution.
+  Use "respond-async" to request asynchronous execution (OGC API Processes Part 1, clause 7.11).
+schema:
+  type: string
+  enum:
+    - respond-async
+    - respond-sync
+x-externalDocs:
+  description: RFC 7240 - Prefer Header for HTTP
+  url: https://www.rfc-editor.org/rfc/rfc7240

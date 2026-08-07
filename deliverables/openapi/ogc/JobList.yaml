@@ -1,0 +1,25 @@
+type: object
+description: >-
+  OGC API — Job list.
+  Response to GET /jobs; lists all jobs (optionally filtered)
+  (OGC API — Processes Part 1, clause 7.13).
+required:
+- jobs
+- links
+properties:
+  jobs:
+    type: array
+    description: Status information for each job.
+    items:
+      $ref: ./StatusInfo.yaml
+  links:
+    type: array
+    description: Hypermedia links (e.g. pagination, self).
+    items:
+      $ref: ../components/schemas/Link.yaml
+  numberMatched:
+    type: integer
+    description: Total number of jobs matching the filter.
+  numberReturned:
+    type: integer
+    description: Number of jobs included in this response.

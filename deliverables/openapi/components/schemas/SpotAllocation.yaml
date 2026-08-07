@@ -1,0 +1,20 @@
+allOf:
+- $ref: ./Allocation.yaml
+- type: object
+  additionalProperties: false
+  description: SPOT ALLOCATION — a package element for an allocation to a specific spot (e.g. seat, berth).
+  required:
+  - packageElementType
+  properties:
+    packageElementType:
+      type: string
+      const: spotAllocation
+    typeOfSpot:
+      type: string
+      description: Category of the allocated spot.
+      x-extensible-enum:
+      - seat
+      - berth
+      - compartment
+      - wheelchairSpace
+      - other

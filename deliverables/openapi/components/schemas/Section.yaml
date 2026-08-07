@@ -7,19 +7,21 @@ required:
   - startLegRef
   - endLegRef
 properties:
-  sectionId: 
+  startLegRef:
     type: string
-
-  tripPatternRef: 
-    description: to refer to a specific trip pattern, if needed.
+    description: Reference to the first leg in this section.
+  endLegRef:
     type: string
-
-  startLegRef: 
+    description: Reference to the last leg in this section.
+  startPlaceRef:
     type: string
-  endLegRef: 
+    description: Reference to the departure place of this section.
+  endPlaceRef:
     type: string
-
-  startPlaceRef: 
+    description: Reference to the arrival place of this section.
+  tripPatternRef:
     type: string
-  endPlaceRef: 
-    type: string  
+    description: Reference to the trip pattern this section belongs to.
+  sectionId:
+    type: string
+    description: Server-assigned identifier for this provided section.

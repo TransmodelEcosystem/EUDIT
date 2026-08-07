@@ -1,42 +1,21 @@
 type: object
+additionalProperties: false
+description: PRICE — a monetary amount in a specific currency.
 required:
-  - amount
-  - currency
+- currencyCode
+- amount
 properties:
+  currencyCode:
+    type: string
+    pattern: "^[A-Z]{3}$"
+    description: ISO 4217 currency code (e.g. EUR, GBP, SEK).
   amount:
     type: number
     format: double
-    description: The price amount.
-  currency:
-    type: string
-    description: The currency of the price, in ISO 4217 format (e.g., "USD", "EUR").
-  description:
-    type: string
-    description: An optional description of the price.
-  type:
-    type: string
-    description: An optional type of the price (e.g., "fee").
-    enum: 
-      - fee
-      - deposit
-      - fine
-      - refund
-      - reimbursement
-      - other
-  discounts:
-    type: array
-    description: An optional list of discounts APPLIED to the price.
-    items:
-      type: number
-      format: double
-  surcharges:
-    type: array
-    description: An optional list of surcharges APPLIED to the price.
-    items:
-      type: number
-      format: double
+    minimum: 0
+    description: Monetary amount in the specified currency.
   taxes:
     type: array
-    description: An optional list of taxes INCLUDED in the price.
+    description: Tax breakdown applicable to this price.
     items:
       $ref: ./Tax.yaml

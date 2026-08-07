@@ -1,0 +1,22 @@
+type: object
+description: >-
+  OGC API Processes — Output description.
+  Describes a single named output of a process
+  (OGC API — Processes Part 1, clause 7.10).
+required:
+- schema
+properties:
+  title:
+    type: string
+    description: Human-readable title.
+  description:
+    type: string
+    description: Detailed description of the output.
+  keywords:
+    type: array
+    items:
+      type: string
+  schema:
+    description: JSON Schema describing the structure of the output value.
+    type: object
+    additionalProperties: true

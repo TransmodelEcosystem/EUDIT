@@ -2,6 +2,7 @@ type: object
 additionalProperties: false
 description: TRIP PATTERN (INPUT) — a proposed trip the traveller wants to undertake, consisting of one or more legs.
 required:
+- tripPatternId
 - legs
 properties:
   tripPatternId:

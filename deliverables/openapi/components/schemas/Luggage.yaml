@@ -1,5 +1,5 @@
 allOf:
-  - $ref: TravellingEntity.yaml
+  - $ref: ./TravellingEntity.yaml
   - type: object
     additionalProperties: false
     description: >

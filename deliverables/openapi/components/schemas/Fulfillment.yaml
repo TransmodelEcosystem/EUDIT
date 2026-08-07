@@ -1,5 +1,5 @@
 type: object
-description: FULFILLMENT — the fulfillment details of a booked offer
+description: FULFILLMENT — the fulfillment details of a purchased offer
 properties:
   fulfillmentId:
     type: string

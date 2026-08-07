@@ -1,43 +1,56 @@
 type: object
-description: Link object
+additionalProperties: false
+x-externalDocs:
+  url: https://www.rfc-editor.org/rfc/rfc8288
+  description: "RFC 8288 — Web Linking"
+required:
+- href
+- rel
 properties:
-  href:
-    type: string
-    description: the URL of the linked resource
   rel:
     type: string
-    description: the relationship between the current resource and the linked resource
+    description: >-
+      Link relation type. Standard values are registered in the IANA Link
+      Relations registry (RFC 8288). May also contain OGC process identifiers,
+      data source prefixes, or deeplink prefixes (e.g. apple, android).
+    x-externalDocs:
+      url: https://www.iana.org/assignments/link-relations/link-relations.xhtml
+      description: "IANA Link Relations registry"
+  href:
+    $ref: ./url.yaml
+  description:
+    type: string
+    description: Human-readable description of the linked resource.
+  method:
+    type: string
+    description: HTTP method to use when following this link.
+    default: GET
+    enum:
+    - GET
+    - POST
+    - DELETE
+    - PATCH
   type:
     type: string
     description: >-
-      the media type of the linked resource (recommended: use IANA MIME type)
-  title:
-    type: string
-    description: a human-readable title for the linked resource
-
-  method:
-    type: string
-    description: to indicate the HTTP method.
-    default: GET
-    enum:
-    - POST
-    - GET
-    - DELETE
-    - PATCH
+      Media type of the linked resource. Values are registered in the
+      IANA Media Types registry (RFC 9110 §8.3.1), e.g. "application/json",
+      "application/geo+json".
+    x-externalDocs:
+      url: https://www.iana.org/assignments/media-types/media-types.xhtml
+      description: "IANA Media Types registry"
+  availableFrom:
+    $ref: ./dateTime.yaml
   body:
     type: object
-    description: the (prefilled) body for the request
+    description: Body template for the request. Replace $parametername$ with actual values.
+    example:
+      packageId: $packageId$
+  expires:
+    $ref: ./dateTime.yaml
   headers:
-    type: object
     additionalProperties:
       type: string
   mandatory:
-    description: is this link informative, or must it be used?
     type: boolean
-  availableFrom:
-    type: string
-    format: date-time
-  expires:
-    type: string
-    format: date-time
-
+    description: Whether this link must be followed (true) or is informative only (false).

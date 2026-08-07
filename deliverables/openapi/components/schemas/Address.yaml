@@ -1,5 +1,5 @@
 allOf:
-  - $ref: Place.yaml
+  - $ref: ./Place.yaml
   - type: object
     additionalProperties: false
     description: ADDRESS (INPUT) — a postal address as a place.

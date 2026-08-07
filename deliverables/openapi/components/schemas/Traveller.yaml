@@ -1,5 +1,5 @@
 allOf:
-  - $ref: TravellingEntity.yaml
+  - $ref: ./TravellingEntity.yaml
   - type: object
     additionalProperties: false
     description: TRAVELLER — a human traveller for whom offers are sought.
@@ -23,8 +23,6 @@ allOf:
         format: date
         description: >
           Date of birth. Enables age-band fare calculation. 
-          TBD: is is needed, since we do have an 'age'?
-          TBD: if it is, should it be in the traveller, or in its QualifyingCharacteristics?
       externalReference:
         type: string
         description: Caller-assigned external reference for this traveller.
@@ -39,13 +37,3 @@ allOf:
           create an issue on GitHub.
         items:
           type: string
-      qualifyingCharacteristics:
-        description: >
-          Additional qualifying characteristics used for eligibility determination. 
-          May contain GDPR-sensitive personal data.
-        $ref: TravellerQualifyingCharacteristics.yaml
-      travellingParty:
-        description: >
-          The travel party this traveller belongs to. A travel party is a group of travellers that are travelling together, 
-          and for which the same offer(s) should be returned. A travel party may consist of one or more travellers.
-        $ref: TravellingParty.yaml

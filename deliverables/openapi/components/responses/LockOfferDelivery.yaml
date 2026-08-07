@@ -1,4 +1,4 @@
-description: The reponse of the lock offer request, or the details of the locked offer.
+description: The response of the lock offer request, or the details of the locked offer.
 headers:
   Version:
     $ref: ../headers/version.yaml
