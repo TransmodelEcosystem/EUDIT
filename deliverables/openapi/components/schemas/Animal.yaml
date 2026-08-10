@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./TravellingEntity.yaml
   - type: object
-    additionalProperties: false
     description: ANIMAL — an animal travelling alongside its owner.
     required:
       - entityType
@@ -20,3 +19,4 @@ allOf:
       assistant:
         type: boolean
         description: Whether this animal is a registered assistance animal.
+unevaluatedProperties: false

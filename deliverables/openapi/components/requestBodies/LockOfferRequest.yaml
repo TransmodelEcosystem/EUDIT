@@ -1,25 +1,8 @@
+description: >-
+  LOCK OFFER REQUEST — locks a previously found offer, optionally selecting
+  specific allocations and ancillary services.
+required: true
 content:
   application/json:
-    schema:    
-      type: object
-      required:
-        - offerReference
-      properties:
-        offerReference:
-          description: >
-            The reference of the offer to be locked. This reference is obtained from the offer search response.
-          type: string
-
-        allocationRefs:
-          type: array
-          description: >
-            The references of the offer allocations to be locked. These references are obtained from the offer search response.
-          items:
-            type: string
-            
-        ancillaryRefs:
-          type: array
-          description: >
-            The references of the ancillary services to be locked. These references are obtained from the offer search response.
-          items:
-            type: string
+    schema:
+      $ref: ../schemas/LockOfferRequest.yaml

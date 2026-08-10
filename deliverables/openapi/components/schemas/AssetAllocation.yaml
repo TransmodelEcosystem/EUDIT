@@ -1,7 +1,6 @@
 allOf:
 - $ref: ./Allocation.yaml
 - type: object
-  additionalProperties: false
   description: ASSET ALLOCATION — a package element for an allocation to an addressable asset (e.g. a specific vehicle, parking spot, ...).
   required:
   - packageElementType
@@ -16,3 +15,4 @@ allOf:
     typeOfAsset:
       type: string
       description: Category of the asset (operator-defined lookup).
+unevaluatedProperties: false

@@ -30,10 +30,14 @@ components:
   requestBodies:
     searchOfferRequest:
       $ref: ./components/requestBodies/SearchOfferRequest.yaml
+    lockOfferRequest:
+      $ref: ./components/requestBodies/LockOfferRequest.yaml
 
   responses:
     searchOfferDelivery:
       $ref: ./components/responses/SearchOfferDelivery.yaml
+    lockOfferDelivery:
+      $ref: ./components/responses/LockOfferDelivery.yaml
 
   schemas:
     # ─── REQUEST ──────────────────────────────────────────────────────────────
@@ -113,6 +117,10 @@ components:
       $ref: ./components/schemas/AncillarySelection.yaml
     RequiredInformation:
       $ref: ./components/schemas/RequiredInformation.yaml
+    LockOfferRequest:
+      $ref: ./components/schemas/LockOfferRequest.yaml
+    LockedOffer:
+      $ref: ./components/schemas/LockedOffer.yaml
 
     # ─── SHARED ───────────────────────────────────────────────────────────────
     Price:

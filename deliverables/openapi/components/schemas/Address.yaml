@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./Place.yaml
   - type: object
-    additionalProperties: false
     description: ADDRESS (INPUT) — a postal address as a place.
     required:
     - placeType
@@ -18,3 +17,4 @@ allOf:
       addressLine3:
         type: string
         description: Tertiary address line (additional address information, if needed)
+unevaluatedProperties: false

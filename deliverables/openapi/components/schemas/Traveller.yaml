@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./TravellingEntity.yaml
   - type: object
-    additionalProperties: false
     description: TRAVELLER — a human traveller for whom offers are sought.
     required:
       - entityType
@@ -37,3 +36,4 @@ allOf:
           create an issue on GitHub.
         items:
           type: string
+unevaluatedProperties: false

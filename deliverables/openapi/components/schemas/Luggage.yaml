@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./TravellingEntity.yaml
   - type: object
-    additionalProperties: false
     description: >
       LUGGAGE — a bulky item a traveller brings that may affect offer
       availability, space allocation, or price.
@@ -40,3 +39,4 @@ allOf:
         type: integer
         minimum: 0
         description: Weight in kilograms.
+unevaluatedProperties: false

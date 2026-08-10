@@ -1,11 +1,14 @@
 openapi: 3.1.0
 info:
-  title: OTI — Search offers (REST)
+  title: OTI — Search offers & Lock offer (REST)
   version: 0.1.0-draft
   description: >-
-    OSDM 3.7.1-compatible REST variant of the OTI Search offers API.
-    Exposes a single POST /offers endpoint; request and response schemas
-    are shared with the OGC variant via oti.yaml.
+    OSDM 3.7.1-compatible REST variant of the OTI API.
+    Exposes two endpoints:
+    - POST /offers — search for available offers
+    - POST /locked-offers — lock a previously found offer
+
+    Request and response schemas are shared with the OGC variant via oti.yaml.
   contact:
     name: OTI working group
     url: https://github.com/UnionInternationalCheminsdeFer/OSDM
@@ -18,6 +21,12 @@ servers: []
 security:
   - BearerAuth: []
 
+tags:
+  - name: Search offers
+    description: Search for available offers for a given trip and set of travelling entities.
+  - name: Lock offer
+    description: Lock a previously found offer to reserve it pending confirmation.
+
 paths:
   /offers:
     post:
@@ -28,10 +37,10 @@ paths:
         PASSENGER TYPEs, and FARE CONDITIONS.
       operationId: searchOffers
       tags:
-      - Search offers
+        - Search offers
       parameters:
-      - $ref: ./components/parameters/acceptLanguage.yaml
-      - $ref: ./components/parameters/traceState.yaml
+        - $ref: ./components/parameters/acceptLanguage.yaml
+        - $ref: ./components/parameters/traceState.yaml
       requestBody:
         $ref: ./components/requestBodies/SearchOfferRequest.yaml
       responses:
@@ -45,6 +54,57 @@ paths:
                 $ref: ./components/schemas/WarningList.yaml
         '401':
           description: Unauthorized — missing or invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /locked-offers:
+    post:
+      summary: Lock offer
+      description: >-
+        Locks a previously found offer, reserving it for a limited time pending confirmation.
+        Optionally selects specific allocations and ancillary services.
+        Returns the locked offer with a lock expiry time.
+      operationId: lockOffer
+      tags:
+        - Lock offer
+      parameters:
+        - $ref: ./components/parameters/acceptLanguage.yaml
+        - $ref: ./components/parameters/traceState.yaml
+      requestBody:
+        $ref: ./components/requestBodies/LockOfferRequest.yaml
+      responses:
+        '201':
+          $ref: ./components/responses/LockOfferDelivery.yaml
+        '400':
+          description: Bad request — the request body is invalid or missing required fields.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '401':
+          description: Unauthorized — missing or invalid credentials.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '404':
+          description: The referenced offer does not exist or has already expired.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '409':
+          description: Conflict — the offer has already been locked or is no longer available.
           content:
             application/json:
               schema:

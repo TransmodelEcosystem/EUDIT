@@ -1,0 +1,12 @@
+allOf:
+- $ref: ./Results.yaml
+- type: object
+  description: >-
+    OGC API Processes — Execution results for the lock-offer process.
+    The "lockedOffer" field contains the locked offer.
+  required:
+  - lockedOffer
+  properties:
+    lockedOffer:
+      description: The locked offer produced by the lock-offer process.
+      $ref: ../components/schemas/LockedOffer.yaml

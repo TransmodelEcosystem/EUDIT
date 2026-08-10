@@ -1,0 +1,11 @@
+allOf:
+- $ref: ./Execute.yaml
+- type: object
+  description: >-
+    OGC API Processes — Execute request for the lock-offer process.
+    The "inputs" field directly contains a LockOfferRequest object.
+  required:
+  - inputs
+  properties:
+    inputs:
+      $ref: ../components/schemas/LockOfferRequest.yaml

@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./Place.yaml
   - type: object
-    additionalProperties: false
     description: TOPOLOGICAL PLACE (INPUT) — a geographic area or zone as a place.
     required:
     - placeType
@@ -16,3 +15,4 @@ allOf:
         type: integer
         minimum: 0
         description: Search radius in metres around the area centroid.
+unevaluatedProperties: false

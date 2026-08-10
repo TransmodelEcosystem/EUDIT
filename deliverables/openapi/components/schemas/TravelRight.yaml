@@ -1,7 +1,6 @@
 allOf:
 - $ref: ./PackageElement.yaml
 - type: object
-  additionalProperties: false
   description: TRAVEL RIGHT — an package element conferring the right to travel on a specific section of the journey.
   required:
   - packageElementType
@@ -19,3 +18,4 @@ allOf:
       description: Ancillaries that can or must be added to this travel right (e.g. bicycle transport, cabin).
       items:
         $ref: ./AncillarySelection.yaml
+unevaluatedProperties: false

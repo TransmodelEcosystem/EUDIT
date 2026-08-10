@@ -1,16 +1,17 @@
 openapi: 3.1.0
 info:
-  title: OTI — Search offers (OGC API Processes)
+  title: OTI — Search offers & Lock offer (OGC API Processes)
   version: 0.1.0-draft
   description: >-
-    OGC API Processes-compatible variant of the OTI Search offers API,
+    OGC API Processes-compatible variant of the OTI API,
     aligned with TOMP-API 2.0.0.
 
     Implements OGC API — Processes Part 1: Core (OAProc-1) and the
     relevant parts of OGC API — Common Part 1 (landing page, conformance).
 
-    The search-offers process accepts an OfferRequest as its "offerRequest"
-    input and returns a SearchOfferDelivery as its "searchOfferDelivery" output.
+    Processes implemented:
+    - search-offers: accepts a LockOfferRequest and returns a SearchOfferDelivery
+    - lock-offer: accepts a LockOfferRequest and returns a LockedOffer
 
     Conformance classes implemented:
     - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core
@@ -38,6 +39,8 @@ tags:
   description: OGC API — Asynchronous job management.
 - name: Search offers
   description: OTI Search offers process execution.
+- name: Lock offer
+  description: OTI Lock offer process execution.
 
 paths:
 
@@ -226,6 +229,115 @@ paths:
                 $ref: ./components/schemas/WarningList.yaml
         '404':
           description: No process with the given identifier exists.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  # ─── OGC API PROCESSES — Lock offer ────────────────────────────────────────
+
+  /processes/lock-offer:
+    get:
+      summary: Lock-offer process description
+      description: >-
+        Returns the full description of the lock-offer process,
+        including its inputs and outputs
+        (OGC API — Processes Part 1, clause 7.10).
+      operationId: getLockOfferProcessDescription
+      tags:
+      - Processes
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      responses:
+        '200':
+          description: Process description.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/Process.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /processes/lock-offer/execution:
+    post:
+      summary: Execute lock-offer
+      description: >-
+        Executes the lock-offer process (OGC API Processes Part 1, clause 7.11).
+
+        Execution mode is controlled by the Prefer header:
+        - "respond-async" requests asynchronous execution → 201 + StatusInfo
+        - absent or "respond-sync" requests synchronous execution → 200 + LockedOffer
+      operationId: executeLockOffer
+      tags:
+      - Lock offer
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      - $ref: ./components/parameters/traceState.yaml
+      - $ref: ./components/parameters/prefer.yaml
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./ogc/LockOfferExecute.yaml
+      responses:
+        '200':
+          description: >-
+            Synchronous execution — offer locked successfully.
+            Returns the locked offer in document mode.
+          headers:
+            Version:
+              $ref: ./components/headers/version.yaml
+            Content-Language:
+              $ref: ./components/headers/content-language.yaml
+            Expires:
+              $ref: ./components/headers/expires.yaml
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/LockOfferResults.yaml
+        '201':
+          description: >-
+            Asynchronous execution accepted — job created.
+            The Location header contains the URL to poll for job status.
+          headers:
+            Location:
+              description: URL of the created job (GET /jobs/{jobId}).
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/StatusInfo.yaml
+        '400':
+          description: Bad request — the request body is invalid or missing required inputs.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '404':
+          description: The referenced offer does not exist or has already expired.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '409':
+          description: Conflict — the offer has already been locked or is no longer available.
           content:
             application/json:
               schema:
@@ -478,6 +590,10 @@ components:
       $ref: ./ogc/Results.yaml
     SearchOffersResults:
       $ref: ./ogc/SearchOffersResults.yaml
+    LockOfferExecute:
+      $ref: ./ogc/LockOfferExecute.yaml
+    LockOfferResults:
+      $ref: ./ogc/LockOfferResults.yaml
     StatusInfo:
       $ref: ./ogc/StatusInfo.yaml
     JobList:
@@ -504,6 +620,10 @@ components:
       $ref: ./components/schemas/AllocationSelection.yaml
     AncillarySelection:
       $ref: ./components/schemas/AncillarySelection.yaml
+    LockOfferRequest:
+      $ref: ./components/schemas/LockOfferRequest.yaml
+    LockedOffer:
+      $ref: ./components/schemas/LockedOffer.yaml
     Price:
       $ref: ./components/schemas/Price.yaml
     Link:

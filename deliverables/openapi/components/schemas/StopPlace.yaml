@@ -1,7 +1,6 @@
 allOf:
 - $ref: ./Place.yaml
 - type: object
-  additionalProperties: false
   description: STOP PLACE (INPUT) — a stop place or scheduled stop point identified by reference.
   required:
   - placeType
@@ -13,3 +12,4 @@ allOf:
     placeRef:
       type: string
       description: Reference to a NeTEx STOP PLACE or SCHEDULED STOP POINT.
+unevaluatedProperties: false

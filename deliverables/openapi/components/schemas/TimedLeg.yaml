@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./Leg.yaml
   - type: object
-    additionalProperties: false
     description: TIMED LEG (INPUT) — a leg on a fixed timetabled service.
     required:
     - legType
@@ -35,3 +34,4 @@ allOf:
         description: Intermediate stops passed during this leg (not boarded/alighted). Each value is a reference to a NeTEx STOP PLACE or SCHEDULED STOP POINT.
         items:
           type: string
+unevaluatedProperties: false

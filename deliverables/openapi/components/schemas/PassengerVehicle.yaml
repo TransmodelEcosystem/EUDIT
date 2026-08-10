@@ -1,7 +1,6 @@
 allOf:
   - $ref: ./TravellingEntity.yaml
   - type: object
-    additionalProperties: false
     description: >
       PASSENGER VEHICLE — a traveller-owned vehicle to be transported
       (e.g. on a train, a ferry or car-train).
@@ -53,3 +52,4 @@ allOf:
         description: Vehicle racks or carriers mounted on the vehicle.
         items:
           $ref: ./VehicleRack.yaml
+unevaluatedProperties: false
