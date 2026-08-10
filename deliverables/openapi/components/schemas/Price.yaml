@@ -1,0 +1,21 @@
+type: object
+additionalProperties: false
+description: PRICE — a monetary amount in a specific currency.
+required:
+- currencyCode
+- amount
+properties:
+  currencyCode:
+    type: string
+    pattern: "^[A-Z]{3}$"
+    description: ISO 4217 currency code (e.g. EUR, GBP, SEK).
+  amount:
+    type: number
+    format: double
+    minimum: 0
+    description: Monetary amount in the specified currency.
+  taxes:
+    type: array
+    description: Tax breakdown applicable to this price.
+    items:
+      $ref: ./Tax.yaml

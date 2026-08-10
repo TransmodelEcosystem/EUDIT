@@ -1,0 +1,39 @@
+allOf:
+  - $ref: ./TravellingEntity.yaml
+  - type: object
+    description: TRAVELLER — a human traveller for whom offers are sought.
+    required:
+      - entityType
+    properties:
+      entityType:
+        type: string
+        const: traveller
+      age:
+        type: integer
+        minimum: 0
+        description: Age in years at the time of travel.
+      assistant:
+        type: boolean
+        description: >
+          Whether this traveller acts as an assistant to another traveller
+          in the same travel party.
+      dateOfBirth:
+        type: string
+        format: date
+        description: >
+          Date of birth. Enables age-band fare calculation. 
+      externalReference:
+        type: string
+        description: Caller-assigned external reference for this traveller.
+      personalNeeds:
+        type: array
+        description: >
+          Accessibility or personal needs of this traveller.
+          Values are operator-defined; see the /personal-needs lookup endpoint.
+          For standardisation needs, there will be a list of needs within OTI. 
+          The described needs in the list CANNOT be modified, but it is allowed to remove unsupported needs, 
+          or to add new ones, but ALWAYS with an unique code. If you want to add this new one to the standard,
+          create an issue on GitHub.
+        items:
+          type: string
+unevaluatedProperties: false

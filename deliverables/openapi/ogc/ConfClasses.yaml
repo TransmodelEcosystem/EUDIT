@@ -1,0 +1,19 @@
+type: object
+description: >-
+  OGC API — Conformance declaration.
+  Lists the URIs of all conformance classes implemented by the server
+  (OGC API — Common Part 1, clause 7.4).
+required:
+- conformsTo
+properties:
+  conformsTo:
+    type: array
+    description: URIs of the OGC conformance classes that this server implements.
+    items:
+      type: string
+      format: uri
+    example:
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/json
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/oas30
+    - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/job-list

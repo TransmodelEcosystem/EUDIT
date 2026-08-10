@@ -1,0 +1,30 @@
+type: object
+additionalProperties: false
+description: GUARANTEE — a guarantee associated with an offer or offer element (e.g. connection guarantee, seat guarantee).
+required:
+- guaranteeId
+- description
+- type
+properties:
+  guaranteeId:
+    type: string
+    description: Server-assigned identifier for this guarantee.
+
+  description:
+    type: string
+    description: A human-readable description of the guarantee.
+
+  type:
+    type: string
+    description: >-
+      Category of guarantee: legal (mandated by regulation, e.g. EU passenger rights)
+      or commercial (provided voluntarily by the carrier).
+    enum:
+    - legal
+    - commercial
+
+  subType:
+    type: string 
+    description: >-
+      Subtype of guarantee (e.g. connection guarantee, seat guarantee, price guarantee).
+      Lookup on implementation level. This field is optional and may be omitted if not applicable.

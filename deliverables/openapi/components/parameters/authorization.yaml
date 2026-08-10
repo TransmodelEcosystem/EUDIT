@@ -1,0 +1,15 @@
+in: header
+name: Authorization
+required: true
+x-externalDocs:
+  description: RFC 6750 - The OAuth 2.0 Authorization Framework Bearer Token Usage
+  url: https://www.rfc-editor.org/rfc/rfc6750
+schema:
+  type: string
+  pattern: "^Bearer [A-Za-z0-9\\-._~+/]+=*$"
+  x-externalDocs:
+    description: RFC 6750 - The OAuth 2.0 Authorization Framework Bearer Token Usage
+    url: https://www.rfc-editor.org/rfc/rfc6750
+description: >
+  Bearer token (JWT) for authentication and authorization.
+  The token MUST be supplied on every request.

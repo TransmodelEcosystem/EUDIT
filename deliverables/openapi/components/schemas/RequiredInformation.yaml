@@ -1,0 +1,36 @@
+type: object
+additionalProperties: false
+description: (personal) information that must be provided for an offer element before purchase.
+required:
+  - fieldName
+properties:
+  purchaseInformationId:
+    type: string
+    description: Server-assigned identifier for this required information item.
+  travellerRef:
+    type: string
+    description: Reference to the travelling entity for whom this information is required.
+  description:
+    type: string
+    description: Human-readable description of the information that must be provided.
+  fieldName:
+    type: string
+    description: Name of the field for which this information is required.
+    x-extensible-enum:
+      # personal information
+      - name
+      - dateOfBirth
+      - gender
+      - email
+      - phoneNumber
+      - address
+      - passportNumber
+      - driverLicenseNumber
+      - idCardNumber
+      # vehicle information
+      - licensePlateNumber
+      # luggage & vehicle information
+      - length
+      - width
+      - height
+      - weight

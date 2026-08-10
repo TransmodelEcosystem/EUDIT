@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: OTI — Shared components
+  version: 0.1.0-draft
+  description: >-
+    Shared OpenAPI components for the OTI specification. This file contains
+    no paths; use oti-rest.yaml (OSDM REST) or oti-ogc.yaml (OGC API Processes)
+    for the concrete API variants.
+  license:
+    name: EUPL-1.2
+    url: https://eupl.eu/1.2/en/
+
+servers: []
+
+paths: {}
+
+components:
+  parameters:
+    traceState:
+      $ref: ./components/parameters/traceState.yaml
+    acceptLanguage:
+      $ref: ./components/parameters/acceptLanguage.yaml
+
+  headers:
+    contentLanguage:
+      $ref: ./components/headers/content-language.yaml
+    expires:
+      $ref: ./components/headers/expires.yaml
+
+  requestBodies:
+    searchOfferRequest:
+      $ref: ./components/requestBodies/SearchOfferRequest.yaml
+    lockOfferRequest:
+      $ref: ./components/requestBodies/LockOfferRequest.yaml
+
+  responses:
+    searchOfferDelivery:
+      $ref: ./components/responses/SearchOfferDelivery.yaml
+    lockOfferDelivery:
+      $ref: ./components/responses/LockOfferDelivery.yaml
+
+  schemas:
+    # ─── REQUEST ──────────────────────────────────────────────────────────────
+    OfferRequest:
+      $ref: ./components/schemas/OfferRequest.yaml
+    SearchOfferPolicy:
+      $ref: ./components/schemas/SearchOfferPolicy.yaml
+    SearchOfferFilter:
+      $ref: ./components/schemas/SearchOfferFilter.yaml
+    Section:
+      $ref: ./components/schemas/Section.yaml
+
+    # ─── TRAVELLING ENTITIES ──────────────────────────────────────────────────
+    TravellingEntity:
+      $ref: ./components/schemas/TravellingEntity.yaml
+    Traveller:
+      $ref: ./components/schemas/Traveller.yaml
+    PassengerVehicle:
+      $ref: ./components/schemas/PassengerVehicle.yaml
+    VehicleRack:
+      $ref: ./components/schemas/VehicleRack.yaml
+    Luggage:
+      $ref: ./components/schemas/Luggage.yaml
+    Animal:
+      $ref: ./components/schemas/Animal.yaml
+    EntitlementRight:
+      $ref: ./components/schemas/EntitlementRight.yaml
+
+    # ─── TRIP PATTERN & LEGS ──────────────────────────────────────────────────
+    TripPattern:
+      $ref: ./components/schemas/TripPattern.yaml
+    Leg:
+      $ref: ./components/schemas/Leg.yaml
+    TimedLeg:
+      $ref: ./components/schemas/TimedLeg.yaml
+    ContinuousLeg:
+      $ref: ./components/schemas/ContinuousLeg.yaml
+    TransferLeg:
+      $ref: ./components/schemas/TransferLeg.yaml
+    LegBoard:
+      $ref: ./components/schemas/LegBoard.yaml
+    LegAlight:
+      $ref: ./components/schemas/LegAlight.yaml
+
+    # ─── PLACE HIERARCHY ──────────────────────────────────────────────────────
+    Place:
+      $ref: ./components/schemas/Place.yaml
+    StopPlace:
+      $ref: ./components/schemas/StopPlace.yaml
+    Address:
+      $ref: ./components/schemas/Address.yaml
+    PointOfInterest:
+      $ref: ./components/schemas/PointOfInterest.yaml
+    TopologicalPlace:
+      $ref: ./components/schemas/TopologicalPlace.yaml
+    GeoPosition:
+      $ref: ./components/schemas/GeoPosition.yaml
+
+    # ─── OFFER RESPONSE ───────────────────────────────────────────────────────
+    SearchOfferDelivery:
+      $ref: ./components/schemas/SearchOfferDelivery.yaml
+    Offer:
+      $ref: ./components/schemas/Offer.yaml
+    TravelRight:
+      $ref: ./components/schemas/TravelRight.yaml
+    Ancillary:
+      $ref: ./components/schemas/Ancillary.yaml
+    Allocation:
+      $ref: ./components/schemas/Allocation.yaml
+    SpotAllocation:
+      $ref: ./components/schemas/SpotAllocation.yaml
+    AssetAllocation:
+      $ref: ./components/schemas/AssetAllocation.yaml
+    AllocationSelection:
+      $ref: ./components/schemas/AllocationSelection.yaml
+    AncillarySelection:
+      $ref: ./components/schemas/AncillarySelection.yaml
+    RequiredInformation:
+      $ref: ./components/schemas/RequiredInformation.yaml
+    LockOfferRequest:
+      $ref: ./components/schemas/LockOfferRequest.yaml
+    LockedOffer:
+      $ref: ./components/schemas/LockedOffer.yaml
+
+    # ─── SHARED ───────────────────────────────────────────────────────────────
+    Price:
+      $ref: ./components/schemas/Price.yaml
+    Vat:
+      $ref: ./components/schemas/Vat.yaml
+    SummaryDetail:
+      $ref: ./components/schemas/SummaryDetail.yaml
+    Guarantee:
+      $ref: ./components/schemas/Guarantee.yaml
+    Link:
+      $ref: ./components/schemas/Link.yaml
+
+    # ─── PRIMITIVES ───────────────────────────────────────────────────────────
+    dateTime:
+      $ref: ./components/schemas/dateTime.yaml
+    url:
+      $ref: ./components/schemas/url.yaml
+    httpDate:
+      $ref: ./components/schemas/httpDate.yaml

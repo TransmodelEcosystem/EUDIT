@@ -1,0 +1,11 @@
+allOf:
+- $ref: ./Execute.yaml
+- type: object
+  description: >-
+    OGC API Processes — Execute request for the search-offers process.
+    The "inputs" field directly contains an OfferRequest object.
+  required:
+  - inputs
+  properties:
+    inputs:
+      $ref: ../components/schemas/OfferRequest.yaml

@@ -1,0 +1,29 @@
+type: object
+additionalProperties: false
+required:
+  - travelDocumentId
+  - type
+properties:
+  travelDocumentId:
+    type: string
+    description: Server-assigned identifier for this travel document.
+
+  type:
+    type: string
+    description: The type of travel document.
+    enum:
+      - qrCode
+      - barcode
+      - image
+      - token
+
+  mediaType:
+    type: string
+    description: >-
+      IANA media type of the travel document content
+      (e.g. "application/pdf", "image/jpeg").
+      Used to determine how to process or display the document.
+
+  issuingCarrier:
+    type: string
+    description: The carrier that issued the travel document (if applicable).

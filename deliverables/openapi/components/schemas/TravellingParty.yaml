@@ -1,0 +1,12 @@
+type: object
+properties:
+  travellingPartyId:
+    type: string
+    description: Caller-assigned identifier for this travel party.
+  travellingPartyType:
+    type: string
+    description: >
+      The type of travel party. 
+    enum:
+      - family
+      - group

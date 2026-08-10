@@ -1,0 +1,27 @@
+type: object
+description: >-
+  A section is a leg-based constraint for trip pattern-based search.  
+  It allows to specify constraints on a specific leg of the trip, identified by its start and end leg references.
+required: 
+  - sectionId
+  - startLegRef
+  - endLegRef
+properties:
+  startLegRef:
+    type: string
+    description: Reference to the first leg in this section.
+  endLegRef:
+    type: string
+    description: Reference to the last leg in this section.
+  startPlaceRef:
+    type: string
+    description: Reference to the departure place of this section.
+  endPlaceRef:
+    type: string
+    description: Reference to the arrival place of this section.
+  tripPatternRef:
+    type: string
+    description: Reference to the trip pattern this section belongs to.
+  sectionId:
+    type: string
+    description: Server-assigned identifier for this provided section.

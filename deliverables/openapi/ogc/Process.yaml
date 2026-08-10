@@ -1,0 +1,22 @@
+allOf:
+- $ref: ./ProcessSummary.yaml
+- type: object
+  description: >-
+    OGC API Processes — Full process description.
+    Extends ProcessSummary with input and output descriptions
+    (OGC API — Processes Part 1, clause 7.10).
+  properties:
+    inputs:
+      type: object
+      description: >-
+        Named inputs accepted by this process. Each key is an input identifier;
+        the value describes the input schema.
+      additionalProperties:
+        $ref: ./InputDescription.yaml
+    outputs:
+      type: object
+      description: >-
+        Named outputs produced by this process. Each key is an output identifier;
+        the value describes the output schema.
+      additionalProperties:
+        $ref: ./OutputDescription.yaml

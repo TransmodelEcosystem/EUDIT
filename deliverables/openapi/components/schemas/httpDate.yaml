@@ -1,0 +1,8 @@
+type: string
+description: >-
+  An HTTP-date timestamp as defined in RFC 9110 section 5.6.7
+  (e.g. Sun, 06 Nov 1994 08:49:37 GMT).
+x-format: http-date
+x-externalDocs:
+  url: https://www.rfc-editor.org/rfc/rfc9110#section-5.6.7
+  description: "RFC 9110 — HTTP Semantics, section 5.6.7: Date/Time Formats"

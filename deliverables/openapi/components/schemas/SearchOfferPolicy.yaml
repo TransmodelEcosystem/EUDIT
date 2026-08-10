@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+description: SEARCH OFFER POLICY — controls pagination and currency of the offer response.
+properties:
+  numberOfResultsBefore:
+    type: integer
+    description: Maximum number of results to return before the requested departure time.
+  numberOfResultsAfter:
+    type: integer
+    description: Maximum number of results to return after the requested departure time.
+  currency:
+    type: string
+    description: ISO 4217 currency code in which prices should be expressed.

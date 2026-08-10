@@ -1,0 +1,18 @@
+allOf:
+- $ref: ./PackageElement.yaml
+- type: object
+  x-abstract: true
+  description: >-
+    ALLOCATION — abstract base class for seat or space allocations within a package.
+    Do not use directly; use the packageElementType discriminator to select the
+    concrete sub-type (spotAllocation or assetAllocation within the package).
+  properties:
+    legRef:
+      type: string
+      description: Reference to the leg on which this allocation applies.
+    startPlaceRef:
+      type: string
+      description: Reference to the stop point where this allocation begins (boarding).
+    endPlaceRef:
+      type: string
+      description: Reference to the stop point where this allocation ends (alighting).

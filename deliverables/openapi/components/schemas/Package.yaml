@@ -1,0 +1,138 @@
+type: object
+description: >-
+  PACKAGE — a purchasable combination of package elements for a trip.
+  A package is composed of:
+  - the 'who' (the travelling entities associated to the package, e.g. travellers, luggage, vehicles, animals)
+  - the 'what' (the trip patterns and sections associated to the package)
+  - the 'how' (the offer elements associated to the package, e.g. travel rights, seat allocations, ancillaries)
+  - the guarantees associated to the package
+required:
+  - packageId
+  - version
+  - status
+
+properties:
+  ## machine identification
+  packageId:
+    type: string
+    description: the identifier of the package
+  version:
+    type: string
+    description: the version of the package
+  status:
+    type: string
+    description: the status of the package
+    enum:
+      - offered
+      - locked
+      - released
+      - confirmed
+      - rolledBack
+      - expired
+      - fulfilled
+      - cancelled
+      - inProgress
+      - executed
+      
+  ## human readable information
+  name:
+    type: string
+    description: Short human-readable name of the package (e.g. "Brussels → Amsterdam, 2 adults").
+  summary:
+    type: string
+    description: Brief human-readable summary of what is included in the package.
+  summaryDetails:
+    type: array
+    items:
+      $ref: ./SummaryDetail.yaml
+
+  afterSalesFlexibility:
+    type: string
+    description: >-
+      The flexibility of the offer after the sale has been made.
+      TBD: Define the possible values for this field. Should we include here the allowed 'after sales operations'
+      (e.g. exchange, cancel, refund) instead of flexible, semiFlexible, nonFlexible?
+    enum:
+      - flexible
+      - semiFlexible
+      - nonFlexible
+
+  ## the 'who'
+  travellingEntities:
+    type: array
+    description: the traveling entities associated to the package, which can be used for display purposes
+    items:
+        oneOf:
+          - $ref: ./Traveller.yaml
+          - $ref: ./Luggage.yaml
+          - $ref: ./PassengerVehicle.yaml
+          - $ref: ./Animal.yaml
+        discriminator:
+          propertyName: entityType
+          mapping:
+            traveller: ./Traveller.yaml
+            luggage: ./Luggage.yaml
+            vehicle: ./PassengerVehicle.yaml
+            animal: ./Animal.yaml
+
+  ## the 'what'
+  tripPatterns:
+    type: array
+    description: the trip patterns associated to the package, which can be used for display purposes
+    items:
+      $ref: ./TripPattern.yaml
+
+  sections:
+    type: array
+    description: the sections of the package
+    items:
+      $ref: ./Section.yaml
+
+  ## the 'how'
+  elements:
+    type: array
+    minItems: 1
+    description: The package elements (travel rights, ancillaries, allocations) that make up this package.
+    items:
+      oneOf:
+      - $ref: ./TravelRight.yaml
+      - $ref: ./Ancillary.yaml
+      - $ref: ./SpotAllocation.yaml
+      - $ref: ./AssetAllocation.yaml
+      discriminator:
+        propertyName: packageElementType
+        mapping:
+          travelRight: ./TravelRight.yaml
+          ancillary: ./Ancillary.yaml
+          spotAllocation: ./SpotAllocation.yaml
+          assetAllocation: ./AssetAllocation.yaml
+      # should we add 'Voucher' and 'Credit' as elements?
+
+  # financials:
+  #   type: array
+  #   description: the financials associated to the package, which can be used for display purposes
+  #   items:
+  #     oneOf:
+  #     - $ref: ./Fee.yaml
+  #     - $ref: ./Fare.yaml      # TBD: not yet defined
+  #     - $ref: ./Reduction.yaml # TBD: not yet defined
+  #     - $ref: ./Credit.yaml    # TBD: not yet defined
+
+  guarantees:
+    type: array
+    description: the guarantees associated to the package, which can be used for display purposes
+    items:
+      $ref: ./Guarantee.yaml
+
+  ## warnings and links
+  warnings:
+    type: array
+    description: the warnings associated to the package, which can be used for display purposes
+    items:
+      $ref: ./Warning.yaml
+
+  links:
+    type: array
+    description: the links associated to the package, which can be used for navigation purposes ( 'find the next technical steps' ).
+    items:
+      $ref: ./Link.yaml

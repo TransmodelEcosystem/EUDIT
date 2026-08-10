@@ -1,0 +1,37 @@
+type: object
+additionalProperties: false
+description: SEARCH OFFER DELIVERY — the root response object containing all offers matching the search request, together with the echoed travelling entities and trip patterns.
+required:
+  - offers
+properties:
+  offers:
+    type: array
+    description: The offers returned by the server for the requested trip and travelling entities.
+    items:
+      $ref: ./Offer.yaml
+  travellers:
+    type: array
+    description: The travelling entities echoed from the request (travellers, vehicles, animals, luggage).
+    items:
+      oneOf:
+      - $ref: ./Traveller.yaml
+      - $ref: ./PassengerVehicle.yaml
+      - $ref: ./Animal.yaml
+      - $ref: ./Luggage.yaml
+      discriminator:
+        propertyName: entityType
+        mapping:
+          traveller: ./Traveller.yaml
+          vehicle: ./PassengerVehicle.yaml
+          animal: ./Animal.yaml
+          luggage: ./Luggage.yaml
+  tripPatterns:
+    type: array
+    description: The trip patterns echoed from the request.
+    items:
+      $ref: ./TripPattern.yaml
+  links:
+    type: array
+    description: Hypermedia links for further actions (e.g. pagination).
+    items:
+      $ref: ./Link.yaml

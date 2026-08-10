@@ -1,0 +1,50 @@
+type: object
+description: >-
+  OGC API Processes — Process summary.
+  A brief description of a process, as returned in the process list
+  (OGC API — Processes Part 1, clause 7.9).
+required:
+- id
+- version
+properties:
+  id:
+    type: string
+    description: Unique process identifier.
+    example: search-offers
+  version:
+    type: string
+    description: Version of the process.
+    example: 0.1.0-draft
+  title:
+    type: string
+    description: Human-readable title of the process.
+  description:
+    type: string
+    description: Detailed description of the process.
+  keywords:
+    type: array
+    description: Keywords that characterise the process.
+    items:
+      type: string
+  jobControlOptions:
+    type: array
+    description: Execution modes supported by this process.
+    items:
+      type: string
+      enum:
+      - sync-execute
+      - async-execute
+      - dismiss
+  outputTransmission:
+    type: array
+    description: How outputs can be delivered.
+    items:
+      type: string
+      enum:
+      - value
+      - reference
+  links:
+    type: array
+    description: Links related to this process (e.g. rel=self, rel=alternate).
+    items:
+      $ref: ../components/schemas/Link.yaml

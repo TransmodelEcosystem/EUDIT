@@ -1,0 +1,15 @@
+allOf:
+- $ref: ./Place.yaml
+- type: object
+  description: STOP PLACE (INPUT) — a stop place or scheduled stop point identified by reference.
+  required:
+  - placeType
+  - placeRef
+  properties:
+    placeType:
+      type: string
+      const: stopPlace
+    placeRef:
+      type: string
+      description: Reference to a NeTEx STOP PLACE or SCHEDULED STOP POINT.
+unevaluatedProperties: false

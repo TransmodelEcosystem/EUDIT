@@ -1,0 +1,7 @@
+type: string
+format: date-time
+pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?Z$"
+description: RFC 3339 date-time string in UTC (e.g. 2019-10-12T07:20:50Z or 2019-10-12T07:20:50.52Z).
+x-externalDocs:
+  description: RFC 3339 - Date and Time on the Internet, section 5.6
+  url: https://www.rfc-editor.org/rfc/rfc3339#section-5.6
