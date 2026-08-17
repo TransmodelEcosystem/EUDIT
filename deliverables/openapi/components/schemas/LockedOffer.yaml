@@ -1,0 +1,21 @@
+allOf:
+  - $ref: ./Offer.yaml
+  - type: object
+    description: >-
+      LOCKED OFFER — an offer that has been reserved and is awaiting confirmation.
+      The status is always "locked". The offer remains locked until it is either
+      confirmed (purchase) or released (cancelled or expired).
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        const: locked
+        description: >-
+          Always "locked"; indicates the offer has been reserved and is pending confirmation.
+      lockExpiry:
+        description: >-
+          Date/time at which the lock expires. After this time the offer is automatically
+          released and must be searched again.
+        $ref: ./dateTime.yaml
+unevaluatedProperties: false

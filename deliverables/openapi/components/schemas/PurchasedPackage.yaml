@@ -1,0 +1,8 @@
+allOf: 
+- $ref: ./Package.yaml
+- type: object
+  properties:
+    fulfillments:
+      type: array
+      items:
+        $ref: ./Fulfillment.yaml

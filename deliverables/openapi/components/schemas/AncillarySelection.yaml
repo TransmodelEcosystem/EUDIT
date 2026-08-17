@@ -1,0 +1,23 @@
+type: object
+additionalProperties: false
+description: REQUIRED ANCILLARY — specifies which ancillary services are available or required for a travel right on a given leg.
+required:
+  - ancillaries
+properties:
+  legRef:
+    type: string
+    description: Reference to the leg (legId) to which these ancillaries apply.
+  minimum:
+    type: integer
+    minimum: 0
+    description: Minimum number of ancillaries that must be selected (0 = optional).
+  maximum:
+    type: integer
+    minimum: 1
+    description: Maximum number of ancillaries that may be selected.
+  ancillaries:
+    type: array
+    minItems: 1
+    description: The available ancillary options for this leg.
+    items:
+      $ref: ./Ancillary.yaml

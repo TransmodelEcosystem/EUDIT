@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+description: SEARCH OFFER FILTER — constrains which offers the server returns.
+properties:
+  modes:
+    type: array
+    description: Transport modes to include in the search.
+    items:
+      type: string
+  classOfUse:
+    type: array
+    description: Classes of use (e.g. first, second) to include in the search.
+    items:
+      type: string
+      x-extensible-enum:
+      - first
+      - second
+      - premium
+  mediaTypes:
+    type: array
+    description: Fulfilment media types to include (e.g. paperTicket, mobileTicket, smartCard).
+    items:
+      type: string
+  requestedSections:
+    type: array
+    description: Restricts the offer search to specific sections of the journey.
+    items:
+      $ref: ./Section.yaml

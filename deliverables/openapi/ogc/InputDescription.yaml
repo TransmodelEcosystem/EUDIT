@@ -1,0 +1,36 @@
+type: object
+description: >-
+  OGC API Processes — Input description.
+  Describes a single named input of a process, including its schema and
+  occurrence constraints (OGC API — Processes Part 1, clause 7.10).
+required:
+- schema
+properties:
+  title:
+    type: string
+    description: Human-readable title.
+  description:
+    type: string
+    description: Detailed description of the input.
+  keywords:
+    type: array
+    items:
+      type: string
+  schema:
+    description: JSON Schema describing the structure of the input value.
+    type: object
+    additionalProperties: true
+  minOccurs:
+    type: integer
+    minimum: 0
+    default: 1
+    description: Minimum number of times this input must be provided.
+  maxOccurs:
+    oneOf:
+    - type: integer
+      minimum: 1
+    - type: string
+      enum:
+      - unbounded
+    default: 1
+    description: Maximum number of times this input may be provided.

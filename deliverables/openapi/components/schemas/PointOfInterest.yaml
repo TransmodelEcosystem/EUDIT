@@ -1,0 +1,11 @@
+allOf:
+  - $ref: ./Place.yaml
+  - type: object
+    description: POINT OF INTEREST (INPUT) — a named point of interest as a place.
+    required:
+    - placeType
+    properties:
+      placeType:
+        type: string
+        const: pointOfInterest
+unevaluatedProperties: false

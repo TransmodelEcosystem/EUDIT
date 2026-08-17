@@ -1,0 +1,7 @@
+description: >-
+  An unexpected error or warning occurred. The response body contains a list
+  of RFC 7807 Problem Details objects describing what went wrong.
+content:
+  application/json:
+      schema:
+        $ref: ../schemas/WarningList.yaml

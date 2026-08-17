@@ -1,3 +1,5 @@
+This is a non-exhaustive list of TM concepts. If you miss concepts, have a look at https://transmodel-cen.eu/model6.2/Transmodel2024-EA_extract_for_publication.xml (also included in this folder).
+
 **ABORT JOURNEY ENTRY**: A RIDE PROVISION EVENT occurring when a journey is terminated early.  
 **ABORT JOURNEY EVENT**: A RIDE PROVISION EVENT occurring when a journey is terminated early.  
 **ABORT RIDE ENTRY**: A RIDING ENTRY recording the early termination of a ride.  

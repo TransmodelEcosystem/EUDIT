@@ -1,0 +1,22 @@
+type: object
+additionalProperties: false
+description: LEG BOARD — the boarding event at the start of a timed leg.
+required:
+- stopPlaceRef
+- plannedDepartureTime
+properties:
+  stopPlaceRef:
+    type: string
+    description: Reference to the NeTEx SCHEDULED STOP POINT or STOP PLACE where boarding occurs.
+  plannedDepartureTime:
+    type: string
+    format: date-time
+    description: Scheduled departure time at the boarding stop.
+  pickupLocation:
+    type: string
+    description: Reference to a specific platform, bay, or pick-up zone within the stop place.
+  trainNumbers:
+    type: array
+    description: Commercial train numbers for this departure.
+    items:
+      type: string

@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+description: VAT — a VAT component of a price, broken down by country and percentage.
+required:
+  - amount
+  - currencyCode
+  - country
+  - percentage
+properties:
+  amount:
+    type: number
+    format: double
+    minimum: 0
+    description: VAT amount in the specified currency.
+  currencyCode:
+    type: string
+    pattern: "^[A-Z]{3}$"
+    description: ISO 4217 currency code for this VAT component.
+  country:
+    type: string
+    pattern: "^[A-Z]{2}$"
+    description: ISO 3166-1 alpha-2 country code for which this VAT rate applies.
+  percentage:
+    type: number
+    format: double
+    minimum: 0
+    maximum: 100
+    description: VAT percentage rate (e.g. 21.0 for 21%).

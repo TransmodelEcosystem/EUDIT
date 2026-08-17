@@ -1,0 +1,25 @@
+type: object
+description: >-
+  OGC API — Process list.
+  Response to GET /processes; lists all available processes
+  (OGC API — Processes Part 1, clause 7.9).
+required:
+- processes
+- links
+properties:
+  processes:
+    type: array
+    description: Summaries of all processes available at this endpoint.
+    items:
+      $ref: ./ProcessSummary.yaml
+  links:
+    type: array
+    description: Hypermedia links (e.g. pagination, self).
+    items:
+      $ref: ../components/schemas/Link.yaml
+  numberMatched:
+    type: integer
+    description: Total number of processes matching the request.
+  numberReturned:
+    type: integer
+    description: Number of processes included in this response.

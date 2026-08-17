@@ -1,0 +1,53 @@
+allOf:
+  - $ref: ./Leg.yaml
+  - type: object
+    description: CONTINUOUS LEG (INPUT) — a leg without fixed timetabled stops (e.g. walk, cycle, taxi).
+    required:
+    - legType
+    - startTime
+    - startLocation
+    properties:
+      legType:
+        type: string
+        const: continuous
+      startTime:
+        type: string
+        format: date-time
+        description: Scheduled start time of this leg.
+      endTime:
+        type: string
+        format: date-time
+        description: Scheduled end time of this leg.
+      startLocation:
+        description: Departure location for this continuous leg.
+        oneOf:
+          - $ref: ./StopPlace.yaml
+          - $ref: ./Address.yaml
+          - $ref: ./GeoPosition.yaml
+          - $ref: ./PointOfInterest.yaml
+          - $ref: ./TopologicalPlace.yaml
+        discriminator:
+          propertyName: placeType
+          mapping:
+            stopPlace: ./StopPlace.yaml
+            address: ./Address.yaml
+            geoPosition: ./GeoPosition.yaml
+            pointOfInterest: ./PointOfInterest.yaml
+            topologicalPlace: ./TopologicalPlace.yaml
+      endLocation:
+        description: Arrival location for this continuous leg.
+        oneOf:
+          - $ref: ./StopPlace.yaml
+          - $ref: ./Address.yaml
+          - $ref: ./GeoPosition.yaml
+          - $ref: ./PointOfInterest.yaml
+          - $ref: ./TopologicalPlace.yaml
+        discriminator:
+          propertyName: placeType
+          mapping:
+            stopPlace: ./StopPlace.yaml
+            address: ./Address.yaml
+            geoPosition: ./GeoPosition.yaml
+            pointOfInterest: ./PointOfInterest.yaml
+            topologicalPlace: ./TopologicalPlace.yaml
+unevaluatedProperties: false

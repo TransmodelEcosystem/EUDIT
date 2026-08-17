@@ -1,0 +1,7 @@
+description: The date/time at which the offer expires, as an HTTP-date string.
+required: false
+schema:
+  $ref: ../schemas/httpDate.yaml
+x-externalDocs:
+  url: https://www.rfc-editor.org/rfc/rfc9111#section-5.3
+  description: "RFC 9111 — HTTP Caching, section 5.3: Expires"

@@ -1,0 +1,8 @@
+type: string
+format: uri
+description: >
+  An absolute URI conforming to RFC 3986.
+  MUST use the https scheme unless explicitly agreed otherwise.
+x-externalDocs:
+  description: RFC 3986 - Uniform Resource Identifier (URI) Generic Syntax
+  url: https://www.rfc-editor.org/rfc/rfc3986

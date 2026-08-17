@@ -1,0 +1,25 @@
+type: object
+additionalProperties: false
+description: TRIP PATTERN (INPUT) — a proposed trip the traveller wants to undertake, consisting of one or more legs.
+required:
+- tripPatternId
+- legs
+properties:
+  tripPatternId:
+    type: string
+    description: Caller-assigned identifier for this trip pattern.
+  legs:
+    type: array
+    minItems: 1
+    description: The legs that make up this trip pattern.
+    items:
+      oneOf:
+      - $ref: ./TimedLeg.yaml
+      - $ref: ./ContinuousLeg.yaml
+      - $ref: ./TransferLeg.yaml
+      discriminator:
+        propertyName: legType
+        mapping:
+          timed: ./TimedLeg.yaml
+          continuous: ./ContinuousLeg.yaml
+          transfer: ./TransferLeg.yaml

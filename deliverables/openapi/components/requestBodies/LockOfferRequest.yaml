@@ -1,0 +1,8 @@
+description: >-
+  LOCK OFFER REQUEST — locks a previously found offer, optionally selecting
+  specific allocations and ancillary services.
+required: true
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/LockOfferRequest.yaml

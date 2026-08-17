@@ -1,0 +1,39 @@
+allOf:
+  - $ref: ./PriceableObject.yaml
+  - type: object
+    x-abstract: true
+    description: >
+      PACKAGE ELEMENT — abstract base class for all elements within a package
+      (travel rights, allocations, ancillaries).
+      Use the packageElementType discriminator to select the concrete sub-type.
+    required:
+      - packageElementType
+    properties:
+      packageElementType:
+        type: string
+        description: Discriminator identifying the concrete type of this package element.
+        enum:
+          - travelRight
+          - seatAllocation # deprecated — use spotAllocation
+          - spotAllocation
+          - assetAllocation
+          - ancillary
+
+      sectionRefs:
+        type: array
+        description: The sections of the package to which this element belongs.
+        items:
+          type: string
+
+      travellingEntityRefs:
+        type: array
+        description: The travelling entities (e.g. travellers) associated to this package element.
+        items:
+          type: string
+
+      mandatory:
+        type: boolean
+        description: >-
+          Indicates if the package element is mandatory in the package.
+          If true, the package element cannot be removed from the package by the customer.
+          It might be possible to exchange this package element with another one.

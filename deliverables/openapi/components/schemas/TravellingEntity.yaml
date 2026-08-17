@@ -1,0 +1,26 @@
+type: object
+x-abstract: true
+description: >
+  TRAVELLING ENTITY — abstract base class for all entities taking part in a journey.
+  Use the entityType discriminator to select the concrete sub-type.
+required:
+  - entityType
+  - travellingEntityId
+properties:
+  travellingEntityId:
+    type: string
+    description: >
+      Stable caller-assigned identifier for this entity.
+      Must be unique, throughout the complete process. Referenced in responses to
+      indicate which offer elements apply to which TRAVELLING ENTITY.
+  entityType:
+    type: string
+    enum: [traveller, vehicle, animal, luggage]
+    description: Discriminator identifying the concrete type of this entity.
+  entitlementRights:
+    type: array
+    description: >
+      ENTITLEMENT RIGHTs held by this entity that may qualify for reduced
+      fares or special conditions.
+    items:
+      $ref: ./EntitlementRight.yaml

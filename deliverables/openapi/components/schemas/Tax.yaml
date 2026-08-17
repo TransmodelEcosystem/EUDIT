@@ -1,0 +1,39 @@
+type: object
+additionalProperties: false
+required:
+  - amount
+  - currencyCode
+properties:
+  amount:
+    type: number
+    minimum: 0
+    description: The tax amount.
+  currencyCode:
+    type: string
+    pattern: "^[A-Z]{3}$"
+    description: The currency of the tax amount, in ISO 4217 format (e.g., "USD", "EUR").
+  country:
+    type: string
+    pattern: "^[A-Z]{2}$"
+    description: The country code (ISO 3166-1 alpha-2) where the tax is applied.
+  percentage:
+    type: number
+    format: double
+    minimum: 0
+    maximum: 100
+    description: The tax percentage rate (e.g., 20 for 20%).
+  taxNumber:
+    type: string
+    description: An optional tax identification number or code.
+  type:
+    type: string
+    description: A type of the tax.
+    x-extensible-enum:
+      - VAT
+      - GST
+      - salesTax
+      - serviceTax
+      - other
+  taxDescription:
+    type: string
+    description: An optional human-readable description of the tax.
