@@ -1,0 +1,17 @@
+type: object
+description: >-
+  OGC API — Features: list of available feature collections
+  (OGC API — Features Part 1, clause 7.13).
+required:
+  - collections
+  - links
+properties:
+  collections:
+    type: array
+    items:
+      $ref: ./Collection.yaml
+  links:
+    type: array
+    description: Links related to this collection list (e.g. self, alternate).
+    items:
+      $ref: ../components/schemas/Link.yaml

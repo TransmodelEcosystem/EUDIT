@@ -1,0 +1,22 @@
+type: object
+description: >-
+  OGC API — Features: metadata for a single feature collection
+  (OGC API — Features Part 1, clause 7.14).
+required:
+  - id
+  - links
+properties:
+  id:
+    type: string
+    description: Identifier of the collection (e.g. "packages").
+  title:
+    type: string
+    description: Human-readable title of the collection.
+  description:
+    type: string
+    description: Human-readable description of the collection.
+  links:
+    type: array
+    description: Links related to this collection (e.g. self, items, alternate).
+    items:
+      $ref: ../components/schemas/Link.yaml

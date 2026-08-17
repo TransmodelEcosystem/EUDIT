@@ -1,23 +1,32 @@
 openapi: 3.1.0
 info:
-  title: OTI — Search offers & Lock offer (OGC API Processes)
+  title: OTI — Search offers, Lock offer & Get package (OGC API)
   version: 0.1.0-draft
   description: >-
-    OGC API Processes-compatible variant of the OTI API,
-    aligned with TOMP-API 2.0.0.
+    OGC API-compatible variant of the OTI API, aligned with TOMP-API 2.0.0.
 
-    Implements OGC API — Processes Part 1: Core (OAProc-1) and the
-    relevant parts of OGC API — Common Part 1 (landing page, conformance).
+    Implements:
+    - OGC API — Processes Part 1: Core (OAProc-1) for search-offers and lock-offer
+    - OGC API — Features Part 1: Core (OAFeat-1) for get-package
 
-    Processes implemented:
-    - search-offers: accepts a LockOfferRequest and returns a SearchOfferDelivery
+    Relevant parts of OGC API — Common Part 1 (landing page, conformance) are
+    also implemented.
+
+    Processes implemented (OGC API — Processes):
+    - search-offers: accepts a SearchOfferRequest and returns a SearchOfferDelivery
     - lock-offer: accepts a LockOfferRequest and returns a LockedOffer
+
+    Collections implemented (OGC API — Features):
+    - packages: retrieve a package by its identifier via GET /collections/packages/items/{packageId}
 
     Conformance classes implemented:
     - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/core
     - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/json
     - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/oas30
     - https://www.opengis.net/spec/ogcapi-processes-1/1.0/conf/job-list
+    - https://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core
+    - https://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30
+    - https://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html
 
   contact:
     name: OTI working group
@@ -41,6 +50,8 @@ tags:
   description: OTI Search offers process execution.
 - name: Lock offer
   description: OTI Lock offer process execution.
+- name: Packages
+  description: OGC API — Features collection for OTI packages.
 
 paths:
 
@@ -351,6 +362,156 @@ paths:
         default:
           $ref: ./components/responses/WarningList.yaml
 
+  # ─── OGC API FEATURES — Packages collection ────────────────────────────────
+
+  /collections:
+    get:
+      summary: Collection list
+      description: >-
+        Returns the list of available feature collections
+        (OGC API — Features Part 1, clause 7.13).
+      operationId: getCollections
+      tags:
+      - Packages
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      responses:
+        '200':
+          description: Collection list.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/CollectionList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /collections/packages:
+    get:
+      summary: Packages collection metadata
+      description: >-
+        Returns metadata for the packages feature collection
+        (OGC API — Features Part 1, clause 7.14).
+      operationId: getPackagesCollection
+      tags:
+      - Packages
+      parameters:
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      responses:
+        '200':
+          description: Collection metadata.
+          content:
+            application/json:
+              schema:
+                $ref: ./ogc/Collection.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
+  /collections/packages/items/{packageId}:
+    get:
+      summary: Get package
+      description: >-
+        Returns the package identified by {packageId}
+        (OGC API — Features Part 1, clause 7.16).
+
+        The response is restricted to the attribute groups specified via the
+        context query parameter:
+        - summary:            guarantees and summary.
+        - travellingEntities: travel party.
+        - tripPatterns:       trip patterns and sections.
+        - elements:           package elements (travel rights, ancillaries, allocations).
+        - financials:         financial aspects (fares, taxes, fees, etc.).
+        - operation:          administrative and operational aspects (conditions,
+                              restrictions, on-trip directives, etc.).
+
+        If context is omitted, only administrative details are returned (default).
+      operationId: getPackage
+      tags:
+      - Packages
+      parameters:
+      - name: packageId
+        in: path
+        required: true
+        description: Identifier of the package to retrieve.
+        schema:
+          type: string
+      - name: version
+        in: query
+        required: false
+        description: >-
+          Version of the package to retrieve.
+          If omitted, the latest version is returned.
+        schema:
+          type: string
+      - name: context
+        in: query
+        required: false
+        description: >-
+          Comma-separated list of attribute groups to include in the response.
+          Allowed values: summary, travellingEntities, tripPatterns, elements,
+          financials, operation.
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - summary
+            - travellingEntities
+            - tripPatterns
+            - elements
+            - financials
+            - operation
+          uniqueItems: true
+        style: form
+        explode: false
+      - $ref: ./components/parameters/acceptLanguage.yaml
+      - $ref: ./components/parameters/traceState.yaml
+      responses:
+        '200':
+          description: Package retrieved successfully.
+          headers:
+            Version:
+              $ref: ./components/headers/version.yaml
+            Content-Language:
+              $ref: ./components/headers/content-language.yaml
+            Expires:
+              $ref: ./components/headers/expires.yaml
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/Package.yaml
+        '400':
+          description: Bad request — the request parameters are invalid.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '404':
+          description: No package with the given identifier exists.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: ./components/schemas/WarningList.yaml
+        default:
+          $ref: ./components/responses/WarningList.yaml
+
   # ─── OGC API PROCESSES — Job management ─────────────────────────────────────
 
   /jobs:
@@ -594,6 +755,10 @@ components:
       $ref: ./ogc/LockOfferExecute.yaml
     LockOfferResults:
       $ref: ./ogc/LockOfferResults.yaml
+    CollectionList:
+      $ref: ./ogc/CollectionList.yaml
+    Collection:
+      $ref: ./ogc/Collection.yaml
     StatusInfo:
       $ref: ./ogc/StatusInfo.yaml
     JobList:

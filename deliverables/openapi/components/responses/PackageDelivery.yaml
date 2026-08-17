@@ -1,0 +1,12 @@
+description: PACKAGE DELIVERY — the response containing the requested package.
+headers:
+  Version:
+    $ref: ../headers/version.yaml
+  Content-Language:
+    $ref: ../headers/content-language.yaml
+  Expires:
+    $ref: ../headers/expires.yaml
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/Package.yaml
