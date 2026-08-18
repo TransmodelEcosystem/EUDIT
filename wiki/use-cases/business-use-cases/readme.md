@@ -109,5 +109,24 @@ L. **Governance** *(technical ?)*
 **After 'the Forge', this is re-scoped to:**
 * customer authentication can be included, when there is time left.
 
+M. **In-trip Support**
+- request support by the traveller
+- get support status
+
+N. **In-trip Notifications**
+- changes of status, routes, ...
+- instructions
+- validation requests to the retailer
+
+O. **Travel document operations**
+- revoke
+- (de)activation
+
+P. **Asset based offer search**
+- search for offers for a specific asset
+
+Q. **Location based offer search**
+- search for offers for a specific station/location
+ 
 
 
