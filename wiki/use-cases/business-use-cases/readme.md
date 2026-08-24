@@ -44,6 +44,7 @@ I. **Post-trip** *(+ end of payment (CHARGING MOMENT))*
 - pay your trips
 - receive the final price
 - automatic purchase (renew your contract)
+- Post-payment models, such as usage-based charging, account-based travel, EMV/check-in check-out or Fairtiq-like flows, require a different process because the travel right, usage events, charging and final amount may be confirmed after travel or after validation events
   
 J. **After trip** *(aftersales + claim + receipt)*
 - traveler request for an after-sale operation
