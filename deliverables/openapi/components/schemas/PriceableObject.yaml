@@ -1,0 +1,24 @@
+type: object
+x-abstract: true
+description: >
+  PRICEABLE OBJECT — abstract base class for all objects that can carry a price
+  (packages, package elements, ancillaries, allocations).
+properties:
+  priceableObjectId:
+    type: string
+    description: the identifier of the priceable object
+
+  description:
+    type: string
+    description: a description of the priceable object
+
+  fareProductRef:
+    type: string
+    description: the reference to the fare product associated to the priceable object. 
+      This can be used to determine the type of the priceable object based on the type of the associated fare product.
+      
+  priceElements:
+    type: array
+    description: the price of the priceable object, which can be composed of multiple price elements
+    items:
+      $ref: ./Price.yaml

@@ -1,0 +1,21 @@
+type: object
+description: >-
+  OGC API — Landing page.
+  Entry point to the API; provides links to conformance declaration,
+  available processes, and jobs (OGC API — Common Part 1, clause 7.2).
+required:
+- links
+properties:
+  title:
+    type: string
+    description: Human-readable title of the API.
+    example: OTI Search offers
+  description:
+    type: string
+    description: Detailed description of the API.
+  links:
+    type: array
+    description: >-
+      Hypermedia links. Must include relations: self, conformance, processes.
+    items:
+      $ref: ../components/schemas/Link.yaml

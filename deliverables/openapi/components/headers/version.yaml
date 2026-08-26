@@ -1,0 +1,4 @@
+description: The version used to format the response.
+required: true
+schema:
+  type: string

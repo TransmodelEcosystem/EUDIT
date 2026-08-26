@@ -1,0 +1,61 @@
+type: object
+description: >-
+  OGC API Processes — Job status information.
+  Returned by GET /jobs/{jobId} and by POST …/execution when executed
+  asynchronously (OGC API — Processes Part 1, clause 7.12).
+required:
+- jobID
+- status
+- type
+properties:
+  jobID:
+    type: string
+    format: uuid
+    description: Server-assigned unique identifier for this job.
+  processID:
+    type: string
+    description: Identifier of the process this job belongs to.
+    example: search-offers
+  type:
+    type: string
+    const: process
+    description: Fixed value identifying this resource as a process job.
+  status:
+    type: string
+    description: Current status of the job.
+    enum:
+    - accepted
+    - running
+    - successful
+    - failed
+    - dismissed
+  message:
+    type: string
+    description: Human-readable status message or error description.
+  created:
+    type: string
+    format: date-time
+    description: Timestamp when the job was created.
+  started:
+    type: string
+    format: date-time
+    description: Timestamp when execution started.
+  finished:
+    type: string
+    format: date-time
+    description: Timestamp when execution finished (successfully or otherwise).
+  updated:
+    type: string
+    format: date-time
+    description: Timestamp of the last status update.
+  progress:
+    type: integer
+    minimum: 0
+    maximum: 100
+    description: Percentage of completion (0–100), if known.
+  links:
+    type: array
+    description: >-
+      Hypermedia links (e.g. rel=self, rel=results, rel=alternate).
+    items:
+      $ref: ../components/schemas/Link.yaml

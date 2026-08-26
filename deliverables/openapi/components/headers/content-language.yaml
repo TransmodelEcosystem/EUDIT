@@ -1,0 +1,11 @@
+description: >-
+  The language/localization of user-facing content.
+  A comma-separated list of BCP 47 (RFC 5646) language tags with optional
+  quality weights as defined in RFC 9110 section 12.4.2 (e.g. nl-NL;q=1.0, en;q=0.8).
+required: true
+schema:
+  type: string
+  pattern: "^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*(;q=(0(\\.[0-9]{0,3})?|1(\\.0{0,3})?))?(\\s*,\\s*[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*(;q=(0(\\.[0-9]{0,3})?|1(\\.0{0,3})?))?)*$"
+x-externalDocs:
+  url: https://www.rfc-editor.org/rfc/rfc9110#section-8.5
+  description: "RFC 9110 — HTTP Semantics, section 8.5: Content-Language"

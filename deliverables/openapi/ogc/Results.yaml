@@ -1,0 +1,11 @@
+type: object
+x-abstract: true
+description: >-
+  OGC API Processes — Results (abstract base).
+  Process-specific variants extend this schema via allOf and add a typed
+  output property (OGC API — Processes Part 1, clause 7.14).
+
+  Note for code generators: the abstract base deliberately leaves outputs
+  untyped. Use the process-specific subschema (e.g. SearchOffersResults)
+  as the concrete response body type.
+properties: {}

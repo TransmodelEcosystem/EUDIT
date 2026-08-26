@@ -1,0 +1,10 @@
+allOf:
+- $ref: ./Results.yaml
+- type: object
+  description: >-
+    OGC API Processes — Execution results for the search-offers process.
+    The "searchOfferDelivery" field contains the full offer response.
+  properties:
+    searchOfferDelivery:
+      description: The search offer delivery produced by the search-offers process.
+      $ref: ../components/schemas/SearchOfferDelivery.yaml

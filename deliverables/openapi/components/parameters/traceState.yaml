@@ -1,0 +1,15 @@
+name: tracestate
+in: header
+description: >-
+  Vendor-specific trace context, extending the traceparent header with a
+  list of key=value pairs. Each entry identifies a tracing system and its
+  opaque value. Providing tracestate is optional; when present it must
+  accompany a valid traceparent header (W3C Trace Context Level 1).
+  Example: rojo=00f067aa0ba902b7, congo=t61rcWkgMzE
+required: false
+schema:
+  type: string
+  pattern: "^[a-z][a-z0-9_\\-*/]{0,255}=[^,=\\s]{1,256}(,[a-z][a-z0-9_\\-*/]{0,255}=[^,=\\s]{1,256})*$"
+x-externalDocs:
+  url: https://www.w3.org/TR/trace-context/#tracestate-header
+  description: "W3C Trace Context Level 1 — tracestate header"

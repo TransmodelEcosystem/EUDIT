@@ -1,0 +1,21 @@
+allOf:
+- $ref: ./PackageElement.yaml
+- type: object
+  description: TRAVEL RIGHT — an package element conferring the right to travel on a specific section of the journey.
+  required:
+  - packageElementType
+  properties:
+    packageElementType:
+      type: string
+      const: travelRight
+    requiredAllocations:
+      type: array
+      description: Seat or space allocations required for this travel right (e.g. mandatory seat reservation).
+      items:
+        $ref: ./AllocationSelection.yaml
+    requiredAncillaries:
+      type: array
+      description: Ancillaries that can or must be added to this travel right (e.g. bicycle transport, cabin).
+      items:
+        $ref: ./AncillarySelection.yaml
+unevaluatedProperties: false

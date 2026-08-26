@@ -1,0 +1,429 @@
+openapi: 3.1.0
+info:
+  title: OTI — Lookup tables
+  version: 0.1.0-draft
+  description: >
+    Provides read-only access to the operator-defined lookup tables (code lists) used in the
+    OTI Search Offers and Lock Offer APIs. Each lookup table is accessible via two path patterns:
+
+    - **REST style** — `GET /{lookup-type}` — returns all items of a given code list.
+    - **OGC Records API style** — `GET /collections/{lookup-type}/items` — returns the same
+      items conforming to the OGC API - Records (Part 1) item-collection response structure.
+
+    The three lookup tables correspond to the attributes marked as `lookup` in the OTI model:
+
+    | Path segment | Used by |
+    |---|---|
+    | `personal-needs` | `OfferRequest.travellers[].personalNeeds[]` |
+    | `ancillary-types` | `Ancillary.type` in offer responses |
+    | `entitlement-types` | `EntitlementRight.entitlementType` |
+
+paths:
+
+  # ─── PERSONAL NEEDS ────────────────────────────────────────────────────────
+
+  /personal-needs:
+    get:
+      summary: List all personal need types
+      operationId: list_personal_needs
+      description: >
+        Returns all valid values for `personalNeeds[]` on a travelling entity.
+        These are operator-defined accessibility and mobility need codes
+        (e.g. motorizedWheelchair, visualImpairment, accompanyingDog).
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguage'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupCollection'
+
+  /collections/personal-needs/items:
+    get:
+      summary: 'OGC Records API: list personal need types'
+      operationId: ogc_list_personal_needs
+      description: >
+        Returns all valid values for `personalNeeds[]` on a travelling entity,
+        conforming to the OGC API - Records (Part 1) item-collection response structure.
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguage'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/ogcBbox'
+        - $ref: '#/components/parameters/ogcDatetime'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OgcItemCollection'
+
+  # ─── ANCILLARY TYPES ───────────────────────────────────────────────────────
+
+  /ancillary-types:
+    get:
+      summary: List all ancillary types
+      operationId: list_ancillary_types
+      description: >
+        Returns all valid values for `Ancillary.type` in offer responses.
+        These are operator-defined ancillary service codes
+        (e.g. bicycleTransport, vehicleTransport, cabin, meal, extraLuggage).
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguage'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupCollection'
+
+  /collections/ancillary-types/items:
+    get:
+      summary: 'OGC Records API: list ancillary types'
+      operationId: ogc_list_ancillary_types
+      description: >
+        Returns all valid values for `Ancillary.type` in offer responses,
+        conforming to the OGC API - Records (Part 1) item-collection response structure.
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguage'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/ogcBbox'
+        - $ref: '#/components/parameters/ogcDatetime'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OgcItemCollection'
+
+  # ─── ENTITLEMENT TYPES ─────────────────────────────────────────────────────
+
+  /entitlement-types:
+    get:
+      summary: List all entitlement right types
+      operationId: list_entitlement_types
+      description: >
+        Returns all valid values for `EntitlementRight.entitlementType` on a travelling entity.
+        These are operator-defined entitlement codes
+        (e.g. discountSubscription, loyaltyCard, concession, promotionCode, railcard).
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguage'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LookupCollection'
+
+  /collections/entitlement-types/items:
+    get:
+      summary: 'OGC Records API: list entitlement right types'
+      operationId: ogc_list_entitlement_types
+      description: >
+        Returns all valid values for `EntitlementRight.entitlementType` on a travelling entity,
+        conforming to the OGC API - Records (Part 1) item-collection response structure.
+      parameters:
+        - $ref: '#/components/parameters/acceptLanguage'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/ogcBbox'
+        - $ref: '#/components/parameters/ogcDatetime'
+      responses:
+        '200':
+          description: Success
+          headers:
+            Content-Language:
+              $ref: '#/components/headers/contentLanguage'
+            Cache-Control:
+              $ref: '#/components/headers/cacheControl'
+            ETag:
+              $ref: '#/components/headers/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OgcItemCollection'
+
+components:
+  schemas:
+
+    # ─── REST RESPONSE ─────────────────────────────────────────────────────────
+
+    LookupCollection:
+      type: object
+      additionalProperties: false
+      description: A paginated collection of lookup items returned by the REST-style endpoints.
+      required:
+      - items
+      properties:
+        items:
+          type: array
+          description: The lookup items on this page.
+          items:
+            $ref: '#/components/schemas/LookupItem'
+        totalCount:
+          type: integer
+          description: Total number of items in the code list (across all pages).
+        offset:
+          type: integer
+          description: Zero-based offset of the first item on this page.
+        limit:
+          type: integer
+          description: Maximum number of items returned per page.
+        links:
+          type: array
+          description: Pagination links (next, prev, self).
+          items:
+            $ref: '#/components/schemas/Link'
+
+    LookupItem:
+      type: object
+      additionalProperties: false
+      description: A single entry in a lookup table (code list).
+      required:
+      - code
+      - name
+      properties:
+        code:
+          type: string
+          description: The machine-readable code value used in API requests and responses.
+        name:
+          type: string
+          description: Human-readable short label for this code (language follows Accept-Language).
+        description:
+          type: string
+          description: Optional longer description of what this code means.
+        validFrom:
+          type: string
+          format: date
+          description: Date from which this code is valid (inclusive). Omitted if always valid.
+        validTo:
+          type: string
+          format: date
+          description: Date until which this code is valid (inclusive). Omitted if open-ended.
+
+    # ─── OGC RECORDS RESPONSE ──────────────────────────────────────────────────
+
+    OgcItemCollection:
+      type: object
+      additionalProperties: false
+      description: >
+        An OGC API - Records (Part 1) item-collection response.
+        Conforms to the FeatureCollection-like envelope used by OGC Records.
+      required:
+      - type
+      - items
+      properties:
+        type:
+          type: string
+          const: ItemCollection
+          description: Fixed GeoJSON-compatible collection type identifier.
+        items:
+          type: array
+          description: The lookup items on this page, each wrapped in an OGC Record Item envelope.
+          items:
+            $ref: '#/components/schemas/OgcItem'
+        numberMatched:
+          type: integer
+          description: Total number of items matching the query (across all pages).
+        numberReturned:
+          type: integer
+          description: Number of items included in this response page.
+        links:
+          type: array
+          description: Pagination and self-description links (next, prev, self, collection).
+          items:
+            $ref: '#/components/schemas/Link'
+
+    OgcItem:
+      type: object
+      additionalProperties: false
+      description: >
+        An OGC API - Records item envelope wrapping a single lookup entry.
+        Conforms to the OGC Records Item schema.
+      required:
+      - type
+      - id
+      - properties
+      properties:
+        type:
+          type: string
+          const: Feature
+          description: Fixed GeoJSON Feature type identifier (required by OGC Records).
+        id:
+          type: string
+          description: Unique identifier of this record — equal to the lookup code.
+        properties:
+          $ref: '#/components/schemas/LookupItem'
+        links:
+          type: array
+          description: Links related to this item (e.g. self, collection).
+          items:
+            $ref: '#/components/schemas/Link'
+
+    # ─── SHARED ────────────────────────────────────────────────────────────────
+
+    Link:
+      type: object
+      additionalProperties: false
+      x-externalDocs:
+        url: http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/schemas/link.yaml
+      required:
+      - href
+      - rel
+      properties:
+        rel:
+          type: string
+          description: Link relation type (e.g. self, next, prev, collection, alternate).
+        href:
+          type: string
+          format: uri
+          description: The URL of the linked resource.
+        type:
+          type: string
+          description: Media type of the linked resource (e.g. application/json).
+        title:
+          type: string
+          description: Human-readable label for this link.
+        method:
+          type: string
+          enum:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          default: GET
+          description: HTTP method to use for this link.
+
+    # ─── PRIMITIVES ────────────────────────────────────────────────────────────
+
+    dateTime:
+      type: string
+      format: date-time
+      x-pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$
+      description: https://www.rfc-editor.org/rfc/rfc3339#section-5.6
+
+  parameters:
+    acceptLanguage:
+      name: Accept-Language
+      in: header
+      description: >
+        Preferred language for human-readable fields (name, description).
+        Supporting English (en) is mandatory (see RFC 9110).
+      schema:
+        type: string
+
+    limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return per page (default 100).
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 100
+
+    offset:
+      name: offset
+      in: query
+      description: Zero-based index of the first item to return (for pagination).
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    ogcBbox:
+      name: bbox
+      in: query
+      description: >
+        OGC API bounding box filter (minLon,minLat,maxLon,maxLat).
+        Not applicable to lookup tables but included for OGC Records conformance.
+      required: false
+      schema:
+        type: array
+        items:
+          type: number
+        minItems: 4
+        maxItems: 6
+
+    ogcDatetime:
+      name: datetime
+      in: query
+      description: >
+        OGC API temporal filter (RFC 3339 instant or interval).
+        Filters items by their validFrom/validTo range when provided.
+      required: false
+      schema:
+        type: string
+
+  headers:
+    contentLanguage:
+      description: Language of human-readable content in the response (IETF BCP 47 tag, e.g. en or nl-NL).
+      schema:
+        type: string
+        pattern: '^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$'
+      required: true
+
+    cacheControl:
+      description: >
+        Caching directives for this response. Lookup tables are typically static and can be cached
+        for a long time (e.g. 1 day). The server may also provide ETag headers for conditional requests.
+      schema:
+        type: string
+
+    ETag:
+      description: >
+        Entity tag for this response, used for conditional requests (If-None-Match).
+        Lookup tables are typically static and can be cached for a long time (e.g. 1 day).
+      schema:
+        type: string

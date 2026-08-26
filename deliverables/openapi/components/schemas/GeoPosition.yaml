@@ -1,0 +1,19 @@
+type: object
+additionalProperties: false
+description: A geodetic position (WGS-84).
+required:
+- longitude
+- latitude
+properties:
+  longitude:
+    type: number
+    format: double
+    minimum: -180
+    maximum: 180
+    description: Longitude in decimal degrees (WGS-84).
+  latitude:
+    type: number
+    format: double
+    minimum: -90
+    maximum: 90
+    description: Latitude in decimal degrees (WGS-84).

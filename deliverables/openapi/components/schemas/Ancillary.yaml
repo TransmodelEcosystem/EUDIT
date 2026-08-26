@@ -1,0 +1,17 @@
+allOf:
+- $ref: ./PackageElement.yaml
+- type: object
+  description: ANCILLARY — a package element for an optional or required ancillary service (e.g. bike transport, cabin, meal).
+  required:
+  - packageElementType
+  properties:
+    packageElementType:
+      type: string
+      const: ancillary
+    ancillaryId:
+      type: string
+      description: Server-assigned identifier for this ancillary.
+    type:
+      type: string
+      description: Type of ancillary service (operator-defined lookup value).
+unevaluatedProperties: false

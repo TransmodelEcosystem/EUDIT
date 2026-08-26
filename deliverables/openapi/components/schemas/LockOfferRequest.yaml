@@ -1,0 +1,33 @@
+type: object
+additionalProperties: false
+description: >-
+  LOCK OFFER REQUEST — the request body to lock a previously found offer,
+  optionally selecting specific allocations and ancillary services.
+required:
+  - offerReference
+properties:
+  offerReference:
+    type: string
+    description: >-
+      The identifier of the offer to be locked.
+      Obtained from the offer search response (Offer.packageId).
+
+  allocationRefs:
+    type: array
+    minItems: 1
+    description: >-
+      Identifiers of the specific allocations (e.g. seat reservations) to include.
+      Required when the offer contains selectable allocations and a choice must be made.
+      If absent, the carrier will apply the default allocation.
+    items:
+      type: string
+
+  ancillaryRefs:
+    type: array
+    minItems: 1
+    description: >-
+      Identifiers of the ancillary services (e.g. bicycle transport, cabin upgrade) to include.
+      Required when the offer contains selectable ancillaries and a choice must be made.
+      If absent, no optional ancillaries are added.
+    items:
+      type: string

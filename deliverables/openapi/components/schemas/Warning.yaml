@@ -1,0 +1,33 @@
+type: object
+description: errors/warning, RFC 7807 compliant
+required:
+  - type
+  - title
+properties:
+  type:
+    type: string
+    format: uri
+    description: >-
+      A URI reference that identifies the problem type. This specification encourages that, when dereferenced, 
+      it provide human-readable documentation for the problem type (e.g., using HTML). When this member is not present, its value is assumed to be "about:blank".
+    example: "https://example.com/probs/out-of-credit"
+    default: "about:blank"
+  title:
+    type: string
+    description: A short, human-readable summary of the problem type. It should not change from occurrence to occurrence of the problem.
+    example: "You have insufficient balance."
+  status:
+    type: integer
+    format: int32
+    description: The HTTP status code for this specific error.
+    example: 403
+  detail:
+    type: string
+    description: A human-readable explanation specific to this situation. Helps to resolve the error.
+    example: "Your current balance is €30, but the order costs €50."
+  instance:
+    type: string
+    format: uri
+    description: A URI reference that uniquely identifies this specific error (e.g., a transaction or log ID).
+    example: "/transactions/abc-12345"
+additionalProperties: true

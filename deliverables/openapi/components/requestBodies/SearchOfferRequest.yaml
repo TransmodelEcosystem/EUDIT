@@ -1,0 +1,6 @@
+description: Search offer request body.
+required: true
+content:
+  application/json:
+    schema:
+      $ref: ../schemas/OfferRequest.yaml

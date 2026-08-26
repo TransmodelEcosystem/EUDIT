@@ -1,0 +1,17 @@
+type: object
+additionalProperties: false
+description: LEG ALIGHT — the alighting event at the end of a timed leg.
+required:
+- stopPlaceRef
+- plannedArrivalTime
+properties:
+  stopPlaceRef:
+    type: string
+    description: Reference to the NeTEx SCHEDULED STOP POINT or STOP PLACE where alighting occurs.
+  plannedArrivalTime:
+    type: string
+    format: date-time
+    description: Scheduled arrival time at the alighting stop.
+  setDownLocation:
+    type: string
+    description: Reference to a specific platform, bay, or set-down zone within the stop place.

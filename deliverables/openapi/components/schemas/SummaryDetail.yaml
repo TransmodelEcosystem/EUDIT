@@ -1,0 +1,13 @@
+type: object
+additionalProperties: false
+description: SUMMARY DETAIL — a human-readable summary of the journey geometry and temporal span covered by an offer.
+properties:
+  geometry:
+    type: string
+    description: Geometric description of the journey (e.g. origin–destination name pair).
+  temporal:
+    type: string
+    description: Temporal description of the journey (e.g. departure–arrival date-time range).
+  conditions:
+    type: string
+    description: Human-readable summary of the applicable fare conditions.

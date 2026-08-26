@@ -1,0 +1,28 @@
+type: object
+additionalProperties: false
+description: >-
+  FEE — a monetary fee applied to a package element
+  (e.g. booking fee, service fee, cancellation fee).
+required:
+  - feeType
+properties:
+  feeType:
+    type: string
+    description: The type of fee being applied.
+    x-extensible-enum:
+      - bookingFee
+      - serviceFee
+      - cancellationFee
+      - exchangeFee
+      - deliveryFee
+      - other
+  price:
+    description: The monetary value of this fee.
+    $ref: ./Price.yaml
+  packageElementRefs:
+    type: array
+    description: >-
+      The package elements to which this fee applies.
+      If absent, the fee applies to the package as a whole.
+    items:
+      type: string
