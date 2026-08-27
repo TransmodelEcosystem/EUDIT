@@ -1,0 +1,45 @@
+Luggage:
+  allOf:
+  - $ref: .\TravellingEntity.yaml
+  - type: object
+    additionalProperties: false
+    description: LUGGAGE — a bulky item a traveller brings that may affect offer availability, space allocation, or price.
+    required:
+    - entityType
+    - type
+    properties:
+      entityType:
+        type: string
+        const: luggage
+      type:
+        type: string
+        description: Category of item.
+        x-extensible-enum:
+        - bicycle
+        - pram
+        - luggage
+        - wheelchair
+        - skis
+        - snowboard
+        - musicalInstrument
+        - other
+      length:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Length in meters.
+      width:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Width in meters.
+      height:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Height in meters.
+      weight:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Weight in kilograms.

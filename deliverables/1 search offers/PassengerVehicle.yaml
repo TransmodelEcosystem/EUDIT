@@ -1,0 +1,52 @@
+PassengerVehicle:
+  allOf:
+  - $ref: .\TravellingEntity.yaml
+  - type: object
+    additionalProperties: false
+    description: PASSENGER VEHICLE — a traveller-owned vehicle to be transported (e.g. on a ferry or car-train).
+    required:
+    - entityType
+    - type
+    properties:
+      entityType:
+        type: string
+        const: vehicle
+      type:
+        type: string
+        description: Vehicle category.
+        x-extensible-enum:
+        - car
+        - motorhome
+        - caravan
+        - motorcycle
+        - bicycle
+        - trailerOnly
+      length:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Total length of the vehicle in meters.
+      width:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Width of the vehicle in meters.
+      height:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Height of the vehicle in metres.
+      weight:
+        type: number
+        format: double
+        minimum: 0.0
+        description: Total weight of the vehicle in kilograms.
+      trailer:
+        description: Details of a towed trailer, if applicable.
+        $ref: .\PassengerVehicle.yaml
+      vehicleRacks:
+        type: array
+        maxItems: 2
+        description: Vehicle racks (e.g. bike racks) mounted on the vehicle.
+        items:
+          $ref: .\VehicleRack.yaml

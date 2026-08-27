@@ -1,0 +1,23 @@
+TravellerQualifyingCharacteristics:
+  type: object
+  additionalProperties: false
+  description: TRAVELLER QUALIFYING CHARACTERISTICS — demographic and eligibility data used for fare calculation. May contain GDPR-sensitive personal data; transmit only when required.
+  properties:
+    fullName:
+      type: string
+      description: Full name of the traveller.
+    nationality:
+      type: string
+      description: Nationality (ISO 3166-1 alpha-2 country code).
+    residency:
+      type: string
+      description: Country of residency (ISO 3166-1 alpha-2) for domestic vs. international fare eligibility.
+    dateOfBirth:
+      type: string
+      format: date
+      description: Date of birth. (TBD — final field name pending.)
+    licenseTypes:
+      type: array
+      description: License types held by this traveller that may affect offer availability.
+      items:
+        type: string
