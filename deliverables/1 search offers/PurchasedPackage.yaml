@@ -1,0 +1,31 @@
+allOf:
+  - $ref: ./Package.yaml
+  - type: object
+    properties:
+      packageType:
+        type: string
+        enum:
+          - purchased_package
+          - rollbacked_package
+          - cancelled_package
+          - fulfilled_package
+      fulfillments:
+        type: array
+        items:
+          $ref: .\Fulfillment.yaml
+examples:
+  - {
+      "packageId": "PKG-123",
+      "packageType": "purchased_package",
+      "fulfillments":
+        [
+          {
+            "fulfillmentId": "FULFILLMENT-123",
+            "status": "revoked",
+            "mediaType": "application/pdf",
+            "packageElements": ["PE-123", "PE-456"],
+            "url": "https://example.com/fulfillment/FULFILLMENT-123",
+            "contentStandard": "ISO/IEC 18004",
+          },
+        ],
+    }

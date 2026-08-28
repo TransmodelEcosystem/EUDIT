@@ -1,0 +1,116 @@
+type: object
+required:
+  - packageId
+  - summary
+  - name
+  - matching
+  - status
+  - version
+properties:
+  packageId:
+    type: string
+    description: Unique identifier for the package
+  version:
+    type: string
+    description: > 
+      The version of the package, which can be used for version control and tracking changes over time.
+      Avoid using an increasing integer as the version number, as it may not accurately reflect the content changes. 
+      Instead, consider using a hash of the package content or a combination of an internal ID and version number 
+      to ensure uniqueness and integrity.
+  summary:
+    type: string
+    description: A brief summary of the package, providing an overview of its contents or purpose.
+  name:
+    type: string
+    description: The name of the package, which can be used for display purposes in user interfaces.
+  packageType:
+    type: string
+    description: The type of the package.
+    x-enum-values: 
+    - offer 
+    - locked_offer
+    - expired_offer
+    - released_offer
+    - purchased_package
+    - rollbacked_package
+    - cancelled_package
+    - fulfilled_package
+  elements:
+    type: array
+    description: A list of elements that are part of the package
+    items:
+      oneOf:
+        - $ref: .\TravelRight.yaml
+        - $ref: .\Ancillary.yaml
+        - $ref: .\SpotAllocation.yaml
+        - $ref: .\AssetAllocation.yaml
+        - $ref: .\AfterSalesFee.yaml
+      discriminator:
+        propertyName: packageElementType
+        mapping:
+          travelRight: .\TravelRight.yaml
+          ancillary: .\Ancillary.yaml
+          spotAllocation: .\SpotAllocation.yaml
+          assetAllocation: .\AssetAllocation.yaml
+          afterSalesFee: .\AfterSalesFee.yaml
+  travellingEntities:
+    type: array
+    description: A list of travelling entities associated with the package.
+    items:
+      $ref: .\TravellingEntity.yaml
+  minimumPrice:
+    $ref: .\Cost.yaml
+  summaryDetails:
+    type: array
+    description: A list of detailed summaries related to the package, providing additional context or information.
+    items:
+      $ref: .\SummaryDetail.yaml
+  trip:
+    $ref: .\Trip.yaml
+  guarantees:
+    type: array
+    description: A list of guarantees
+    items:
+      $ref: .\Guarantee.yaml
+  # links:
+  #   type: array
+  #   description: A list of links related to the package, which can provide additional information or actions.
+  #   items:
+  #     $ref: .\Link.yaml
+  # moved to the response!
+example:
+  {
+    "packageId": "PK-123",
+    "summary": "This is a sample package.",
+    "name": "Sample Package",
+    "matching": "match",
+    "minimumPrice": { "amount": 100.00, "currencyCode": "USD" },
+    "summaryDetails": [
+      { 
+        "detailType": "geospatial-condition",
+        "description": "A route from San Francisco to Los Angeles.",
+        "geospatialValidity": { "type": "Feature", "geometry": { "type": "LineString", "coordinates": [[-122.4194, 37.7749], [-118.2437, 34.0522]] } }
+      },
+      { 
+        "detailType": "other-condition",
+        "description": "No pets allowed"
+      }
+    ],
+    "elements": [
+      {
+        "elementType": "travelRight",
+        "elementId": "PE-123",
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ],
+        "price": { "amount": 23.20, "currencyCode": "EUR" },
+        "travellingEntities": [ "TE-123", "TE-456" ],
+
+      }, 
+      {
+        "elementType": "spotAllocation",
+        "elementId": "PE-124",
+        "typeOfSpot": "seat",
+        "numberOfAllocatedUnits": 1,
+        "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ]
+      }
+    ]
+  }

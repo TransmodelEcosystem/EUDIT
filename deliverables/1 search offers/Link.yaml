@@ -1,0 +1,38 @@
+type: object
+externalDocs:
+  description: Link object definition
+  url: https://github.com/opengeospatial/ogcapi-processes/blob/master/openapi/schemas/processes-core/link.yaml
+required:
+  - rel
+  - href
+properties:
+  rel:
+    type: string
+  type:
+    type: string
+  hreflang:
+    type: string
+  title:
+    type: string
+  length:
+    type: integer
+  href:
+    type: string
+  method:
+    type: string
+    enum: [ POST, GET, DELETE, PATCH ]
+  body: 
+    type: object
+  headers:
+    type: object
+    additionalProperties:
+      type: string
+examples:
+- {
+    "rel": "self",
+    "type": "application/json",
+    "title": "Self link",
+    "length": 1234,
+    "href": "https://api.example.com/resource/1",
+    "method": "GET"  
+  }

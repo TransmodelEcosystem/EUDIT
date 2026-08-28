@@ -1,0 +1,24 @@
+type: object
+properties:
+  requestId:
+    type: string
+    description: a unique ID, the response to this request MUST have the same ID (in case of a-sync call) 
+  packageRef:
+    type: string
+    format: package-ref
+    description: the reference of the offer to lock
+  aftersalesByRetailerOnly:
+    type: boolean
+    description: filter field; is it allowed that the customer can change the offer after purchase directly communicating with the distributor. Default 'false'
+  allocations:
+    type: array
+    items:
+      type: string
+      format: allocation-ref
+    description: a list of allocatable seats/assets, subset of the 'required allocations' in the offer
+  ancillaries:
+    type: array
+    items:
+      type: string
+      format: ancillary-ref
+    description: a list of ancillaries, subset of the 'required ancillaries' in the offer

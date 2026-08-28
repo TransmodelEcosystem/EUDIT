@@ -1,0 +1,24 @@
+Animal:
+  allOf:
+  - $ref: .\TravellingEntity.yaml
+  - type: object
+    additionalProperties: false
+    description: ANIMAL — an animal travelling alongside its owner.
+    required:
+    - entityType
+    - type
+    properties:
+      entityType:
+        type: string
+        const: animal
+      type:
+        type: string
+        description: Category of animal (operator-defined, e.g. dog, cat, other).
+        x-extensible-enum:
+        - dog
+        - cat
+        - other
+      assistant:
+        type: boolean
+        description: Whether this animal is a registered assistance animal.
+      

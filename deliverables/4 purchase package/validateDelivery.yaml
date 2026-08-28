@@ -1,0 +1,29 @@
+type: object
+required:
+  - packageId
+  - version
+  - expiryTime
+properties:
+  requestId:
+    type: string
+    description: a unique ID, the response to this request MUST have the same ID (in case of a-sync call)
+  packageId:
+    type: string
+    description: the reference of the validated package
+  version:
+    type: string
+    description: the version of the validated locked offer package
+  expiryTime:
+    type: string
+    format: date-time
+    description: expiry time of the locked offer, ISO 8601
+  problems:
+    type: array
+    items:
+      type: string
+    description: a list of string, describing blocking issues, in the requested language (or local if not the requested language is not supported)
+  warnings:
+    type: array
+    items:
+      type: string
+    description: a list of string, describing non-blocking issues, in the requested language (or local if not the requested language is not supported)

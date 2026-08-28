@@ -1,0 +1,38 @@
+type: object
+required:
+  - packageId
+  - version
+properties:
+  requestId:
+    type: string 
+    message: >-
+      conditional, when using a-sync calls, a unique ID, the response to this request MUST have the same ID (in case of a-sync call)
+  packageId: 
+    type: string
+    message: the reference of the package to validate
+  version:
+    type: string
+    message: the version of the locked offer package to validate
+  contentLanguage:
+    type: string
+    message: the requested language for the response content
+  personalInformation:
+    type: array
+    items:
+      type: object
+      properties:
+        travellingEntityId:
+          type: string
+        informationType:
+          $ref: .\personalInformationType.yaml
+        distributionType:
+          type: string
+          description: >-
+            the distribution type of the personal information.
+          enum: 
+            - value
+            - reference
+            - VC
+            - referencedVC
+        value:
+          type: string

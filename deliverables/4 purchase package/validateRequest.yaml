@@ -1,0 +1,23 @@
+type: object
+required:
+  - packageId
+  - version
+properties:
+  requestId:
+    type: string 
+    description: >-
+      conditional, when using a-sync calls, a unique ID, the response to this request MUST have the same ID (in case of a-sync call)
+  packageId: 
+    type: string
+    description: the reference of the package to validate
+  version:
+    type: string
+    description: the version of the locked offer package to validate
+  placeHolders:
+    type: array
+    items:
+      type: ./placeHolder.yaml
+    description: conditional, when personal information is required to validate
+  contentLanguage:
+    type: string
+    description: optional, The language/localization of user-facing content, One IETF BCP 47 (RFC 5646) language tag. If missing, the local accepted language

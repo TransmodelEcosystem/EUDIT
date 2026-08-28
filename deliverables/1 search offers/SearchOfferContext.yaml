@@ -1,0 +1,8 @@
+type: object
+properties:
+  # TBD: adding the place structure
+  # places:
+  #   type: array
+  #   items:
+  #     oneOf:
+  #       - $ref: .\Place.yaml
