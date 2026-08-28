@@ -12,10 +12,6 @@ allOf:
       class:
         type: string
         x-enum-values:
-          - economy
-          - business
-          - first
-          - second
-          - premium
-examples:
-- { filterType: "mode", mode: "RAIL", class: "economy" }
+          - FIRST # equals BUSINESS, PREMIUM, BEST
+          - SECOND # equals ECONOMY, STANDARD, BASIC
+          - ANY_CLASS

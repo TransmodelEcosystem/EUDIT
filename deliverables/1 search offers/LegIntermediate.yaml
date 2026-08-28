@@ -1,29 +1,20 @@
 type: object
 required:
   - stopPointRef
-  - stopPointName
-  - serviceArrivalTimetabledTime
-  - serviceDepartureTimetabledTime
+  - arrivalTime
+  - departureTime
 properties:
-  serviceArrivalTimetabledTime:
+  stopPointRef:
+    type: string
+    format: stop-point-ref
+  arrivalTime:
     type: string
     format: date-time
     description: The arrival time at the drop-off location. Local time zone should be used.
-  serviceDepartureTimetabledTime:
+  departureTime:
     type: string
     format: date-time
     description: The departure time from the stop point. Local time zone should be used.  
   stopPointName:
     type: string
-    description: Name of the stop point 
-  stopPointRef:
-    type: string
-    format: stop-point-ref
-    description: Reference to the stop point
-examples:
-- {
-    "serviceArrivalTimetabledTime": "2024-06-15T14:00:00Z",
-    "serviceDepartureTimetabledTime": "2024-06-15T14:06:00Z",
-    "stopPointName": "Central Station",
-    "stopPointRef": "STOP-456"
-  }
+    description: Name of the stop point

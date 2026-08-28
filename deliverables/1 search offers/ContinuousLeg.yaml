@@ -9,10 +9,11 @@ allOf:
       duration:
         type: integer
         description: Duration of the leg in minutes
-      startPlace:
+      start:
         type: string
+        description: consistent with TimedLeg
         format: place-ref
-      endPlace:
+      end:
         type: string
         format: place-ref
       timeWindowStart:
@@ -29,6 +30,6 @@ examples:
     "duration": 120,
     "timeWindowStart": "2024-06-15T08:00:00Z",
     "timeWindowEnd": "2024-06-15T10:00:00Z",
-    "startPlace": "PLACE-123",
-    "endPlace": "PLACE-456"
+    "start": "PLACE-123",
+    "end": "PLACE-456"
   }

@@ -12,7 +12,7 @@ allOf:
         description: discriminator for the leg type
         const: timed
       service:
-        $ref: .\DatedJourney.yaml
+        $ref: .\Service.yaml
       start:
         $ref: .\LegBoard.yaml
       end:

@@ -4,23 +4,24 @@ required:
   - mode
   - legType
 properties:
-  legId:
-    type: string
-    description: Unique identifier for the leg
-    format: leg-ref
   legType:
     type: string
     description: discriminator for the leg type
     enum: [timed, continuous, transfer]
+  legId:
+    type: string
+    description: Unique identifier for the leg
+    format: leg-ref
   mode:
-    description: Mode of transportation for the leg (e.g., bus, train, walking). See modes as specified in NeTEx.
     $ref: .\Mode.yaml
   sequenceNumber:
     type: integer
-    description: The order of the leg in the overall journey. In case of parallel legs, the sequence number should be the same for those legs.
+    description: >-
+      The order of the leg in the overall journey. In case of parallel legs, the sequence number should be the same for those legs.
+      When not supplied, the order within the list of legs determines the sequence number.
     default: 1
     minimum: 1
-  tripPatternId:
+  tripPattern:
     type: string
     format: trip-pattern-ref
     description: Reference to the trip pattern that this leg is part of, if applicable. There is no tripPattern object in the data model,
@@ -33,5 +34,5 @@ examples:
     "legId": "LEG-123",
     "legType": "timed",
     "mode": "TRAIN",
-    "tripPatternId": "inbound-1234"
+    "tripPattern": "inbound-1234"
   }

@@ -15,17 +15,14 @@ allOf:
       description: A list of travelling entities associated with the package.
       items:
         $ref: .\TravellingEntity.yaml
+    policy:
+      $ref: .\SearchOfferPolicy.yaml
     filters:
       type: array
       items:
         oneOf:
           - $ref: .\ServiceFilter.yaml
           - $ref: .\DistributionFilter.yaml
-          # - $ref: .\PriceFilter.yaml
-          # - $ref: .\AreaFilter.yaml
-          # - $ref: .\TimeFilter.yaml
-          # - $ref: .\AccessibilityFilter.yaml
-          # - $ref: .\OperatorFilter.yaml
           - $ref: .\FlexibilityFilter.yaml
         discriminator:
           propertyName: filterType

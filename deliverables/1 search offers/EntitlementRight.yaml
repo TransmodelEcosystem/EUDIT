@@ -1,4 +1,6 @@
 type: object
+additionalProperties: false
+description: ENTITLEMENT RIGHT — a credential held by a travelling entity that may qualify for reduced fares or additional offers (loyalty card, discount card, company card, concession, etc.).
 required:
   - issuer
   - entitlementType
