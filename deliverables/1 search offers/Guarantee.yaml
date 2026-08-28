@@ -1,0 +1,58 @@
+type: object
+required:
+  - guaranteeId
+  - type
+  - description
+properties:
+  guaranteeId:
+    type: string
+    description: The unique identifier of the guarantee
+  description:
+    type: string
+    description: A human-readable description of the guarantee
+  guaranteeType:
+    type: string
+    description: The type of guarantee (e.g., refund, replacement, compensation). Valid values can be obtained using the `guaranteeType` endpoint
+    x-extensible-enum: [refund, replacement, compensation, travel-through, travel-back]
+  termsAndConditions:
+    type: string
+    description: A URL or reference to the terms and conditions of the guarantee
+    format: uri
+  applicableRegulations:
+    type: array
+    description: A list of applicable regulations for this guarantee
+    items:
+      type: string
+      x-enum-values:
+        - EU_PRR # EU Passenger Rights Regulation (EC) No 261/2004
+  redresses:
+    type: array
+    description: A list of redresses for this guarantee
+    items:
+      $ref: .\Redress.yaml
+  appliesTo:
+    type: array
+    description: The relevant items where the guarantee applies. This can include specific package elements or trip pattern sections. 
+      If it is absent, the guarantee applies to the entire package.
+    items:
+      type: object
+      properties:
+        packageElementId:
+          type: string
+          format: package-element-ref
+        section:
+          $ref: .\TripPatternSection.yaml
+examples:
+- {
+    "guaranteeId": "G-123",
+    "description": "This guarantee provides a refund in case of cancellation.",
+    "guaranteeType": "refund",
+    "redresses": [
+      { "redressType": "refund",
+        "amount": 23.00,
+        "currencyCode": "EUR",
+        "conditions": "Valid for cancellations made at least 24 hours before departure.",
+        "temporalValidity": "/2024-06-01T10:13:00Z"
+      }
+    ]
+  }

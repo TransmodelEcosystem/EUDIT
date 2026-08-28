@@ -30084,10 +30084,10 @@ components:
               conditions:
               - 'No direct Transmodel equivalent: property has no counterpart in the
                 matched Transmodel class'
-        tripSections:
+        sections:
           type: array
           items:
-            $ref: '#/components/schemas/TripSection'
+            $ref: '#/components/schemas/TripPatternSection'
           x-semantics:
             Transmodel:
               concepts:

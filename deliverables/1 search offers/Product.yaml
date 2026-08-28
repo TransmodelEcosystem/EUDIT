@@ -1,0 +1,11 @@
+type: object
+required:
+  - description
+  - productId
+properties:
+  productId:
+    type: string
+    description: The unique identifier of the product
+  description:
+    type: string
+    description: A human-readable description of the product

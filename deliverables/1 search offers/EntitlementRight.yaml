@@ -1,0 +1,23 @@
+type: object
+additionalProperties: false
+description: ENTITLEMENT RIGHT — a credential held by a travelling entity that may qualify for reduced fares or additional offers (loyalty card, discount card, company card, concession, etc.).
+required:
+  - issuer
+  - entitlementType
+  - code
+properties:
+  issuer:
+    type: string
+    description: The entity that issues the entitlement right. Could be a RISC code
+  entitlementType:
+    type: string
+    description: The type of entitlement right (e.g., subscription, license, access). Valid values can be obtained using the `entitlementType` endpoint
+  code:
+    type: string
+    description: A unique code representing the entitlement right.
+examples:
+- {
+    "issuer": "Company XYZ",
+    "entitlementType": "voucher",
+    "code": "VOUCHER-2024-001"
+  }

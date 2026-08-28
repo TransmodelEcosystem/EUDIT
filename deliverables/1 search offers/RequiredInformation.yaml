@@ -1,0 +1,69 @@
+type: object
+required:
+  - fields
+  - description
+description: >-
+  A list of required information that must be provided by the traveller in order to book this package element
+  In e.g. one of the amend-operations, in the validation or in the purchase itself (TBD)
+properties:
+  fields:
+    type: array
+    description: A list of required information that must be provided by the traveller in order to book this package element
+    items:
+      type: string
+      x-extensible-enum: 
+      - fullName
+      - firstName
+      - lastName
+      - dateOfBirth
+      - gender
+      - nationality
+      - email
+      - address
+      - phoneNumber
+      - passportNumber
+      - passportExpiryDate
+      - passportIssuingCountry
+      - idCardNumber
+      - idCardExpiryDate
+      - idCardIssuingCountry
+      - drivingLicenseNumber
+      - drivingLicenseExpiryDate
+      - drivingLicenseIssuingCountry
+      - width
+      - height
+      - length
+      - weight
+      - confirmation
+  description:
+    type: string
+    description: A description of the required information that must be provided by the traveller in order to book this package element
+  travellingEntityIds:
+    description: >-
+     The travelling entities for which this required information is applicable, in case not all travelling entities 
+     within the package element need to supply the required information. If absent, it is assumed that all 
+     travelling entities within the package element need to supply the required information.
+    type: array
+    items:
+      type: string
+      format: travelling-entity-ref
+  minimumNumberOfItems:
+    type: integer
+    description: The minimum number of items that must be provided for this required information.
+  validation:
+    type: string
+    description: The validation rules or constraints for the required information, expressed in JSONPath format
+  examples:
+    - {
+        "fields": ["fullName"],
+      }
+    - {
+        "fields": ["confirmation"],
+        "travellingEntityIds": ["TE-123"],
+      }  
+    - # to indicate that at least the email or mobile number of the travelling entity with id TE-123 must be provided
+      {
+        "fields": ["email", "mobileNumber"],
+        "travellingEntityIds": ["TE-123"],
+        "minimumNumberOfItems": 1
+      }

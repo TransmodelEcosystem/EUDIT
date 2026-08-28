@@ -1,0 +1,35 @@
+Traveller:
+  allOf:
+  - $ref: .\TravellingEntity.yaml
+  - type: object
+    additionalProperties: false
+    description: TRAVELLER — a human traveller for whom offers are sought.
+    required:
+    - entityType
+    properties:
+      entityType:
+        type: string
+        const: traveller
+      age:
+        type: integer
+        minimum: 0
+        description: Age in years at the start time of travel.
+      gender:
+        type: string
+        description: Gender of the traveller
+        enum:
+        - male
+        - female
+        - other
+        - not_specified
+      assistant:
+        type: boolean
+        description: Whether this traveller acts as an assistant to another traveller.
+      externalReference:
+        type: string
+        description: Caller-assigned external reference for this traveller.
+      personalNeeds:
+        type: array
+        description: Accessibility or personal needs types (operator-defined lookup values, see GET /personal-needs or GET /collections/personal-needs/items).
+        items:
+          type: string

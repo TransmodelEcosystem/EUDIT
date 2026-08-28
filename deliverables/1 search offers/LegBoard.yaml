@@ -1,0 +1,33 @@
+type: object
+required:
+  - stopPointRef
+  - departureTime
+properties:
+  stopPointRef:
+    type: string
+    format: stop-point-ref
+    description: Reference to the stop point where the leg starts
+  departureTime:
+    type: string
+    format: date-time
+    description: The departure time from the pickup location. Local time zone should be used.
+  stopPointName:
+    type: string
+    description: Name of the stop point where the leg starts
+  location:
+    type: string
+    format: place-ref
+    description: Reference to the pickup location for the leg
+  trainNumbers:
+    type: array
+    items:
+      type: string
+      format: train-number
+    description: List of train numbers associated with this leg, if applicable
+examples:
+- {
+    "departureTime": "2024-06-15T14:00:00Z",
+    "stopPointRef": "STOP-456",
+    "stopPointName": "Central Station",
+    "trainNumbers": ["1234", "5678"]
+  }

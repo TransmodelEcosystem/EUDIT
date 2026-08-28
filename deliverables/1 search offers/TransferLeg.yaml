@@ -1,0 +1,23 @@
+allOf:
+  - $ref: .\Leg.yaml
+  - type: object
+    properties:
+      legType:
+        type: string
+        description: discriminator for the leg type
+        const: transfer
+      duration:
+        type: string
+        description: Duration of the leg in minutes (ISO 8601 duration format, e.g., "PT10M" for 10 minutes).
+      start:
+        type: string
+        format: place-ref
+      end:
+        type: string
+        format: place-ref
+examples:
+  - {
+      legType: "transfer",
+      duration: "PT10M",
+      mode: "WALK"
+    }

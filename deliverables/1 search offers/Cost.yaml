@@ -1,0 +1,23 @@
+type: object
+properties:
+  amount:
+    type: number
+    description: The monetary amount of the cost.
+    format: float
+  currencyCode:
+    type: string
+    description: The currency of the cost, represented as a three-letter ISO 4217 code
+  taxes:
+    type: array
+    description: A list of taxes associated with the cost.
+    items:
+      $ref: .\Tax.yaml
+examples:
+- {
+    "amount": 100.00,
+    "currencyCode": "EUR",
+    "taxes": [
+      { "taxType": "VAT", "amount": 20.00, "currencyCode": "EUR" },
+      { "taxType": "Service Tax", "amount": 5.00, "currencyCode": "EUR" }
+    ]
+  }

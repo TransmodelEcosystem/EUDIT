@@ -1,0 +1,29 @@
+allOf:
+- $ref: .\Request.yaml
+- type: object
+  properties:
+    trip:
+      $ref: .\Trip.yaml
+    requestedSections:
+      type: array
+      items:
+        $ref: .\TripPatternSection.yaml
+    travellingEntities:
+      type: array
+      description: A list of travelling entities associated with the package.
+      items:
+        $ref: .\TravellingEntity.yaml
+
+    policy:
+      $ref: .\SearchOfferPolicy.yaml
+    filters:
+      type: array
+      items:
+        oneOf:
+          - $ref: .\ServiceFilter.yaml
+          - $ref: .\DistributionFilter.yaml
+          - $ref: .\FlexibilityFilter.yaml
+        discriminator:
+          propertyName: filterType
+    context:
+      $ref: .\SearchOfferContext.yaml

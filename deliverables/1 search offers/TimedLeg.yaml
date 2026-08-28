@@ -1,0 +1,57 @@
+allOf:
+  - $ref: .\Leg.yaml
+  - type: object
+    required:
+      - legType
+      - service
+      - start
+      - end
+    properties:
+      legType:
+        type: string
+        description: discriminator for the leg type
+        const: timed
+      service:
+        $ref: .\Service.yaml
+      start:
+        $ref: .\LegBoard.yaml
+      end:
+        $ref: .\LegAlight.yaml
+      intermediateStops:
+        type: array
+        description: List of intermediate stops for this leg
+        items:
+          $ref: .\LegIntermediate.yaml
+examples:
+  - {
+      legType: "timed",
+      "tripPatternId": "outbound-1",
+      "service": {
+        "journeyRef": "journey-123",
+        "lineRef": "line-456",
+        "operatingDayRef": "2024-06-15",
+        "directionRef": "outbound",
+        "publishedServiceName": "Intercity 1234",
+        "operatorRefs": ["NS"],
+        "destinationStopPointRef": "stop-100",
+        "productCategory": "IC"
+      },
+      "start": {
+        "stopPointRef": "STOP-456",
+        "stopPointName": "Amsterdam Centraal",
+        "serviceDepartureTime": "2024-06-15T14:00:00Z"
+      },
+      "end": {
+        "stopPointRef": "STOP-789",
+        "stopPointName": "Utrecht Centraal",
+        "serviceArrivalTimetabledTime": "2024-06-15T14:28:00Z"
+      },
+      "intermediateStops": [
+        {
+          "stopPointRef": "STOP-500",
+          "stopPointName": "Amstel",
+          "serviceArrivalTimetabledTime": "2024-06-15T14:10:00Z",
+          "serviceDepartureTimetabledTime": "2024-06-15T14:11:00Z"
+        }
+      ]
+    }

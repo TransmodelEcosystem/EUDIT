@@ -1,0 +1,29 @@
+required: 
+- lineRef
+- publishedLineName
+properties:
+  lineRef:
+    type: string
+    description: Reference to the line associated with this leg
+    format: line-ref
+  publishedLineName:
+    type: string
+    description: The published name of the line associated with this leg
+  journeyRef:
+    type: string
+    description: Reference to the journey associated with this leg
+    format: journey-ref
+  datedJourneyRef:
+    type: string
+    description: Reference to the dated journey associated with this leg
+    format: dated=journey-ref
+  operatingDayRef:
+    type: string
+    description: Reference to the operating day associated with this leg
+    format: day-of-week
+    enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
+  carriers:
+    type: array
+    description: List of carriers associated with this leg
+    items:
+      $ref: .\Carrier.yaml

@@ -1,0 +1,21 @@
+type: object
+properties:
+  requestId:
+    type: string
+    description: Identifier of the originating request
+    format: request-ref
+  problems:
+    type: array
+    description: List of problems related to the request
+    items:
+      $ref: .\Problem.yaml
+  warnings:
+    type: array
+    description: List of warnings related to the request
+    items:
+      $ref: .\Problem.yaml
+  links:
+    type: array
+    description: List of links related to the request
+    items:
+      $ref: .\Link.yaml

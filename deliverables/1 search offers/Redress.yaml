@@ -1,0 +1,17 @@
+type: object
+required:
+  - redressId
+  - redressType
+  - description
+properties:
+  redressId:
+    type: string
+    description: An identifier for the redress
+  description:
+    type: string
+    description: A human-readable description of the redress
+  redressType:
+    type: string
+    x-extensible-enum: []
+examples:
+- { redressId: "12345", description: "Refund for overcharge", redressType: "refund" }

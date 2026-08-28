@@ -1,0 +1,98 @@
+allOf:
+  - $ref: .\SearchOfferFilter.yaml
+  - type: object
+    required:
+      - filterType
+      - mediaType
+    properties:
+      filterType:
+        type: string
+        const: distribution
+      channel:
+        type: string
+        description: The channel of the offer.
+        x-enum-values:
+          - "web"
+          - "mobile"
+          - "kiosk"
+          - "call center"
+          - "travel agency"
+          - "other"
+      fulfillmentMethod:
+        type: string
+        description: >-
+          The fulfillment method of the offer. 
+          * electronic: The offer is fulfilled electronically, e.g. via email or download.
+          * paper: The offer is fulfilled via paper, e.g. a printed voucher or ticket
+          * mobile-app: The offer is fulfilled via a mobile app, e.g. a mobile ticket or voucher.
+          * other: The offer is fulfilled via other methods, e.g. a physical product or service.
+        x-enum-values:
+          - "electronic"
+          - "paper"
+          - "mobile-app"
+          - "ticketless"
+          - "wallet"
+          - "chip_card"
+          - "other"
+      storageLocationType:
+        type: string
+        description: The storage location type of the fulfillments.
+        x-enum-values:
+          - "traveller_mobile"
+          - "retailer_system"
+          - "traveller_media"
+          - "online"
+      typeOfPayment:
+        type: string
+        description: The type of payment of the offer.
+        x-enum-values:
+          - "prepaid"
+          - "postpaid"
+          - "periodic"
+          - "other"
+      mediaType:
+        type: string
+        description: |-
+         The media type of the offer. IANA media type registry: https://www.iana.org/assignments/media-types/media-types.xhtml
+        examples: 
+          - "application/json"
+          - "application/xml"
+          - "text/html"
+          - "application/pdf"
+          - "image/jpeg"
+          - "image/svg+xml"
+      contentStandard:
+        type: string
+        description: The content standard of the offer.
+        x-enum-values:
+          - "ISO/IEC 18004" # QR Code
+          - "ISO/IEC 24778" # Aztec Code
+          - "ISO/IEC 15438" # PDF417
+          - "ISO/IEC 16022" # Data Matrix
+          - "ISO/IEC 15417" # Code 128
+          - "ISO/IEC 16388" # Code 39
+          - "ISO/IEC 15420" # EAN-13
+          - "ISO/IEC 15417" # UPC-A
+          - "ISO/IEC 15424" # MaxiCode
+          - "ISO/IEC 7816-4" # NFC, MIFARE DESFire
+          - "CEN/TS 16794" # calypso NFC card 
+          - "ISO/IEC 14443" # NFC, MIFARE Classic, f.i. for Calypso
+          - "GATT" # Bluetooth Low Energy
+          - "AXA Bike lock" # AXA Bike lock
+          - "RCT2" # RCT2
+          - "RCCST" # UIC RCCST
+          - "IATA BCBP" # IATA BCBP
+          - "CEN/ISO 18013-5" # Wallet handling
+          - "PKPASS" # Apple wallet pass handling
+          - "X.509 v3" # Certificate handling (RFC 5280)
+          - "CBOR" # CBOR (RFC 8392, signed with RFC 9052/9053)
+          - "OTHER" # Other content standard
+examples:
+  - {
+      "filterType": "distribution",
+      "channel": "web",
+      "fulfillmentMethod": "electronic",
+      "typeOfPayment": "prepaid",
+      "mediaType": "application/json",
+      "contentStandard": "ISO/IEC 18004"
+    }

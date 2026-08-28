@@ -1,0 +1,31 @@
+allOf:
+- $ref: .\PackageElement.yaml
+- type: object
+  required:
+    - allocationType
+    - packageElementType
+  properties:
+    packageElementType:
+      description: The type of the package element, which can be used to determine the specific schema to use for validation.
+      type: string
+      const: assetAllocation
+    typeOfAsset:
+      type: string
+      description: The type of asset allocated. The allowed values are defined in 'asset-type' lookup.
+    description:
+      type: string
+      description: A description of the allocation.
+    reference:
+      type: string
+      description: An asset reference identifier for the allocation.
+      format: asset-ref
+    numberOfAssets:
+      type: integer
+      description: The number of allocated assets for the allocation
+examples:
+- {
+    "packageElementType": "assetAllocation",
+    "typeOfAsset": "normal-bike",
+    "description": "Normal bike for the trip.",
+    "numberOfAssets": 2
+  }

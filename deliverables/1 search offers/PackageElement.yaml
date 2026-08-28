@@ -1,0 +1,42 @@
+type: object
+required:
+  - packageElementId
+  - packageElementType
+  - status
+properties:
+  packageElementId:
+    description: Unique identifier for the package element
+    type: string
+  packageElementType:
+    description: The type of the package element, which can be used to determine the specific schema to use for validation.
+    type: string
+    enum: [travelRight, ancillary, spotAllocation, assetAllocation, afterSalesFee]
+  coverage:
+    type: array
+    description: A list of trip sections that are covered by this package element. If absent, the package element is considered to be valid for the entire requested trip.
+    items:
+      $ref: .\TripPatternSection.yaml
+  price:
+    description: The price of this package element
+    $ref: .\Cost.yaml
+  product:
+    description: The product associated with this package element
+    $ref: .\Product.yaml
+  travellingEntities:
+    type: array
+    description: A list of travelling entities associated with this package element. If absent, the package element is considered to be valid for all travelling entities.
+    items:
+      type: string
+      format: travelling-entity-ref
+  status:
+    type: string
+    description: The status of the package element, which can be used to determine its availability or validity.
+    enum: [offered, locked, expired, released, purchased, rollbacked, cancelled, fulfilled, refunded, exchanged, exchange_ongoing, error]
+examples:
+  - { "packageElementId": "PE-123", 
+      "packageElementType": "travelRight",
+      "status": "offered",
+      "coverage": [ { "startLeg": "L-789", "endLeg": "L-789" } ], 
+      "price": { "amount": 23.20, "currencyCode": "EUR" }, 
+      "travellingEntities": [ "TE-123", "TE-456" ]
+    }

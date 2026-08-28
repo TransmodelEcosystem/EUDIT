@@ -1,0 +1,9 @@
+type: object
+properties:
+  description:
+    type: string
+    description: A description of the filter, providing context or details about its purpose.
+  exclude:
+    type: boolean
+    default: false
+    description: If true, the filter will exclude the specified item instead of including them

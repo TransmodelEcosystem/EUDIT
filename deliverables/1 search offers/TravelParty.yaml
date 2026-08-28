@@ -1,0 +1,14 @@
+type: object
+required:
+  - travelPartyId
+description: >-
+  TRAVEL PARTY — a group of travelling entities that are travelling together. The travel party can be used to apply group 
+  discounts or other offers. Travelling entities with the same travelPartyId are considered to be part of the same travel party.
+properties:
+  travelPartyId:
+    type: string
+  type:
+    type: string
+    x-extensible-enum: [family, group, individual]
+examples:
+- { travelPartyId: "party123", type: "family" }
