@@ -6,15 +6,9 @@ allOf:
         type: string
         description: discriminator for the leg type
         const: transfer
-      continuousMode:
-        type: string
-        enum: []
       duration:
         type: integer
         description: Duration of the leg in minutes
-      transferMode:
-        type: string
-        enum: []
       start:
         type: string
         format: place-ref

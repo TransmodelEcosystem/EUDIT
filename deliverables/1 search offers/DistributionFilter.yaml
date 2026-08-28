@@ -20,18 +20,35 @@ allOf:
           - "other"
       fulfillmentMethod:
         type: string
-        description: The fulfillment method of the offer.
+        description: >-
+          The fulfillment method of the offer. 
+          * electronic: The offer is fulfilled electronically, e.g. via email or download.
+          * paper: The offer is fulfilled via paper, e.g. a printed voucher or ticket
+          * mobile-app: The offer is fulfilled via a mobile app, e.g. a mobile ticket or voucher.
+          * other: The offer is fulfilled via other methods, e.g. a physical product or service.
         x-enum-values:
           - "electronic"
           - "paper"
-          - "mobile"
+          - "mobile-app"
+          - "ticketless"
+          - "wallet"
+          - "chip_card"
           - "other"
+      storageLocationType:
+        type: string
+        description: The storage location type of the fulfillments.
+        x-enum-values:
+          - "traveller_mobile"
+          - "retailer_system"
+          - "traveller_media"
+          - "online"
       typeOfPayment:
         type: string
         description: The type of payment of the offer.
         x-enum-values:
           - "prepaid"
           - "postpaid"
+          - "periodic"
           - "other"
       mediaType:
         type: string
@@ -58,6 +75,14 @@ allOf:
           - "ISO/IEC 15417" # UPC-A
           - "ISO/IEC 15424" # MaxiCode
           - "ISO/IEC 7816-4" # NFC, MIFARE DESFire
+          - "ISO/IEC 14443" # NFC, MIFARE Classic, f.i. for Calypso
           - "GATT" # Bluetooth Low Energy
           - "AXA Bike lock" # AXA Bike lock
+          - "RCT2" # RCT2
+          - "RCCST" # UIC RCCST
+          - "IATA BCBP" # IATA BCBP
+          - "CEN/ISO 18013-5" # Wallet handling
+          - "PKPASS" # Apple wallet pass handling
+          - "X.509 v3" # Certificate handling (RFC 5280)
+          - "CBOR" # CBOR (RFC 8392, signed with RFC 9052/9053)
           - "OTHER" # Other content standard

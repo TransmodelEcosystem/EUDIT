@@ -1,12 +1,8 @@
 type: object
 required:
-  - pickupLocation
+  - stopPointRef
   - departureTime
 properties:
-  pickupLocation:
-    type: string
-    format: place-ref
-    description: Reference to the pickup location for the leg
   departureTime:
     type: string
     format: date-time
@@ -24,3 +20,7 @@ properties:
       type: string
       format: train-number
     description: List of train numbers associated with this leg, if applicable
+  pickupLocation:
+    type: string
+    format: place-ref
+    description: Reference to the pickup location for the leg.

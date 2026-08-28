@@ -6,17 +6,12 @@ allOf:
         type: string
         description: discriminator for the leg type
         const: continuous
-      continuousMode:
-        type: string
-        enum: []
       duration:
         type: integer
         description: Duration of the leg in minutes
-      individualMode:
-        type: string
-        enum: []
       start:
         type: string
+        description: consistent with TimedLeg
         format: place-ref
       end:
         type: string

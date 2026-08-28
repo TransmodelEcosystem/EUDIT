@@ -13,4 +13,4 @@ allOf:
         enum:
           - "cancellable"
           - "exchangeable"
-          - "refundable"
+          - "resellable"

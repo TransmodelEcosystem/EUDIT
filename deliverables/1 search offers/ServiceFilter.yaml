@@ -12,6 +12,6 @@ allOf:
       class:
         type: string
         x-enum-values:
-          - economy
-          - business
-          - first
+          - FIRST # equals BUSINESS, PREMIUM, BEST
+          - SECOND # equals ECONOMY, STANDARD, BASIC
+          - ANY_CLASS

@@ -6,25 +6,8 @@ allOf:
         type: string
         description: discriminator for the leg type
         const: timed
-      journeyRef:
-        type: string
-        description: Reference to the journey associated with this leg
-        format: journey-ref
-      lineRef:
-        type: string
-        description: Reference to the line associated with this leg
-        format: line-ref
-      operatingDayRef:
-        type: string
-        description: Reference to the operating day associated with this leg
-        format: day-of-week
-        enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday]
-      privateMode:
-        type: string
-        enum: []
-      ptMode:
-        type: string
-        enum: []
+      service:
+        $ref: .\Service.yaml
       start:
         $ref: .\LegBoard.yaml
       end:

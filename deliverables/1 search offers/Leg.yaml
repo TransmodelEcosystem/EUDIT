@@ -13,9 +13,7 @@ properties:
     description: discriminator for the leg type
     enum: [timed, continuous, transfer]
   mode:
-    type: string
-    description: Mode of transportation for the leg (e.g., bus, train, walking). See modes as specified in NeTEx.
-    enum: []
+    $ref: .\Mode.yaml
   sequenceNumber:
     type: integer
     description: The order of the leg in the overall journey. In case of parallel legs, the sequence number should be the same for those legs.
