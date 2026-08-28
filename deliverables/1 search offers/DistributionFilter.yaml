@@ -75,6 +75,7 @@ allOf:
           - "ISO/IEC 15417" # UPC-A
           - "ISO/IEC 15424" # MaxiCode
           - "ISO/IEC 7816-4" # NFC, MIFARE DESFire
+          - "CEN/TS 16794" # calypso NFC card 
           - "ISO/IEC 14443" # NFC, MIFARE Classic, f.i. for Calypso
           - "GATT" # Bluetooth Low Energy
           - "AXA Bike lock" # AXA Bike lock
@@ -86,3 +87,12 @@ allOf:
           - "X.509 v3" # Certificate handling (RFC 5280)
           - "CBOR" # CBOR (RFC 8392, signed with RFC 9052/9053)
           - "OTHER" # Other content standard
+examples:
+  - {
+      "filterType": "distribution",
+      "channel": "web",
+      "fulfillmentMethod": "electronic",
+      "typeOfPayment": "prepaid",
+      "mediaType": "application/json",
+      "contentStandard": "ISO/IEC 18004"
+    }

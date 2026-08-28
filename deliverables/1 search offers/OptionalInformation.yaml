@@ -1,0 +1,24 @@
+type: object
+required:
+  - informationId
+  - description
+properties:
+  informationId:
+    type: string
+    description: Unique identifier for this optional information item.
+  description:
+    type: string
+    description: A description of the optional information that can be provided by the traveller before purchase.
+  optionalInformation:
+    type: string
+    description: >-
+      The type of optional information to supply before purchase,
+      e.g. to obtain a discount or to provide additional context for the service provider.
+    x-extensible-enum:
+      - voucher
+examples:
+- {
+    "informationId": "OI-001",
+    "description": "Provide a voucher code to obtain a discount.",
+    "optionalInformation": "voucher"
+  }

@@ -1,0 +1,31 @@
+type: object
+required:
+  - amount
+  - currencyCode
+properties:
+  taxType:
+    type: string
+    description: The type of tax applied to the cost.
+    enum:
+      - VAT
+      - Service Tax
+      - Other
+  amount:
+    type: number
+    description: The monetary amount of the cost.
+    format: float
+  currencyCode:
+    type: string
+    description: The currency code of the cost, represented as a three-letter ISO 4217 code
+  country:
+    type: string
+    description: The country associated with the tax, represented as a two-letter ISO 3166-1 alpha-2 code
+  description:
+    type: string
+    description: A description of the tax.
+  percentage:
+    type: number
+    description: The percentage of the tax applied to the cost.
+    format: double
+examples:
+- { amount: 5.00, country: "US", "taxType": "VAT", currencyCode: "USD", percentage: 10.0 }

@@ -16,3 +16,20 @@ allOf:
       end:
         type: string
         format: place-ref
+      timeWindowStart:
+        type: string
+        format: date-time
+        description: The start of the time window during which this continuous leg may be used.
+      timeWindowEnd:
+        type: string
+        format: date-time
+        description: The end of the time window during which this continuous leg may be used.
+examples:
+- {
+    "legType": "continuous",
+    "duration": 120,
+    "timeWindowStart": "2024-06-15T08:00:00Z",
+    "timeWindowEnd": "2024-06-15T10:00:00Z",
+    "start": "PLACE-123",
+    "end": "PLACE-456"
+  }

@@ -1,8 +1,12 @@
 type: object
 required:
+  - stopPointRef
   - arrivalTime
   - departureTime
 properties:
+  stopPointRef:
+    type: string
+    format: stop-point-ref
   arrivalTime:
     type: string
     format: date-time
@@ -13,8 +17,4 @@ properties:
     description: The departure time from the stop point. Local time zone should be used.  
   stopPointName:
     type: string
-    description: Name of the stop point 
-  stopPointRef:
-    type: string
-    format: stop-point-ref
-    description: Reference to the stop point
+    description: Name of the stop point

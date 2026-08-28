@@ -1,0 +1,7 @@
+type: object
+required:
+  - requestId
+properties:
+  requestId:
+    type: string
+    description: Unique identifier for the request
