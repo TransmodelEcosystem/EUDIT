@@ -1,0 +1,16 @@
+allOf:
+  - $ref: .\SearchOfferFilter.yaml
+  - type: object
+    required:
+      - filterType
+      - afterSalesLevel
+    properties:
+      filterType:
+        type: string
+        const: flexibility
+      afterSalesLevel:
+        type: string
+        enum:
+          - "cancellable"
+          - "exchangeable"
+          - "resellable"

@@ -1,0 +1,24 @@
+type: object
+properties:
+  startLeg:
+    type: string
+    format: leg-ref
+  startPlace:
+    type: string
+    description: The starting place of the trip, which can be a stop or a location.
+    format: place-ref
+  endLeg:
+    type: string
+    format: leg-ref
+  endPlace:
+    type: string
+    description: The ending place of the trip, which can be a stop or a location.
+    format: place-ref
+  tripPattern:
+    type: string
+    format: trip-pattern-ref
+    description: | 
+      Reference to the trip pattern that this trip follows, if applicable.
+    examples:
+      - "inbound-1234"
+      - "outbound-5678"

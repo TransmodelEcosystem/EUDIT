@@ -1,0 +1,29 @@
+type: object
+required:
+  - legId
+  - mode
+  - legType
+properties:
+  legId:
+    type: string
+    description: Unique identifier for the leg
+    format: leg-ref
+  legType:
+    type: string
+    description: discriminator for the leg type
+    enum: [timed, continuous, transfer]
+  mode:
+    $ref: .\Mode.yaml
+  sequenceNumber:
+    type: integer
+    description: The order of the leg in the overall journey. In case of parallel legs, the sequence number should be the same for those legs.
+    default: 1
+    minimum: 1
+  tripPattern:
+    type: string
+    format: trip-pattern-ref
+    description: Reference to the trip pattern that this leg is part of, if applicable. There is no tripPattern object in the data model,
+      so legs with the same tripPattern reference are considered to be part of the same trip pattern.
+    examples:
+      - "inbound-1234"
+      - "outbound-5678"

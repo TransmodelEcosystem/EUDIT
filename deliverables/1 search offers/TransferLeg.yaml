@@ -1,0 +1,17 @@
+allOf:
+  - $ref: .\Leg.yaml
+  - type: object
+    properties:
+      legType:
+        type: string
+        description: discriminator for the leg type
+        const: transfer
+      duration:
+        type: integer
+        description: Duration of the leg in minutes
+      start:
+        type: string
+        format: place-ref
+      end:
+        type: string
+        format: place-ref

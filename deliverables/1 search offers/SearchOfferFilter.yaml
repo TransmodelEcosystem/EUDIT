@@ -1,0 +1,5 @@
+type: object
+properties:
+  exclude:
+    type: boolean
+    description: If true, the filter will exclude the specified item instead of including them

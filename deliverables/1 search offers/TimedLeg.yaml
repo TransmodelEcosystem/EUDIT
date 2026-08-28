@@ -1,0 +1,19 @@
+allOf:
+  - $ref: .\Leg.yaml
+  - type: object
+    properties:
+      legType:
+        type: string
+        description: discriminator for the leg type
+        const: timed
+      service:
+        $ref: .\Service.yaml
+      start:
+        $ref: .\LegBoard.yaml
+      end:
+        $ref: .\LegAlight.yaml
+      intermediateStops:
+        type: array
+        description: List of intermediate stops for this leg
+        items:
+          $ref: .\LegIntermediate.yaml

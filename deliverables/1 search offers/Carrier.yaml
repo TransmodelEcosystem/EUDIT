@@ -1,0 +1,14 @@
+type: object
+required:
+  - ref
+  - name
+properties:
+  ref:
+    type: string
+    description: Unique identifier for the carrier
+  name:
+    type: string
+    description: Name of the carrier
+  shortName:
+    type: string
+    description: Short name of the carrier
