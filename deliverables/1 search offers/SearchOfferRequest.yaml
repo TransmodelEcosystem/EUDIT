@@ -4,8 +4,6 @@ allOf:
   properties:
     trip:
       $ref: .\Trip.yaml
-    context:
-      $ref: .\TripContext.yaml
     requestedSections:
       type: array
       items:
@@ -15,6 +13,7 @@ allOf:
       description: A list of travelling entities associated with the package.
       items:
         $ref: .\TravellingEntity.yaml
+
     policy:
       $ref: .\SearchOfferPolicy.yaml
     filters:
@@ -26,3 +25,5 @@ allOf:
           - $ref: .\FlexibilityFilter.yaml
         discriminator:
           propertyName: filterType
+    context:
+      $ref: .\SearchOfferContext.yaml

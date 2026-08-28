@@ -30,7 +30,7 @@ properties:
     description: A list of redresses for this guarantee
     items:
       $ref: .\Redress.yaml
-  guaranteeFor:
+  appliesTo:
     type: array
     description: The relevant items where the guarantee applies. This can include specific package elements or trip pattern sections. 
       If it is absent, the guarantee applies to the entire package.
