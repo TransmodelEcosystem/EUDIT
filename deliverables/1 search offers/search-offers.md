@@ -17,7 +17,7 @@ _Required items_
 | filters | List of Filters | optional | See the PR of the 'What' part |
 | amendingOfferedPackageRef | string | conditional | (policy) only to be used in the 'amend' phase, where additional offers can be searched |
 | contentLanguage | string | optional | (policy) The language/localization of user-facing content, One IETF BCP 47 (RFC 5646) language tag. If missing, the local accepted language |
-| currency | string | optional | (policy) The currency to be used in the response. If the requested currency is not available, return the local valuta |
+| currency | string | optional | (policy) The preferred currency to be used in the response. The response can contain the currency, but is not obliged to be used. |
 
 ### Example (indicative)
 
