@@ -1,0 +1,36 @@
+type: object
+properties:
+  requestId:
+    type: string
+    description: a-sync | a unique ID, the response to this request MUST have the same ID (in case of a-sync call) 
+  packageId:
+    type: string
+    description: the reference of the package
+  version:
+    type: string
+    description: the new version of the package
+  summary:
+    type: string
+    description: textual explanaition, which parts are refunded
+  status:
+    type: string
+    description: enumeration for tracking the refund (offer status =  refunded or scheduled_refund)
+    enum:
+      - offered
+      - refund_in_progress # for a-sync responses
+      - refunded
+      - scheduled_refund
+  delayedReimbursement:
+    type: string
+    format: date-time
+    description: in case the reimbursement will be settled in the future
+  problems:
+    type: array
+    items:
+      type: string
+    description: a list of string, describing blocking issues, in the requested language (or local if not the requested language is not supported)
+  warnings:
+    type: array
+    items:
+      type: string
+    description: a list of string, describing non-blocking issues, in the requested language (or local if not the requested language is not supported)

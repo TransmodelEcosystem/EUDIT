@@ -1,0 +1,54 @@
+type: object
+required:
+  - refundOfferId
+  - packageId
+  - version
+  - refundableAmount
+properties:
+  requestId:
+    type: string
+    description: a unique ID, the response to this request MUST have the same ID (in case of a-sync call)
+  refundOfferId:
+    type: string
+    description: a unique ID, to identify the offer
+  summary:
+    type: string
+    description: human readable clarification of the offer, in the requested content language, if possible
+  fee:
+    $ref: '#/components/schemas/Price'
+    description: the fee to pay
+  refundableAmount:
+    $ref: '#/components/schemas/Price'
+    description: the amount that can be refunded
+
+  packageId:
+    type: string
+    description: the reference of the package
+  version:
+    type: string
+    description: the version of the package to (partial) refund
+  expiryTime:
+    type: string
+    format: date-time
+    description: expiry time of rollback window, ISO 8601
+  problems:
+    type: array
+    items:
+      type: string
+    description: a list of string, describing blocking issues, in the requested language (or local if not the requested language is not supported)
+  warnings:
+    type: array
+    items:
+      type: string
+    description: a list of string, describing non-blocking issues, in the requested language (or local if not the requested language is not supported)
+  delayedReimbursement:
+    type: string
+    format: date-time
+    description: in case the reimbursement will be settled in the future
+  paymentMethod:
+    type: string
+    description: the method of payment used for the refund
+  status:
+    type: string
+    description: enumeration for tracking the offer
+    const: offered
